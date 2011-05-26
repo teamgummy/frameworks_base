@@ -270,6 +270,12 @@ void matrixf_t::multiply(matrixf_t& r, const matrixf_t& lhs, const matrixf_t& rh
         r.m[ I(i,2) ] = ri2;
         r.m[ I(i,3) ] = ri3;
     }
+
+#else /* HAVE_ARM_VFP */
+   GLfloat const* const m1 = lhs.m;
+   GLfloat const* const m2 = rhs.m;
+   matrix_4x4_mul(m1, m2, r.m);
+#endif
 }
 
 void matrixf_t::dump(const char* what) {
