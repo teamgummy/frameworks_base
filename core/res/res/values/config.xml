@@ -746,11 +746,19 @@
          movement threshold where scrolling should begin. -->
     <dimen name="config_viewConfigurationTouchSlop">8dp</dimen>
 
+<<<<<<< HEAD
     <!-- Defines the shutdown options shown in the reboot dialog. -->
     <array name="zzshutdown_reboot_options" translatable="false">
         <item>@string/zzreboot_reboot</item>
         <item>@string/zzreboot_recovery</item>
         <item>@string/zzreboot_bootloader</item>
     </array>
+=======
+
+    <!-- CM CHANGES START HERE -->
+
+    <!-- Use legacy USB device manager. -->
+    <bool name="config_usesLegacyUsbDeviceManager">false</bool>
+>>>>>>> 8caeb56... LegacyUSB: Add support for legacy USB implementations
 
 </resources>
