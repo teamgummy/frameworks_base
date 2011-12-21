@@ -1,0 +1,558 @@
+page.title=Publishing on Android Market
+@jd:body
+
+<div id="qv-wrapper">
+<div id="qv">
+
+<h2>Quickview</h2>
+
+<ul>
+<li>You can publish your application using a hosted service such as Android Market or through a web server.</li>
+<li>Before you publish, make sure you have prepared your application properly.</li>
+<li>Android Market makes it easy for users of Android-powered devices to see and download your application.</li>
+</ul>
+
+
+<h2>In this document</h2>
+
+<ol>
+<li><a href="#overview">About Android Market</a>
+<li><a href="#marketupgrade">Publishing Updates on Android Market</a></li>
+<li><a href="#marketLicensing">Using Android Market Licensing Service</a></li>
+<li><a href="#marketintent">Linking to Your Apps on Android Market</a>
+  <ol>
+    <li><a href="#OpeningDetails">Opening an app's details page</a></li>
+    <li><a href="#PerformingSearch">Performing a search</a></li>
+    <li><a href="#BuildaButton">Build an Android Market button</a></li>
+    <li><a href="#UriSummary">Summary of URI formats</a></li>
+  </ol>  
+</li>
+</ol>
+
+<h2>See also</h2>
+
+<ol>
+<li><a href="{@docRoot}guide/publishing/licensing.html">Application Licensing</a></li>
+<li><a href="{@docRoot}guide/publishing/preparing.html">Preparing to Publish</a></li>
+</ol>
+
+<div id="qv-extra">
+  <img id="rule" src="{@docRoot}assets/images/grad-rule-qv.png">
+  <div id="qv-sub-rule">
+    <img src="{@docRoot}assets/images/icon_market.jpg" style="float:left;margin:0;padding:0 5px;">
+    <h2 style="color:#669999;">Interested in publishing your app on Android Market?</h2>
+    <p><a href="http://market.android.com/publish">Go to Android Market</a> to
+create a developer account and upload your application. For more information about the
+required assets, listing details, and options, see <a
+href="http://market.android.com/support/bin/answer.py?answer=113469">Uploading
+applications</a>.</p>
+  </div>
+</div>
+
+</div>
+</div>
+
+<p>If you've followed the steps outlined in <a
+href="{@docRoot}guide/publishing/preparing.html">Preparing to Publish</a>, the result of the process
+is a compiled {@code .apk} file that is signed with your private release key. Your application is
+now ready to be published publicly so users can install it.</p>
+
+<p>You can publish your application and allow users to install it any way you choose, including
+from your own web server. This document provides information about publishing your Android
+application with Android Market.</p>
+
+
+<h2 id="overview">About Android Market</h2>
+
+<p>Android Market is a service that makes it easy for users to find and download Android
+applications to their Android-powered devices, either from the Android Market application on their
+device or from the Android Market web site (<a
+href="http://market.android.com">market.android.com</a>). As a developer, you can use Android Market
+to distribute your applications to users on all types of Android-powered devices, all around the
+world.</p>
+
+<p>To publish your application on Android Market, you first need to register
+with the service using a Google account and agree to the terms of service.
+Once you are registered, you can upload your application to the service whenever
+you want, update it as many times as you want, and then publish it when you are ready.
+Once published, users can see your application, download it, and rate it. </p>
+
+<p>To register as an Android Market developer and get started with publishing,
+visit the Android Market publisher site: </p>
+
+<p style="margin-left:3em;"><a
+href="http://market.android.com/publish">http://market.android.com/publish</a>
+</p>
+
+<p>If you plan to publish your application on Android Market, you must make sure
+that it meets the requirements listed below, which are enforced by the Market
+server when you upload the application.</p>
+
+<div class="special">
+<p>Requirements enforced by the Android Market server:</p>
+<ol>
+<li>Your application must be signed with a cryptographic private key whose
+validity period ends after <span style="color:red">22 October 2033</span>. </li>
+<li>Your application must define both an <code>android:versionCode</code> and an
+<code>android:versionName</code> attribute in the
+<a
+href="{@docRoot}guide/topics/manifest/manifest-element.html"><code>&lt;manifest&gt;</code></a>
+element of its manifest file. The server uses the <code>android:versionCode</code> as
+the basis for identifying the application internally and handling updates, and
+it displays the <code>android:versionName</code> to users as the application's
+version.</li>
+<li>Your application must define both an <code>android:icon</code> and an
+<code>android:label</code> attribute in the <a
+href="{@docRoot}guide/topics/manifest/application-element.html"><code>&lt;application&gt;</code></a>
+element of its manifest file.</li>
+</ol>
+</div>
+
+
+<h2 id="marketupgrade">Publishing Updates on Android Market</h2>
+
+<p>At any time after publishing an application on Android Market, you can upload
+and publish an update to the same application package. When you publish an
+update to an application, users who have already installed the
+application may receive a notification that an update is
+available for the application. They can then choose to update the application
+to the latest version.</p>
+
+<p>Before uploading the updated application, be sure that you have incremented
+the <code>android:versionCode</code> and <code>android:versionName</code>
+attributes in the <a
+href="{@docRoot}guide/topics/manifest/manifest-element.html"><code>&lt;manifest&gt;</code></a>
+element of the manifest file. Also, the package name must be the same as the existing version and
+the {@code .apk} file must be signed with the same private key. If the package name and signing
+certificate do <em>not</em> match those of the existing version, Market will
+consider it a new application, publish it as such, and will not offer it to existing users as an
+update.</p>
+
+
+<h2 id="marketLicensing">Using Android Market Licensing Service</h2>
+
+<p>Android Market offers a licensing service that lets you enforce licensing
+policies for paid applications that you publish through Android Market. With
+Android Market Licensing, your applications can query Android Market at runtime
+to obtain the licensing status for the current user, then allow or disallow
+further use of the application as appropriate. Using the service, you can apply a flexible
+licensing policy on an application-by-application basis&mdash;each 
+application can enforce its licensing status in the way most appropriate
+for it. </p>
+
+<p>Any application that you publish through Android Market can use the Android
+Market Licensing Service. The service uses no dedicated framework APIs, so you can
+add licensing to any application that uses a minimum API Level of 3 or
+higher.</p>
+
+<p>For complete information about Android Market Licensing Service and how to
+use it in your application, read <a
+href="{@docRoot}guide/publishing/licensing.html">Application Licensing</a>.</p>
+
+
+
+<h2 id="marketintent">Linking to Your Apps on Android Market</h2>
+
+<p>To help users discover your published applications, you can use two special Android Market URIs
+that direct users to your application's details page or perform a search for all of your published
+applications in Android Market. You can use these URIs to create a button in your application or a
+link on a web page that:</p>
+
+<ul>
+  <li>Opens your application's details page in the Android Market application or web site.</li>
+  <li>Searches for all your published applications in the Android Market application or web
+site.</li>
+</ul>
+
+<p>You can launch the Android Market application or web site in the following ways:</p>
+<ul>
+  <li>Initiate an {@link android.content.Intent} from your application that launches the
+Android Market application on the user's device.</li>
+  <li>Provide a link on a web page that opens the Android Market web site (but will also
+open the Android Market application if clicked from a device).</li>
+</ul>
+
+<p>In both cases, whether you want to initiate the action from your application or from a web
+page, the URIs are quite similar. The only difference is the URI prefix.</p>
+
+<p>To open the Android Market application from your application, the prefix for the intent's data
+URI is:</p>
+
+<p style="margin-left:2em"><code>market://</code></p>
+
+<p>To open Android Market from your web site, the prefix for the link URI is:</p>
+
+<p style="margin-left:2em"><code>http://market.android.com/</code></p>
+
+<p>The following sections describe how to create a complete URI for each action.</p>
+
+<p class="note"><strong>Note:</strong> If you create a link to open Android Market from your web
+site and the user selects it from an Android-powered device, the device's Market application will
+resolve the link so the user can use the Market application instead of opening the web
+site. As such, you should always use {@code http://market.android.com/} URIs when creating a link on
+a web page. When pointing to your apps from within your Android app, use the
+{@code market://} URIs in an intent, so that the Market application always opens.</p>
+
+
+<h3 id="OpeningDetails">Opening an app's details page</h3>
+
+<p>As described above, you can open the details page for a specific application either on the
+Android Market application or the Android Market web site. The details page allows the user to see
+the application description, screenshots, reviews and more, and choose to install it.</p>
+
+<p>The format for the URI that opens the details page is:</p>
+
+<p style="margin-left:2em"><code>&lt;URI_prefix&gt;<b>details?id=</b>&lt;package_name&gt;</code></p>
+
+<p>The <code>&lt;package_name&gt;</code> is a placeholder for the target application's
+fully-qualified package name, as declared in the <a
+href="{@docRoot}guide/topics/manifest/manifest-element.html#package">{@code
+package}</a> attribute of the <a href="{@docRoot}guide/topics/manifest/manifest-element.html">{@code
+&lt;manifest&gt;}</a> element.</p>
+
+
+<h4>Opening the app details page from your Android app</h4>
+
+<p>To open the Android Market details page from your application,
+create an intent with the {@link android.content.Intent#ACTION_VIEW} action and include a data URI
+in this format:</p>
+
+<p style="margin-left:2em"><code>market://details?id=&lt;package_name&gt;</code></p>
+
+<p>For example, here's how you can create an intent and open an application's details page in
+Android Market:</p>
+
+<pre>
+Intent intent = new Intent(Intent.ACTION_VIEW);
+intent.setData(Uri.parse("market://details?id=com.android.example"));
+startActivity(intent);
+</pre>
+
+<p>This will open the Android Market application on the device to view the {@code
+com.android.example} application.</p>
+
+
+<h4>Opening the app details page from a web site</h4>
+
+<p>To open the details page from your web site, create a link with a URI in this
+format:</p>
+
+<p style="margin-left:2em">
+  <code>http://market.android.com/details?id=&lt;package_name&gt;</code>
+</p>
+
+<p>For example, here's a link that opens an application's details page on Android Market:</p>
+
+<pre>
+&lt;a href="http://market.android.com/details?id=com.android.example">App Link&lt;/a>
+</pre>
+
+<p>When clicked from a desktop web browser, this opens the Android Market web site to view the
+{@code com.android.example} application. When clicked from an Android-powered device, users are
+given the option to use either their web browser or the Android Market application to view the
+application.</p>
+
+
+
+<h3 id="PerformingSearch">Performing a search</h3>
+
+<p>To initiate a search in Android Market, the format for the URI is:</p>
+
+<p style="margin-left:2em">
+  <code>&lt;URI_prefix&gt;<b>search?q=</b>&lt;query&gt;</code>
+</p>
+
+<p>The <code>&lt;query&gt;</code> is a placeholder for the search query to execute in Android
+Market. The query can be a raw text string or you can include a parameter that performs a search
+based on the publisher name:</p>
+
+<ul>
+  <li>To perform a raw text search, append the query string:
+  <p><code>&lt;URI_prefix&gt;<b>search?q=</b>&lt;search_query&gt;</code></p></li>
+
+  <li>To search based on the publisher name, use the {@code pub:} parameter in the query, followed
+by the publisher name:
+  <p><code>&lt;URI_prefix&gt;<b>search?q=pub:</b>&lt;publisher_name&gt;</code></p>
+  <p>You can use this type of search to show all of your published applications.</p></li>
+</ul>
+
+
+<h4>Searching from your Android app</h4>
+
+<p>To initiate a search on Android Market from your application, create an intent with the
+{@link android.content.Intent#ACTION_VIEW} action and include a data URI in this format:</p>
+
+<p style="margin-left:2em"><code>market://search?q=&lt;query&gt;</code></p>
+
+<p>The query may include the {@code pub:} parameter described above.</p>
+
+<p>For example, here's how you can initiate a search in the Android Market application, based on the
+publisher name:</p>
+
+<pre>
+Intent intent = new Intent(Intent.ACTION_VIEW);
+intent.setData(Uri.parse("market://search?q=pub:Your Publisher Name"));
+startActivity(intent);
+</pre>
+
+<p>This opens the Android Market application to perform the search. The search result shows all
+applications published by the publisher that are compatible with the current device.</p>
+
+
+<h4>Searching from a web site</h4>
+
+<p>To initiate a search on Android Market from your web site, create a link with a URI in this
+format:</p>
+
+<p style="margin-left:2em">
+  <code>http://market.android.com/search?q=&lt;query&gt;</code>
+</p>
+
+<p>The query may include the {@code pub:} parameter described above.</p>
+
+<p>For example, here's a link that initiates a search on Android Market, based on the
+publisher name:</p>
+
+<pre>
+&lt;a href="http://market.android.com/search?q=pub:Your Publisher Name">Search Link&lt;/a>
+</pre>
+
+<p>When clicked from a desktop web browser, this opens the Android Market web site and performs the
+search. When clicked from an Android-powered device, users are given the option to use either their
+web browser or the Android Market application to perform the search.</p>
+
+
+
+<h3 id="BuildaButton">Build an Android Market button</h3>
+
+<p>Use the following form to generate an "Available in Android Market" button that you can use on
+your web site. Input either your application's package name or publisher name and the button will
+take users to Android Market to either view your application's information or view a list of
+your published apps. If users click the button while on an Android-powered device, the Android
+Market application will respond to show users your application(s).</p>
+
+<p>This form offers four versions of the official "Available in Android Market" button at
+recommended sizes. If you want to create a different size, you can download an EPS file for
+the button images from the <a href="http://www.android.com/branding.html">Android Brand
+Guidelines</a>.</p>
+
+<style type="text/css">
+  
+form.button-form {
+  margin-top:2em;
+}
+
+/* the label and input elements are blocks that float left in order to
+   keep the left edgets of the input aligned, and IE 6/7 do not fully support "inline-block" */
+label.block {
+  display: block;
+  float: left;
+  width: 100px;
+  padding-right: 10px;
+}
+
+input.text {
+  display: block;
+  float: left;
+  width: 250px;
+}
+
+div.button-row {
+  white-space:nowrap;
+  min-height:80px;
+}
+
+div.button-row input {
+  vertical-align:120%;
+}
+
+#jd-content div.button-row img {
+  margin: 0;
+}
+
+</style>
+
+<script type="text/javascript">
+
+// variables for creating 'try it out' demo button
+var imagePath = "http://www.android.com/images/brand/"
+var linkStart = "<a href=\"http://market.android.com/";
+var imageStart = "\">\n"
+        + "  <img src=\"" + imagePath;
+var imageEnd = ".png\"\n"
+        + "       alt=\"Available in Android Market\" />\n</a>";
+
+// variables for creating code snippet
+var linkStartCode = "&lt;a href=\"http://market.android.com/";
+var imageStartCode = "\"&gt;\n"
+        + "  &lt;img src=\"" + imagePath;
+var imageEndCode = ".png\"\n"
+        + "       alt=\"Available in Android Market\" />\n&lt;/a>";
+
+/** Generate the HTML snippet and demo based on form values */
+function buildButton(form) {
+  if (form["package"].value != "com.android.example") {
+    $("#preview").show();
+    $("#snippet").show().html(linkStartCode + "details?id=" + form["package"].value
+            + imageStartCode + $('form input[type=radio]:checked').val() + imageEndCode);
+    $("#button-preview").html(linkStart + "details?id=" + form["package"].value
+            + imageStart + $('form input[type=radio]:checked').val() + imageEnd);
+  } else if (form["publisher"].value != "Example, Inc.") {
+    $("#preview").show();
+    $("#snippet").show().html(linkStartCode + "search?q=pub:" + form["publisher"].value
+            + imageStartCode + $('form input[type=radio]:checked').val() + imageEndCode);
+    $("#button-preview").html(linkStart + "search?q=pub:" + form["publisher"].value + imageStart +
+    $('form input[type=radio]:checked').val() + imageEnd);
+  } else {
+    alert("Please enter your package name or publisher name");
+  }
+  return false;
+}
+
+/** Listen for Enter key */
+function onTextEntered(event, form, me) {
+  // 13 = enter
+  if (event.keyCode == 13) {
+    buildButton(form);
+  }
+}
+
+/** When input is focused, remove example text and disable other input */
+function onInputFocus(object, example) {
+  if (object.value == example) {
+    $(object).val('').css({'color' : '#000'});
+  }
+  $('input[type="text"]:not(input[name='+object.name+'])',
+          object.parentNode).attr('disabled','true');
+  $('#'+object.name+'-clear').show();
+}
+
+/** When input is blured, restore example text if appropriate and enable other input */
+function onInputBlur(object, example) {
+  if (object.value.length < 1) {
+    $(object).attr('value',example).css({'color':'#ccc'});
+    $('input[type="text"]', object.parentNode).removeAttr('disabled');
+    $('#'+object.name+'-clear').hide();
+  }
+}
+
+/** Clear the form to start over */
+function clearLabel(id, example) {
+  $("#preview").hide();
+  $('#'+id+'').html('').attr('value',example).css({'color':'#ccc'});
+  $('input[type="text"]', $('#'+id+'').parent()).removeAttr('disabled');
+  $('#'+id+'-clear').hide();
+  return false;
+}
+
+/** When the doc is ready, find the inputs and color the input grey if the value is the example
+    text. This is necessary to handle back-navigation, which can auto-fill the form with previous
+    values (and text should not be grey) */
+$(document).ready(function() {
+  $(".button-form input.text").each(function(index) {
+    if ($(this).val() == $(this).attr("default")) {
+      $(this).css("color","#ccc");
+    } else {
+      /* This is necessary to handle back-navigation to the page after form was filled */
+      $('input[type="text"]:not(input[name='+this.name+'])',
+              this.parentNode).attr('disabled','true');
+      $('#'+this.name+'-clear').show();
+    }
+  });
+});
+
+</script>
+
+<form class="button-form">
+  <label class="block" for="package">Package name:</label>
+  <input class="text" type="text" id="package" name="package"
+         value="com.android.example"
+         default="com.android.example"
+         onfocus="onInputFocus(this, 'com.android.example')"
+         onblur="onInputBlur(this, 'com.android.example')"
+         onkeyup="return onTextEntered(event, this.parentNode, this)"/>&nbsp;
+         <a id="package-clear" style="display:none" href="#"
+            onclick="return clearLabel('package','com.android.example');">clear</a>
+  <p style="clear:both;margin:0">&nbsp;<em>or</em></p>
+  <label class="block" style="margin-top:5px" for="publisher">Publisher name:</label>
+  <input class="text" type="text" id="publisher" name="publisher"
+         value="Example, Inc."
+         default="Example, Inc."
+         onfocus="onInputFocus(this, 'Example, Inc.')"
+         onblur="onInputBlur(this, 'Example, Inc.')"
+         onkeyup="return onTextEntered(event, this.parentNode, this)"/>&nbsp;
+         <a id="publisher-clear" style="display:none" href="#"
+            onclick="return clearLabel('publisher','Example, Inc.');">clear</a>
+         <br/><br/>
+
+<div class="button-row">
+  <input type="radio" name="buttonStyle" value="45_avail_market_logo1" id="ns" checked="checked" />
+    <label for="ns"><img src="http://www.android.com/images/brand/45_avail_market_logo1.png"
+alt="narrow and small logo" /></label>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+  <input type="radio" name="buttonStyle" value="60_avail_market_logo1" id="nm" />
+    <label for="nm"><img src="http://www.android.com/images/brand/60_avail_market_logo1.png"
+alt="narrow and large logo" /></label>
+</div>
+
+<div class="button-row">
+  <input type="radio" name="buttonStyle" value="45_avail_market_logo2" id="ws" />
+    <label for="ws"><img src="http://www.android.com/images/brand/45_avail_market_logo2.png"
+alt="wide and small logo" /></label>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+  <input type="radio" name="buttonStyle" value="60_avail_market_logo2" id="wm" />
+    <label for="wm"><img src="http://www.android.com/images/brand/60_avail_market_logo2.png"
+alt="wide and large logo" /></label>
+</div>
+
+  <input type="button" onclick="return buildButton(this.parentNode)" value="Build my button"
+style="padding:5px" />
+  <br/>
+</form>
+
+<div id="preview" style="display:none">
+  <p>Copy and paste this HTML into your web site:</p>
+  <textarea id="snippet" cols="80" rows="4" onclick="this.select()"
+style="font-family:monospace;background-color:#efefef;padding:5px;display:none;margin-bottom:1em">
+  </textarea >
+
+<p>Try it out:</p>
+<div id="button-preview" style="margin-top:1em"></div>
+</div>
+
+
+
+
+
+
+<h3 id="UriSummary">Summary of URI formats</h3>
+
+<p>The table below provides a summary of the URIs currently supported by the Android Market (both on
+the web and in the Android application), as discussed in the previous sections.</p>
+
+<table>
+<tr>
+<th>For this result</th>
+<th>Use this URI in a web page link</th>
+<th>Or this URI in an {@link android.content.Intent#ACTION_VIEW} intent</th>
+</tr>
+
+<tr>
+<td>Display the details screen for a specific application</td>
+<td><code>http://market.android.com/details?id=&lt;package_name&gt;</code> 
+<td><code>market://details?id=&lt;package_name&gt;</code></td>
+</tr>
+
+<tr>
+<td>Search for applications using a general string query.</td>
+<td><code>http://market.android.com/search?q=&lt;query&gt;</code></td>
+<td><code>market://search?q=&lt;query&gt;</code></td>
+</tr>
+
+<tr>
+<td>Search for applications by publisher name</td>
+<td><nobr><code>http://market.android.com/search?q=pub:&lt;publisher_name&gt;</code></nobr></td>
+<td><nobr><code>market://search?q=pub:&lt;publisher_name&gt;</code></nobr></td>
+</tr>
+
+</table>
