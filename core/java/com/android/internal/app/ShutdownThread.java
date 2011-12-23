@@ -1,18 +1,18 @@
 /*
-* Copyright (C) 2008 The Android Open Source Project
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright (C) 2008 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
  
 package com.android.internal.app;
@@ -40,11 +40,10 @@ import android.os.Vibrator;
 import android.os.storage.IMountService;
 import android.os.storage.IMountShutdownObserver;
 
-import android.util.Log;
-import android.view.KeyEvent;
-import android.view.WindowManager;
-
 import com.android.internal.telephony.ITelephony;
+import android.util.Log;
+import android.view.WindowManager;
+import android.view.KeyEvent;
 
 public final class ShutdownThread extends Thread {
     // constants
@@ -83,13 +82,13 @@ public final class ShutdownThread extends Thread {
     }
  
     /**
-* Request a clean shutdown, waiting for subsystems to clean up their
-* state etc. Must be called from a Looper thread in which its UI
-* is shown.
-*
-* @param context Context used to display the shutdown progress dialog.
-* @param confirm true if user confirmation is needed before shutting down.
-*/
+     * Request a clean shutdown, waiting for subsystems to clean up their
+     * state etc.  Must be called from a Looper thread in which its UI
+     * is shown.
+     *
+     * @param context Context used to display the shutdown progress dialog.
+     * @param confirm true if user confirmation is needed before shutting down.
+     */
     public static void shutdown(final Context context, boolean confirm) {
         // ensure that only one thread is trying to power down.
         // any additional calls are just returned
@@ -190,14 +189,14 @@ public final class ShutdownThread extends Thread {
     }
 
     /**
-* Request a clean shutdown, waiting for subsystems to clean up their
-* state etc. Must be called from a Looper thread in which its UI
-* is shown.
-*
-* @param context Context used to display the shutdown progress dialog.
-* @param reason code to pass to the kernel (e.g. "recovery"), or null.
-* @param confirm true if user confirmation is needed before shutting down.
-*/
+     * Request a clean shutdown, waiting for subsystems to clean up their
+     * state etc.  Must be called from a Looper thread in which its UI
+     * is shown.
+     *
+     * @param context Context used to display the shutdown progress dialog.
+     * @param reason code to pass to the kernel (e.g. "recovery"), or null.
+     * @param confirm true if user confirmation is needed before shutting down.
+     */
     public static void reboot(final Context context, String reason, boolean confirm) {
         mReboot = true;
         mRebootReason = reason;
@@ -216,7 +215,7 @@ public final class ShutdownThread extends Thread {
         // throw up an indeterminate system dialog to indicate radio is
         // shutting down.
         ProgressDialog pd = new ProgressDialog(context);
-if (mReboot) {
+        if (mReboot) {
             pd.setTitle(context.getText(com.android.internal.R.string.reboot_system));
             pd.setMessage(context.getText(com.android.internal.R.string.reboot_progress));
         } else {
@@ -272,9 +271,9 @@ if (mReboot) {
     }
 
     /**
-* Makes sure we handle the shutdown gracefully.
-* Shuts off power regardless of radio and bluetooth state if the alloted time has passed.
-*/
+     * Makes sure we handle the shutdown gracefully.
+     * Shuts off power regardless of radio and bluetooth state if the alloted time has passed.
+     */
     public void run() {
         boolean bluetoothOff;
         boolean radioOff;
@@ -287,10 +286,10 @@ if (mReboot) {
         };
 
         /*
-* Write a system property in case the system_server reboots before we
-* get to the actual hardware restart. If that happens, we'll retry at
-* the beginning of the SystemServer startup.
-*/
+         * Write a system property in case the system_server reboots before we
+         * get to the actual hardware restart. If that happens, we'll retry at
+         * the beginning of the SystemServer startup.
+         */
         {
             String reason = (mReboot ? "1" : "0") + (mRebootReason != null ? mRebootReason : "");
             SystemProperties.set(SHUTDOWN_ACTION_PROPERTY, reason);
@@ -344,7 +343,7 @@ if (mReboot) {
                            bluetooth.getBluetoothState() == BluetoothAdapter.STATE_OFF;
             if (!bluetoothOff) {
                 Log.w(TAG, "Disabling Bluetooth...");
-                bluetooth.disable(false); // disable but don't persist new state
+                bluetooth.disable(false);  // disable but don't persist new state
             }
         } catch (RemoteException ex) {
             Log.e(TAG, "RemoteException during bluetooth shutdown", ex);
@@ -429,12 +428,12 @@ if (mReboot) {
     }
 
     /**
-* Do not call this directly. Use {@link #reboot(Context, String, boolean)}
-* or {@link #shutdown(Context, boolean)} instead.
-*
-* @param reboot true to reboot or false to shutdown
-* @param reason reason for reboot
-*/
+     * Do not call this directly. Use {@link #reboot(Context, String, boolean)}
+     * or {@link #shutdown(Context, boolean)} instead.
+     *
+     * @param reboot true to reboot or false to shutdown
+     * @param reason reason for reboot
+     */
     public static void rebootOrShutdown(boolean reboot, String reason) {
         if (reboot) {
             Log.i(TAG, "Rebooting, reason: " + reason);
@@ -449,7 +448,7 @@ if (mReboot) {
             try {
                 vibrator.vibrate(SHUTDOWN_VIBRATE_MS);
             } catch (Exception e) {
-                // Failure to vibrate shouldn't interrupt shutdown. Just log it.
+                // Failure to vibrate shouldn't interrupt shutdown.  Just log it.
                 Log.w(TAG, "Failed to vibrate during shutdown.", e);
             }
 
