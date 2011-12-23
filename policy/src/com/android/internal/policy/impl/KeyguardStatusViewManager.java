@@ -51,6 +51,7 @@ class KeyguardStatusViewManager implements OnClickListener {
     public static final int ALARM_ICON = R.drawable.ic_lock_idle_alarm;
     public static final int CHARGING_ICON = 0; //R.drawable.ic_lock_idle_charging;
     public static final int BATTERY_LOW_ICON = 0; //R.drawable.ic_lock_idle_low_battery;
+    public static final int BATTERY_ICON = 0; //insert a R.drawable icon if you want it to show up
     private static final long INSTRUCTION_RESET_DELAY = 2000; // time until instruction text resets
 
     private static final int INSTRUCTION_TEXT = 10;
@@ -78,6 +79,8 @@ class KeyguardStatusViewManager implements OnClickListener {
 
     // are we showing battery information?
     private boolean mShowingBatteryInfo = false;
+
+    private boolean mLockAlwaysBattery = true;
 
     // last known plugged in state
     private boolean mPluggedIn = false;
@@ -361,7 +364,7 @@ class KeyguardStatusViewManager implements OnClickListener {
         // If we have replaced the status area with a single widget, then this code
         // prioritizes what to show in that space when all transient messages are gone.
         CharSequence string = null;
-        if (mShowingBatteryInfo) {
+        if (mLockAlwaysBattery) {
             // Battery status
             if (mPluggedIn) {
                 // Charging or charged
@@ -371,10 +374,16 @@ class KeyguardStatusViewManager implements OnClickListener {
                     string = getContext().getString(R.string.lockscreen_plugged_in, mBatteryLevel);
                 }
                 icon.value = CHARGING_ICON;
-            } else if (mBatteryLevel < KeyguardUpdateMonitor.LOW_BATTERY_THRESHOLD) {
+            } else {
+                if (mBatteryLevel < KeyguardUpdateMonitor.LOW_BATTERY_THRESHOLD) {
                 // Battery is low
-                string = getContext().getString(R.string.lockscreen_low_battery);
-                icon.value = BATTERY_LOW_ICON;
+                    string = getContext().getString(R.string.lockscreen_low_battery);
+                    icon.value = BATTERY_LOW_ICON;
+                } else {
+                // Always show battery
+                    string = getContext().getString(R.string.lockscreen_always_battery, mBatteryLevel);
+                    icon.value = BATTERY_ICON;
+                }
             }
         } else {
             string = mCarrierText;
@@ -388,7 +397,7 @@ class KeyguardStatusViewManager implements OnClickListener {
             // Instructions only
             string = mInstructionText;
             icon.value = LOCK_ICON;
-        } else if (mShowingBatteryInfo) {
+        } else if (mLockAlwaysBattery) {
             // Battery status
             if (mPluggedIn) {
                 // Charging or charged
@@ -398,10 +407,16 @@ class KeyguardStatusViewManager implements OnClickListener {
                     string = getContext().getString(R.string.lockscreen_plugged_in, mBatteryLevel);
                 }
                 icon.value = CHARGING_ICON;
-            } else if (mBatteryLevel < KeyguardUpdateMonitor.LOW_BATTERY_THRESHOLD) {
+            } else {
+                if (mBatteryLevel < KeyguardUpdateMonitor.LOW_BATTERY_THRESHOLD) {
                 // Battery is low
-                string = getContext().getString(R.string.lockscreen_low_battery);
-                icon.value = BATTERY_LOW_ICON;
+                    string = getContext().getString(R.string.lockscreen_low_battery);
+                    icon.value = BATTERY_LOW_ICON;
+                } else {
+                // Always show battery
+                    string = getContext().getString(R.string.lockscreen_always_battery, mBatteryLevel);
+                    icon.value = BATTERY_ICON;
+                }
             }
         } else if (!inWidgetMode() && mOwnerInfoView == null && mOwnerInfoText != null) {
             // OwnerInfo shows in status if we don't have a dedicated widget
