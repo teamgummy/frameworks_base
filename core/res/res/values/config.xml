@@ -757,8 +757,15 @@
 
     <!-- CM CHANGES START HERE -->
 
+<<<<<<< HEAD
     <!-- Use legacy USB device manager. -->
     <bool name="config_usesLegacyUsbDeviceManager">false</bool>
 >>>>>>> 8caeb56... LegacyUSB: Add support for legacy USB implementations
+=======
+    <!-- LUN file to be used by legacy USB manager.
+         The existence of this file will be used to determine in the
+         legacy USB manager should be started. -->
+    <string name="config_legacyUmsLunFile">/sys/devices/platform/usb_mass_storage/lun0/file</string>
+>>>>>>> 320f18a... LegacyUSB: add overlay for UMS lun and use existence of lun to enable legacy USB
 
 </resources>
