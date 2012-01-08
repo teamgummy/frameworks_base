@@ -362,4 +362,16 @@
 
     <!-- Content description of the clear button in the notification panel for accessibility (not shown on the screen). [CHAR LIMIT=NONE] -->
     <string name="accessibility_clear_all">Clear all notifications.</string>
+
+    <!-- Power Control Text (add text if you want it)-->
+    <string name="pc_wifi_text" />
+    <string name="pc_bluetooth_text" />
+    <string name="pc_gps_text" />
+    <string name="pc_sound_vibration_text" />
+    <string name="pc_sound_text" />
+    <string name="pc_silent_text" />
+    <string name="pc_vibration_text" />
+    <string name="pc_data_text" />
+    <string name="pc_rotation_text" />
+    <string name="pc_error_text" />
 </resources>

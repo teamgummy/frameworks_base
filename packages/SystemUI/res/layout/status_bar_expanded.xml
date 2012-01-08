@@ -26,6 +26,8 @@
     android:descendantFocusability="afterDescendants"
     >
 
+    <include layout="@layout/powercontrols_settings" />
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="52dp"
