@@ -381,7 +381,7 @@ class KeyguardStatusViewManager implements OnClickListener {
                     icon.value = BATTERY_LOW_ICON;
                 } else {
                 // Always show battery
-                    string = getContext().getString(R.string.lockscreen_always_battery, mBatteryLevel);
+                    string = getContext().getString(R.string.zzlockscreen_always_battery, mBatteryLevel);
                     icon.value = BATTERY_ICON;
                 }
             }
@@ -414,7 +414,7 @@ class KeyguardStatusViewManager implements OnClickListener {
                     icon.value = BATTERY_LOW_ICON;
                 } else {
                 // Always show battery
-                    string = getContext().getString(R.string.lockscreen_always_battery, mBatteryLevel);
+                    string = getContext().getString(R.string.zzlockscreen_always_battery, mBatteryLevel);
                     icon.value = BATTERY_ICON;
                 }
             }

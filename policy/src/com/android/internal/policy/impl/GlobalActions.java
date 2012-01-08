@@ -198,7 +198,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
         // next: reboot
         mItems.add(
-            new SinglePressAction(com.android.internal.R.drawable.ic_lock_reboot, R.string.global_action_reboot) {
+            new SinglePressAction(com.android.internal.R.drawable.zzic_lock_reboot, R.string.zzglobal_action_reboot) {
                 public void onPress() {
                     ShutdownThread.reboot(mContext, "null", true);
                 }
@@ -214,7 +214,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
         // final: screenshot
         mItems.add(
-            new SinglePressAction(com.android.internal.R.drawable.ic_lock_screenshot, R.string.global_action_screenshot) {
+            new SinglePressAction(com.android.internal.R.drawable.zzic_lock_screenshot, R.string.zzglobal_action_screenshot) {
                 public void onPress() {
                     takeScreenshot();
                 }

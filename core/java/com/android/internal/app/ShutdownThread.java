@@ -113,13 +113,13 @@ public final class ShutdownThread extends Thread {
             if (mReboot) {
                 dialog = new AlertDialog.Builder(context)
                         .setIcon(android.R.drawable.ic_dialog_alert)
-                        .setTitle(com.android.internal.R.string.reboot_system)
-                        .setSingleChoiceItems(com.android.internal.R.array.shutdown_reboot_options, 0, new DialogInterface.OnClickListener() {
+                        .setTitle(com.android.internal.R.string.zzreboot_system)
+                        .setSingleChoiceItems(com.android.internal.R.array.zzshutdown_reboot_options, 0, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 if (which < 0)
                                     return;
 
-                                String actions[] = context.getResources().getStringArray(com.android.internal.R.array.shutdown_reboot_actions);
+                                String actions[] = context.getResources().getStringArray(com.android.internal.R.array.zzshutdown_reboot_actions);
 
                                 if (actions != null && which < actions.length)
                                     mRebootReason = actions[which];
@@ -216,8 +216,8 @@ public final class ShutdownThread extends Thread {
         // shutting down.
         ProgressDialog pd = new ProgressDialog(context);
         if (mReboot) {
-            pd.setTitle(context.getText(com.android.internal.R.string.reboot_system));
-            pd.setMessage(context.getText(com.android.internal.R.string.reboot_progress));
+            pd.setTitle(context.getText(com.android.internal.R.string.zzreboot_system));
+            pd.setMessage(context.getText(com.android.internal.R.string.zzreboot_progress));
         } else {
             pd.setTitle(context.getText(com.android.internal.R.string.power_off));
             pd.setMessage(context.getText(com.android.internal.R.string.shutdown_progress));

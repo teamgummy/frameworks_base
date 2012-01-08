@@ -745,4 +745,12 @@
     <!-- Base "touch slop" value used by ViewConfiguration as a
          movement threshold where scrolling should begin. -->
     <dimen name="config_viewConfigurationTouchSlop">8dp</dimen>
+
+    <!-- Defines the shutdown options shown in the reboot dialog. -->
+    <array name="zzshutdown_reboot_options" translatable="false">
+        <item>@string/zzreboot_reboot</item>
+        <item>@string/zzreboot_recovery</item>
+        <item>@string/zzreboot_bootloader</item>
+    </array>
+
 </resources>
