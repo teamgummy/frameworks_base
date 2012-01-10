@@ -470,6 +470,14 @@ public class TelephonyManager {
         }
     }
 
+    public void LTEtoggle(boolean on) {
+      try {
+          getITelephony().LTEtoggle(on);
+      } catch (RemoteException e) {
+          // doesnt work
+      }
+    }
+
     /** Unknown network class. {@hide} */
     public static final int NETWORK_CLASS_UNKNOWN = 0;
     /** Class of broadly defined "2G" networks. {@hide} */

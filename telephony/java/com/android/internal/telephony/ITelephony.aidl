@@ -44,6 +44,12 @@ interface ITelephony {
     void call(String number);
 
     /**
+     * Toggle for 4G LTE and CDMA
+     * @param boolean for turning LTE off and on
+     */
+    void LTEtoggle(boolean on);
+
+    /**
      * If there is currently a call in progress, show the call screen.
      * The DTMF dialpad may or may not be visible initially, depending on
      * whether it was up when the user last exited the InCallScreen.

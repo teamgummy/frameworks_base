@@ -373,5 +373,6 @@
     <string name="pc_vibration_text" />
     <string name="pc_data_text" />
     <string name="pc_rotation_text" />
+    <string name="pc_lte_text" />
     <string name="pc_error_text" />
 </resources>

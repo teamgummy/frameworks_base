@@ -3190,6 +3190,11 @@ public final class Settings {
         public static final String MOBILE_DATA = "mobile_data";
 
         /**
+         * Whether or not LTE toggle is allowing LTE service. (0 = false, 1 = true)
+         */
+        public static final String LTE_TOGGLE = "lte_toggle";
+
+        /**
          * The CDMA roaming mode 0 = Home Networks, CDMA default
          *                       1 = Roaming on Affiliated networks
          *                       2 = Roaming on any networks
