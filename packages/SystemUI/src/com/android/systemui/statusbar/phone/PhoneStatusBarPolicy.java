@@ -70,6 +70,9 @@ public class PhoneStatusBarPolicy {
     private final StatusBarManager mService;
     private final Handler mHandler = new Handler();
 
+    //hide alarm
+    private boolean mHideAlarm;
+
     // storage
     private StorageManager mStorageManager;
 
@@ -194,7 +197,17 @@ public class PhoneStatusBarPolicy {
 
     private final void updateAlarm(Intent intent) {
         boolean alarmSet = intent.getBooleanExtra("alarmSet", false);
-	mService.setIconVisibility("alarm_clock", false);
+	mService.setIconVisibility("alarm_clock", alarmSet);
+
+        if (alarmSet) {
+          mHideAlarm = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.HIDE_ALARM, 0) == 1);
+          
+          if (mHideAlarm) {
+            mService.setIconVisibility("alarm_clock", false);
+          } else {
+            mService.setIconVisibility("alarm_clock", true);
+          }
+        }
     }
 
     private final void updateSyncState(Intent intent) {

@@ -1895,6 +1895,34 @@ public final class Settings {
         */
         public static final String SHOW_SEARCH_BUTTON = "show_search_button";
 
+        /*
+         * 0: hide
+         * 1: show right clock
+         * 2: show center clock
+         * @hide
+         */
+        public static final String STATUS_BAR_CLOCK = "status_bar_clock";
+
+        
+        /**
+         * Display style of AM/PM next to clock in status bar
+         *
+         * @hide
+         */
+        public static final String STATUS_BAR_AM_PM = "status_bar_am_pm";
+
+        /**
+         * Setting to hide clock.
+         * @hide
+         */
+        public static final String HIDE_CLOCK = "hide_clock";
+
+        /**
+         * Setting to hide clock.
+         * @hide
+         */
+        public static final String HIDE_ALARM = "hide_alarm";
+
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
