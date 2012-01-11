@@ -1723,6 +1723,7 @@ mNoNotificationsTitle.setAlpha(any ? 0.0f : 0.75f);
             mTicking = true;
             mIcons.setVisibility(View.GONE);
             mTickerView.setVisibility(View.VISIBLE);
+            mClock.setVisibility(View.GONE);
             mTickerView.startAnimation(loadAnim(com.android.internal.R.anim.push_up_in, null));
             mIcons.startAnimation(loadAnim(com.android.internal.R.anim.push_up_out, null));
             mClock.startAnimation(loadAnim(com.android.internal.R.anim.push_up_out, null));
