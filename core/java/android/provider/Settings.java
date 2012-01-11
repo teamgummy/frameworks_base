@@ -1884,6 +1884,18 @@ public final class Settings {
         public static final String POINTER_SPEED = "pointer_speed";
 
         /**
+        * Setting to show full menu button in nav bar
+        * @hide
+        */
+        public static final String SHOW_MENU_BUTTON = "show_menu_button";
+
+        /**
+        * Setting to show search button in nav bar
+        * @hide
+        */
+        public static final String SHOW_SEARCH_BUTTON = "show_search_button";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *
