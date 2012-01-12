@@ -1923,14 +1923,6 @@ public final class Settings {
          */
         public static final String HIDE_ALARM = "hide_alarm";
 
-        /*
-         * 0: Default no 1%
-         * 1: 1% Mod
-         * 2: 1% Circle
-         * @hide
-         */
-        public static final String BATTERY_PERCENTAGES = "battery_percentages";
-
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
