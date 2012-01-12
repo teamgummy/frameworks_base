@@ -227,6 +227,9 @@ public class PhoneStatusBar extends StatusBar {
     // for disabling the status bar
     int mDisabled = 0;
 
+    private boolean mShowClock;
+    private boolean showClock;
+
 
     // tracking calls to View.setSystemUiVisibility()
     int mSystemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE;
@@ -1061,8 +1064,11 @@ mNoNotificationsTitle.setAlpha(any ? 0.0f : 0.75f);
 
     public void showClock(boolean show) {
         View clock = mStatusBarView.findViewById(R.id.clock);
-        if (clock != null) {
-            clock.setVisibility(show ? View.VISIBLE : View.GONE);
+        mShowClock = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.STATUS_BAR_CLOCK, 1) == 1);
+        if (mShowClock && show) {
+            clock.setVisibility(View.VISIBLE);
+        } else {
+            clock.setVisibility(View.GONE);
         }
     }
 
