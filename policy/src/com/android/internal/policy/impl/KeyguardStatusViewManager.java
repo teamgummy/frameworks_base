@@ -33,6 +33,7 @@ import android.content.Context;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -80,7 +81,7 @@ class KeyguardStatusViewManager implements OnClickListener {
     // are we showing battery information?
     private boolean mShowingBatteryInfo = false;
 
-    private boolean mLockAlwaysBattery = true;
+    private boolean mLockAlwaysBattery;
 
     // last known plugged in state
     private boolean mPluggedIn = false;
@@ -364,7 +365,8 @@ class KeyguardStatusViewManager implements OnClickListener {
         // If we have replaced the status area with a single widget, then this code
         // prioritizes what to show in that space when all transient messages are gone.
         CharSequence string = null;
-        if (mLockAlwaysBattery) {
+        mLockAlwaysBattery = Settings.System.getInt(getContext().getContentResolver(), Settings.System.LOCKSCREEN_BATTERY, 0) == 1;
+        if (mShowingBatteryInfo || mLockAlwaysBattery) {
             // Battery status
             if (mPluggedIn) {
                 // Charging or charged
@@ -393,11 +395,12 @@ class KeyguardStatusViewManager implements OnClickListener {
 
     private CharSequence getPriorityTextMessage(MutableInt icon) {
         CharSequence string = null;
+        mLockAlwaysBattery = Settings.System.getInt(getContext().getContentResolver(), Settings.System.LOCKSCREEN_BATTERY, 0) == 1;
         if (!TextUtils.isEmpty(mInstructionText)) {
             // Instructions only
             string = mInstructionText;
             icon.value = LOCK_ICON;
-        } else if (mLockAlwaysBattery) {
+        } else if (mShowingBatteryInfo || mLockAlwaysBattery) {
             // Battery status
             if (mPluggedIn) {
                 // Charging or charged

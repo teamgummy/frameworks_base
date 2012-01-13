@@ -1933,6 +1933,18 @@ public final class Settings {
         public static final String BATTERY_PERCENTAGES = "battery_percentages";
 
         /**
+         * Setting to allow % on lockscreen always showing.
+         * @hide
+         */
+        public static final String LOCKSCREEN_BATTERY = "lockscreen_battery";
+
+        /**
+         * Custom Carrier text on the systemui.
+         * @hide
+         */
+        public static final String CUSTOM_CARRIER_TEXT = "custom_carrier_text";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *
