@@ -1927,6 +1927,7 @@ public final class Settings {
          * 0: Default no 1%
          * 1: 1% Mod
          * 2: 1% Circle
+         * 3: 1% Bar
          * @hide
          */
         public static final String BATTERY_PERCENTAGES = "battery_percentages";

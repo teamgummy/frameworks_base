@@ -128,6 +128,7 @@ class BatteryService extends Binder {
     private boolean mSentLowBatteryBroadcast = false;
     private boolean mUseBattPercentages;
     private boolean mUseCircleBatt;
+    private boolean mUseBarBatt;
     private Handler mHandler;
 
     public BatteryService(Context context, LightsService lights) {
@@ -150,7 +151,8 @@ class BatteryService extends Binder {
         }
 
         mUseBattPercentages = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.BATTERY_PERCENTAGES, 1) == 1);
-        mUseCircleBatt = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.BATTERY_PERCENTAGES, 1) == 1);
+        mUseCircleBatt = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.BATTERY_PERCENTAGES, 1) == 2);
+        mUseBarBatt = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.BATTERY_PERCENTAGES, 1) == 3);
         mHandler = new Handler();
         SettingsObserver settingsObserver = new SettingsObserver(mHandler);
         settingsObserver.observe();
