@@ -95,7 +95,7 @@ public class CarrierLabel extends TextView {
         }
 
         String customCarrier = null;
-        customCarrier = Settings.System.getString(mContext.getContentResolver(), Settings.CUSTOM_CARRIER_TEXT);
+        customCarrier = Settings.System.getString(mContext.getContentResolver(), Settings.System.CUSTOM_CARRIER_TEXT);
 
         if (customCarrier == null) {
             StringBuilder str = new StringBuilder();
