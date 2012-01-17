@@ -34,7 +34,7 @@ public final class MobileDataSettingButton extends PowerControls
 
   private void setMobileDataEnabled(boolean paramBoolean)
   {
-    ConnectivityManager localConnectivityManager = (ConnectivityManager)this.mContext.getSystemService("connectivity");
+    ConnectivityManager localConnectivityManager = (ConnectivityManager)this.mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
     if (localConnectivityManager != null)
     {
       Log.i("MobileDataSettingButton", "setMobileDataEnabled: set to  = " + paramBoolean);
