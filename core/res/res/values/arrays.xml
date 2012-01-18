@@ -531,10 +531,4 @@
         <item>@null</item>
     </array>
 
-    <array name="zzshutdown_reboot_options" translatable="false">
-        <item>@string/zzreboot_reboot</item>
-        <item>@string/zzreboot_recovery</item>
-        <item>@string/zzreboot_bootloader</item>
-   </array>
-
 </resources>
