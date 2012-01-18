@@ -71,6 +71,7 @@ class KeyguardStatusViewManager implements OnClickListener {
     private TextView mCarrierView;
     private TextView mDateView;
     private TextView mStatus1View;
+    private TextView mStatus2View;
     private TextView mOwnerInfoView;
     private TextView mAlarmStatusView;
     private TransportControlView mTransportView;
@@ -180,6 +181,7 @@ class KeyguardStatusViewManager implements OnClickListener {
         mCarrierView = (TextView) findViewById(R.id.carrier);
         mDateView = (TextView) findViewById(R.id.date);
         mStatus1View = (TextView) findViewById(R.id.status1);
+        mStatus2View = (TextView) findViewById(R.id.zzstatus2);
         mAlarmStatusView = (TextView) findViewById(R.id.alarm_status);
         mOwnerInfoView = (TextView) findViewById(R.id.propertyOf);
         mTransportView = (TransportControlView) findViewById(R.id.transport);
@@ -207,7 +209,7 @@ class KeyguardStatusViewManager implements OnClickListener {
         updateOwnerInfo();
 
         // Required to get Marquee to work.
-        final View scrollableViews[] = { mCarrierView, mDateView, mStatus1View, mOwnerInfoView,
+        final View scrollableViews[] = { mCarrierView, mDateView, mStatus1View, mStatus2View,  mOwnerInfoView,
                 mAlarmStatusView };
         for (View v : scrollableViews) {
             if (v != null) {
@@ -320,6 +322,7 @@ class KeyguardStatusViewManager implements OnClickListener {
         updateAlarmInfo();
         updateOwnerInfo();
         updateStatus1();
+        updateStatus2();
         updateCarrierText();
     }
 
@@ -352,6 +355,16 @@ class KeyguardStatusViewManager implements OnClickListener {
             mStatus1View.setText(string);
             mStatus1View.setCompoundDrawablesWithIntrinsicBounds(icon.value, 0, 0, 0);
             mStatus1View.setVisibility(mShowingStatus ? View.VISIBLE : View.INVISIBLE);
+        }
+    }
+
+    private void updateStatus2() {
+        if (mStatus2View != null) {
+            MutableInt icon = new MutableInt(0);
+            CharSequence string = getSecondPriorityTextMessage(icon);
+            mStatus2View.setText(string);
+            mStatus2View.setCompoundDrawablesWithIntrinsicBounds(icon.value, 0, 0, 0);
+            mStatus2View.setVisibility(mShowingStatus ? View.VISIBLE : View.INVISIBLE);
         }
     }
 
@@ -424,6 +437,20 @@ class KeyguardStatusViewManager implements OnClickListener {
         } else if (!inWidgetMode() && mOwnerInfoView == null && mOwnerInfoText != null) {
             // OwnerInfo shows in status if we don't have a dedicated widget
             string = mOwnerInfoText;
+        }
+        return string;
+    }
+
+    private CharSequence getSecondPriorityTextMessage(MutableInt icon) {
+        CharSequence string = null;
+        mLockAlwaysBattery = Settings.System.getInt(getContext().getContentResolver(), Settings.System.LOCKSCREEN_BATTERY, 0) == 1;
+        if (mShowingBatteryInfo || mLockAlwaysBattery) {
+            if (!inWidgetMode() && mOwnerInfoView == null && mOwnerInfoText != null) {
+            // OwnerInfo shows in status if we don't have a dedicated widget
+                string = mOwnerInfoText;
+            }
+        } else {
+            string = null;
         }
         return string;
     }
