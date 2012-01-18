@@ -3427,6 +3427,8 @@
         <item>recovery</item>
         <item>bootloader</item>
     </string-array> 
-
+    <!-- Description of the unlock target in the Slide unlock screen. [CHAR LIMIT=NONE] -->
+    <string name="zzic_lockscreen_custom_one">CustomOne</string>
+    <string name="zzic_lockscreen_custom_two">CustomTwo</string>
 
 </resources>

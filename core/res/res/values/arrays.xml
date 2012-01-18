@@ -512,4 +512,29 @@
     </array>
 
 
+    <array name="zzlockscreen_extra_apps">
+        <item>@drawable/ic_lockscreen_unlock</item>
+        <item>@drawable/zzic_lockscreen_custom_one</item>
+        <item>@drawable/zzic_lockscreen_custom_two</item>
+        <item>@drawable/ic_lockscreen_camera</item>
+        <item>@null</item>
+        <item>@null</item>
+    </array>
+
+
+    <array name="zzlockscreen_extra_apps_descriptions">
+        <item>@string/description_target_unlock</item>
+        <item>@string/zzic_lockscreen_custom_one</item>
+        <item>@string/zzic_lockscreen_custom_two</item>
+        <item>@string/description_target_camera</item>
+        <item>@null</item>
+        <item>@null</item>
+    </array>
+
+    <array name="zzshutdown_reboot_options" translatable="false">
+        <item>@string/zzreboot_reboot</item>
+        <item>@string/zzreboot_recovery</item>
+        <item>@string/zzreboot_bootloader</item>
+   </array>
+
 </resources>

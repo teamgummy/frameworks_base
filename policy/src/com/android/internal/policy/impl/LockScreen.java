@@ -38,6 +38,7 @@ import android.provider.MediaStore;
 import android.provider.Settings;
 
 import java.io.File;
+import java.net.URISyntaxException;
 
 /**
  * The screen within {@link LockPatternKeyguardView} that shows general
@@ -68,6 +69,9 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     private KeyguardStatusViewManager mStatusViewManager;
     private UnlockWidgetCommonMethods mUnlockWidgetMethods;
     private View mUnlockWidget;
+
+    // lockscreen toggle for 4 icons
+    private boolean mLockscreenCustom = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_EXTRA_ICONS, 0) == 1);
 
     private interface UnlockWidgetCommonMethods {
         // Update resources based on phone state
@@ -203,7 +207,9 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 
         public void updateResources() {
             int resId;
-            if (mCameraDisabled) {
+            if (mLockscreenCustom) {
+                resId = R.array.zzlockscreen_extra_apps;
+            }else if (mCameraDisabled) {
                 // Fall back to showing ring/silence if camera is disabled by DPM...
                 resId = mSilentMode ? R.array.lockscreen_targets_when_silent
                     : R.array.lockscreen_targets_when_soundon;
@@ -222,19 +228,73 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         }
 
         public void onTrigger(View v, int target) {
-            if (target == 0 || target == 1) { // 0 = unlock/portrait, 1 = unlock/landscape
-                mCallback.goToUnlockScreen();
-            } else if (target == 2 || target == 3) { // 2 = alt/portrait, 3 = alt/landscape
-                if (!mCameraDisabled) {
-                    // Start the Camera
-                    Intent intent = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    mContext.startActivity(intent);
+            if (mLockscreenCustom){
+                if (target == 0) { // 0 = unlock on the right
                     mCallback.goToUnlockScreen();
-                } else {
-                    toggleRingMode();
-                    mUnlockWidgetMethods.updateResources();
-                    mCallback.pokeWakelock();
+                } else if (target == 1) { // 1 = Custom App, default mms
+                    String isCustom = Settings.System.getString(mContext.getContentResolver(), Settings.System.LOCKSCREEN_CUSTOM_ONE);
+                    if (isCustom == null) {
+                        Intent customMms = new Intent (Intent.ACTION_MAIN);
+                        customMms.setClassName("com.android.mms", "com.android.mms.ui.ConversationList");
+                        customMms.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        mContext.startActivity(customMms);
+                        mCallback.goToUnlockScreen();
+                    } else {
+                        Intent customOne;
+                        try {
+                            customOne = Intent.parseUri(isCustom, 0);
+                            customOne.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            mContext.startActivity(customOne);
+                            mCallback.goToUnlockScreen();
+                        } catch (URISyntaxException e) {
+                        }
+                    }              
+                } else if (target == 2) { // 2 = Custom App, default to phone
+                    String isCustom = Settings.System.getString(mContext.getContentResolver(), Settings.System.LOCKSCREEN_CUSTOM_TWO);
+                    if (isCustom == null){
+                        Intent customPhone = new Intent (Intent.ACTION_MAIN);
+                        customPhone.setClassName("com.android.contacts", "com.android.contacts.activities.DialtactsActivity");
+                        customPhone.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        mContext.startActivity(customPhone);
+                        mCallback.goToUnlockScreen();
+                    } else {
+                        Intent customTwo;
+                        try {
+                            customTwo = Intent.parseUri(isCustom, 0);
+                            customTwo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            mContext.startActivity(customTwo);
+                            mCallback.goToUnlockScreen();
+                        } catch (URISyntaxException e) {
+                        }
+                    } 
+                }else if (target == 3) {
+                    if (!mCameraDisabled) {
+                        // Start the Camera
+                        Intent intent = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        mContext.startActivity(intent);
+                        mCallback.goToUnlockScreen();
+                    } else {
+                        toggleRingMode();
+                        mUnlockWidgetMethods.updateResources();
+                        mCallback.pokeWakelock();
+                    }
+                }
+            } else {
+                if (target == 0 || target == 1) { // 0 = unlock/portrait, 1 = unlock/landscape
+                    mCallback.goToUnlockScreen();
+                } else if (target == 2 || target == 3) { // 2 = alt/portrait, 3 = alt/landscape
+                    if (!mCameraDisabled) {
+                        // Start the Camera
+                        Intent intent = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        mContext.startActivity(intent);
+                        mCallback.goToUnlockScreen();
+                    } else {
+                        toggleRingMode();
+                        mUnlockWidgetMethods.updateResources();
+                        mCallback.pokeWakelock();
+                    }
                 }
             }
         }

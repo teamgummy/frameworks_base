@@ -1965,6 +1965,24 @@ public final class Settings {
         public static final String NOTIFICATION_LIGHT_COLOR = "notification_light_color";
 
         /**
+         * Lockscreen toggle to allow 4 icons 0:false/1:true
+         * @hide
+         */
+        public static final String LOCKSCREEN_EXTRA_ICONS = "lockscreen_extra_icons";
+
+        /**
+         * Lockscreen custom app one
+         * @hide
+         */
+        public static final String LOCKSCREEN_CUSTOM_ONE = "lockscreen_custom_one";
+
+        /**
+         * Lockscreen custom app two
+         * @hide
+         */
+        public static final String LOCKSCREEN_CUSTOM_TWO = "lockscreen_custom_two";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *
