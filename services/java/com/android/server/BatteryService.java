@@ -163,6 +163,8 @@ class BatteryService extends Binder {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(
                 Settings.System.getUriFor(Settings.System.BATTERY_PERCENTAGES), false, this);
+            resolver.registerContentObserver(
+                Settings.System.getUriFor(Settings.System.HIDE_BATTERY), false, this);
         }
 
         @Override

@@ -28,6 +28,8 @@ import android.os.BatteryManager;
 import android.os.Handler;
 import android.provider.Settings;
 import android.util.Slog;
+import android.util.AttributeSet;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -41,6 +43,8 @@ public class BatteryController extends BroadcastReceiver {
     private ArrayList<TextView> mLabelViews = new ArrayList<TextView>();
     private int mBattIcon;
     private int mChargeIcon;
+
+    private boolean mHideBatt;
     private boolean mUseBattPercentages;
     private boolean mUseCircleBatt;
     private boolean mUseBarBatt;
@@ -70,6 +74,7 @@ public class BatteryController extends BroadcastReceiver {
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(Settings.System.getUriFor(Settings.System.BATTERY_PERCENTAGES), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(Settings.System.HIDE_BATTERY), false, this);
         }
 
         @Override
@@ -113,6 +118,10 @@ public class BatteryController extends BroadcastReceiver {
                 v.setImageLevel(level);
                 v.setContentDescription(mContext.getString(R.string.accessibility_battery_level,
                         level));
+                if (mHideBatt)
+                    v.setVisibility(View.GONE);
+                else
+                    v.setVisibility(View.VISIBLE);
             }
             N = mLabelViews.size();
             for (int i=0; i<N; i++) {
@@ -128,5 +137,7 @@ public class BatteryController extends BroadcastReceiver {
         mUseBattPercentages = (Settings.System.getInt(resolver, Settings.System.BATTERY_PERCENTAGES, 1) == 1);
         mUseBarBatt = (Settings.System.getInt(resolver, Settings.System.BATTERY_PERCENTAGES, 1) == 2);
         mUseCircleBatt = (Settings.System.getInt(resolver, Settings.System.BATTERY_PERCENTAGES, 1) == 3);
+
+        mHideBatt = (Settings.System.getInt(resolver, Settings.System.HIDE_BATTERY, 0) == 1);
     }
 }
