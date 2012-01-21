@@ -48,7 +48,6 @@ public class BatteryController extends BroadcastReceiver {
     private boolean mUseBattPercentages;
     private boolean mUseCircleBatt;
     private boolean mUseBarBatt;
-    private boolean mBattText;
     private Handler mHandler;
 
     public BatteryController(Context context) {
@@ -58,7 +57,6 @@ public class BatteryController extends BroadcastReceiver {
         mUseBarBatt = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.BATTERY_PERCENTAGES, 1) == 2);
         mUseCircleBatt = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.BATTERY_PERCENTAGES, 1) == 3);
         mHideBatt = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.BATTERY_PERCENTAGES, 1) == 4);
-        mBattText = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.BATTERY_TEXT, 0) == 1);
 
         mHandler = new Handler();
         SettingsObserver settingsObserver = new SettingsObserver(mHandler);
@@ -76,7 +74,6 @@ public class BatteryController extends BroadcastReceiver {
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(Settings.System.getUriFor(Settings.System.BATTERY_PERCENTAGES), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(Settings.System.BATTERY_TEXT), false, this);
         }
 
         @Override
@@ -120,7 +117,7 @@ public class BatteryController extends BroadcastReceiver {
                 v.setImageLevel(level);
                 v.setContentDescription(mContext.getString(R.string.accessibility_battery_level,
                         level));
-                if (mHideBatt || mBattText)
+                if (mHideBatt)
                     v.setVisibility(View.GONE);
                 else
                     v.setVisibility(View.VISIBLE);
@@ -140,7 +137,5 @@ public class BatteryController extends BroadcastReceiver {
         mUseBarBatt = (Settings.System.getInt(resolver, Settings.System.BATTERY_PERCENTAGES, 1) == 2);
         mUseCircleBatt = (Settings.System.getInt(resolver, Settings.System.BATTERY_PERCENTAGES, 1) == 3);
         mHideBatt = (Settings.System.getInt(resolver, Settings.System.BATTERY_PERCENTAGES, 1) == 4);
-
-        mBattText = (Settings.System.getInt(resolver, Settings.System.BATTERY_TEXT, 0) == 1);
     }
 }
