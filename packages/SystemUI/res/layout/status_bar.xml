@@ -99,6 +99,15 @@
                 android:layout_width="wrap_content"
                 android:paddingLeft="4dip"
                 />
+            <com.android.systemui.statusbar.policy.BatteryText
+                android:id="@+id/batterytext"
+                android:textAppearance="@style/TextAppearance.StatusBar.Clock"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:singleLine="true"
+	        android:paddingLeft="4dip"
+                android:gravity="center_vertical"
+            />  
         </LinearLayout>
 
         <com.android.systemui.statusbar.policy.Clock
