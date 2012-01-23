@@ -3431,4 +3431,7 @@
     <string name="zzic_lockscreen_custom_one">CustomOne</string>
     <string name="zzic_lockscreen_custom_two">CustomTwo</string>
 
+    <!--Application killed toast -->
+    <string name="zzapp_killed_message">Application killed</string>
+
 </resources>
