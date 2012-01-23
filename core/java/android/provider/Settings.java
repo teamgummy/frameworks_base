@@ -2037,6 +2037,12 @@ public final class Settings {
         public static final String BATTERY_TEXT = "battery_text_color_low";
 
         /**
+         * Volume rocker wake option
+         * @hide
+         */
+        public static final String VOLUME_WAKE = "volume_wake";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *

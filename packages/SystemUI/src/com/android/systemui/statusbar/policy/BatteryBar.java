@@ -174,7 +174,7 @@ public class BatteryBar extends LinearLayout implements Animatable, Runnable {
 
     private void setProgress(int n) {
 
-        int width = (int) ((getWidth() / 100) + 0.5d) * n;
+        int width = (int) (((getWidth() / 100) * n) + 0.5d);
         LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mBatteryBar
                 .getLayoutParams();
         params.width = width;
