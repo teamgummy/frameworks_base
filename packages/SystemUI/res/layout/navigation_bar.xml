@@ -96,7 +96,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0"
                 />
-            <com.android.systemui.statusbar.policy.KeyButtonView android:id="@+id/home"
+            <com.android.systemui.statusbar.policy.HomeButton android:id="@+id/home"
                 android:layout_width="72dp"
                 android:layout_height="match_parent"
                 android:src="@drawable/ic_sysbar_home"
@@ -418,7 +418,7 @@
                 android:layout_width="match_parent"
                 android:layout_weight="1"
                 />
-            <com.android.systemui.statusbar.policy.KeyButtonView android:id="@+id/home"
+            <com.android.systemui.statusbar.policy.HomeButton android:id="@+id/home"
                 android:layout_height="72dp"
                 android:layout_width="match_parent"
                 android:src="@drawable/ic_sysbar_home_land"

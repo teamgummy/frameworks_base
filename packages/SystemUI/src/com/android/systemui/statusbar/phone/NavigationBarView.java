@@ -58,6 +58,7 @@ public class NavigationBarView extends LinearLayout {
 
     private boolean mShowMenuButton;
     private boolean mShowSearchButton;
+    private boolean mLongPressHomeHideRecentShowSearch;
     private int mLightsOut;
     private Handler mHandler;
 
@@ -165,9 +166,14 @@ public class NavigationBarView extends LinearLayout {
 
         getBackButton() .setVisibility(disableBack ? View.INVISIBLE : View.VISIBLE);
         getHomeButton() .setVisibility(disableHome ? View.INVISIBLE : View.VISIBLE);
-        getRecentsButton().setVisibility(disableRecent ? View.INVISIBLE : View.VISIBLE);
 
-        if (mShowSearchButton) {
+        if (mLongPressHomeHideRecentShowSearch) {
+            getRecentsButton().setVisibility(View.GONE);
+        } else {
+            getRecentsButton().setVisibility(disableRecent ? View.INVISIBLE : View.VISIBLE);
+        }
+
+        if (mShowSearchButton || mLongPressHomeHideRecentShowSearch) {
             getSearchButton().setVisibility(disableRecent ? View.INVISIBLE : View.VISIBLE);
         } else {
             getSearchButton().setVisibility(View.GONE);
@@ -315,6 +321,7 @@ public class NavigationBarView extends LinearLayout {
                 Settings.System.SHOW_MENU_BUTTON, 0) == 1);
         mShowSearchButton = (Settings.System.getInt(resolver,
                 Settings.System.SHOW_SEARCH_BUTTON, 0) == 1);
+        mLongPressHomeHideRecentShowSearch = (Settings.System.getInt(resolver, Settings.System.LONG_PRESS_HOME, 0) == 1);
 
         // Let's start clean
         ViewGroup navButtonView = ((ViewGroup) mCurrentView.findViewById(R.id.nav_buttons));
@@ -326,7 +333,7 @@ public class NavigationBarView extends LinearLayout {
 
         // Setup the optional buttons
         getMenuButton().setVisibility(mShowMenuButton ? View.VISIBLE : View.GONE);
-        getSearchButton().setVisibility(mShowSearchButton ? View.VISIBLE : View.GONE);
+        getSearchButton().setVisibility(mShowSearchButton || mLongPressHomeHideRecentShowSearch ? View.VISIBLE : View.GONE);
         getOutsideSpacer().setVisibility(mShowSearchButton && mShowMenuButton ? View.GONE : View.INVISIBLE);
 
         // These are only used on the stock layout

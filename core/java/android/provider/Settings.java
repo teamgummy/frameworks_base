@@ -2043,10 +2043,11 @@ public final class Settings {
         public static final String VOLUME_WAKE = "volume_wake";
 
         /**
-         * Whether to allow killing of the foreground app by long-pressing the Back button
+         * Enables long press home button, hides recent & shows search button
          * @hide
          */
-        public static final String KILL_APP_LONGPRESS_BACK = "kill_app_longpress_back";
+        public static final String LONG_PRESS_HOME = "long_press_home";
+
 
         /**
          * Control the type of rotation which can be performed using the accelerometer
@@ -2060,6 +2061,12 @@ public final class Settings {
          * @hide
          */
         public static final String ACCELEROMETER_ROTATION_ANGLES = "accelerometer_rotation_angles";
+
+        /**
+         * Enables long press home button, hides recent & shows search button
+         * @hide
+         */
+        public static final String SOFT_KEY_COLOR = "soft_key_color";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
@@ -4028,6 +4035,12 @@ public final class Settings {
          * @hide
          */
         public static final String ANR_SHOW_BACKGROUND = "anr_show_background";
+
+        /**
+         * Whether to allow killing of the foreground app by long-pressing the Back button
+         * @hide
+         */
+        public static final String KILL_APP_LONGPRESS_BACK = "kill_app_longpress_back";
 
         /**
          * The {@link ComponentName} string of the service to be used as the voice recognition

@@ -18,14 +18,19 @@ package com.android.systemui.statusbar.policy;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.database.ContentObserver;
 import android.graphics.drawable.Drawable;
 import android.graphics.Canvas;
 import android.graphics.RectF;
+import android.os.Handler;
 import android.os.RemoteException;
 import android.os.SystemClock;
 import android.os.ServiceManager;
+import android.provider.Settings;
+import android.provider.Settings.SettingNotFoundException;
 import android.util.AttributeSet;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.HapticFeedbackConstants;
@@ -53,7 +58,7 @@ public class KeyButtonView extends ImageView {
     int mTouchSlop;
     Drawable mGlowBG;
     float mGlowAlpha = 0f, mGlowScale = 1f, mDrawingAlpha = 1f;
-    boolean mSupportsLongpress = true;
+    protected boolean mSupportsLongpress = true;
     RectF mRect = new RectF(0f,0f,0f,0f);
 
     Runnable mCheckLongPress = new Runnable() {
@@ -97,6 +102,9 @@ public class KeyButtonView extends ImageView {
 
         setClickable(true);
         mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
+
+        SettingsObserver settingsObserver = new SettingsObserver(new Handler());
+        settingsObserver.observe();
     }
 
     @Override
@@ -279,6 +287,35 @@ public class KeyButtonView extends ImageView {
         } catch (RemoteException ex) {
             // System process is dead
         }
+    }
+
+    class SettingsObserver extends ContentObserver {
+        SettingsObserver(Handler handler) {
+            super(handler);
+        }
+
+        void observe() {
+            ContentResolver resolver = mContext.getContentResolver();
+
+            resolver.registerContentObserver(Settings.System.getUriFor(Settings.System.SOFT_KEY_COLOR), false, this);
+            updateSettings();
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            updateSettings();
+        }
+    }
+
+    protected void updateSettings() {
+        ContentResolver resolver = mContext.getContentResolver();
+
+        try {
+            setColorFilter(null);
+            setColorFilter(Settings.System.getInt(resolver, Settings.System.SOFT_KEY_COLOR));
+        } catch (SettingNotFoundException e) {
+        }
+
     }
 }
 

@@ -398,6 +398,7 @@ public class PhoneStatusBar extends StatusBar {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(Settings.System.getUriFor(Settings.System.SHOW_MENU_BUTTON), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(Settings.System.SHOW_SEARCH_BUTTON), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(Settings.System.LONG_PRESS_HOME), false, this);
             onChange(true);
         }
 
