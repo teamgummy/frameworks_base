@@ -48,6 +48,7 @@ import com.android.systemui.R;
 
 public class KeyButtonView extends ImageView {
     private static final String TAG = "StatusBar.KeyButtonView";
+    private int mSoftKeyColor;
 
     final float GLOW_MAX_SCALE_FACTOR = 1.8f;
     final float BUTTON_QUIESCENT_ALPHA = 0.6f;
@@ -310,11 +311,9 @@ public class KeyButtonView extends ImageView {
     protected void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
 
-        try {
-            setColorFilter(null);
-            setColorFilter(Settings.System.getInt(resolver, Settings.System.SOFT_KEY_COLOR));
-        } catch (SettingNotFoundException e) {
-        }
+        mSoftKeyColor = Settings.System.getInt(resolver, Settings.System.SOFT_KEY_COLOR, 0xFFB0B0B0);
+        setColorFilter(mSoftKeyColor);
+
 
     }
 }
