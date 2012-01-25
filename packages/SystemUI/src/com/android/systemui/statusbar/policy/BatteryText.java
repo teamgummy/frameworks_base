@@ -115,7 +115,7 @@ public class BatteryText extends TextView {
             mBattTextColor = Settings.System.getInt(resolver, Settings.System.BATTERY_TEXT_COLOR_STOCK, 0xFF33B5E5);
         } else if (plugged) {
             mBattTextColor = Settings.System.getInt(resolver, Settings.System.BATTERY_TEXT_COLOR_CHARGE, 0xFF00FF00);
-        } else if (level >=16) {
+        } else if (level > 15) {
             mBattTextColor = Settings.System.getInt(resolver, Settings.System.BATTERY_TEXT_COLOR_NORMAL, 0xFF33B5E5);
         } else {
             mBattTextColor = Settings.System.getInt(resolver, Settings.System.BATTERY_TEXT_COLOR_LOW, 0xFFFF0000);
@@ -158,7 +158,7 @@ public class BatteryText extends TextView {
 
               if (plugged) {
                   mBattTextColor = Settings.System.getInt(resolver, Settings.System.BATTERY_TEXT_COLOR_CHARGE, 0xFF00FF00);
-              } else if (level >= 16) {
+              } else if (level > 15) {
                   mBattTextColor = Settings.System.getInt(resolver, Settings.System.BATTERY_TEXT_COLOR_NORMAL, 0xFF33B5E5);
               } else {
                   mBattTextColor = Settings.System.getInt(resolver, Settings.System.BATTERY_TEXT_COLOR_LOW, 0xFFFF0000);

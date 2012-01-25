@@ -2034,7 +2034,7 @@ public final class Settings {
          * Show/Hide battery text %
          * @hide
          */
-        public static final String BATTERY_TEXT = "battery_text_color_low";
+        public static final String BATTERY_TEXT = "battery_text";
 
         /**
          * Volume rocker wake option
