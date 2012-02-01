@@ -142,7 +142,12 @@ public class PhoneFactory {
                 try {
                     Class<?> classDefinition = Class.forName("com.android.internal.telephony." + sRILClassname);
                     Constructor<?> constructor = classDefinition.getConstructor(new Class[] {Context.class, int.class, int.class});
-                    sCommandsInterface = (RIL) constructor.newInstance(new Object[] {context, networkMode, cdmaSubscription});
+                    if ("motow3g".equals(sRILClassname)) {
+                        Log.i(LOG_TAG, "Using Motorola Wrigley 3G RIL");
+                        sCommandsInterface = new MotoWrigley3GRIL(context, networkMode, cdmaSubscription);
+                    } else {
+                        sCommandsInterface = (RIL) constructor.newInstance(new Object[] {context, networkMode, cdmaSubscription});
+                    }
                 } catch (Exception e) {
                     // 6 different types of exceptions are thrown here that it's
                     // easier to just catch Exception as our "error handling" is the same.
