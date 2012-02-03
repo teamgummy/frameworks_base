@@ -79,6 +79,8 @@ public class Clock extends TextView {
                 Settings.System.getUriFor(Settings.System.STATUS_BAR_AM_PM), false, this);
             resolver.registerContentObserver(
                 Settings.System.getUriFor(Settings.System.STATUS_BAR_CLOCK), false, this);
+            resolver.registerContentObserver(
+                Settings.System.getUriFor(Settings.System.CLOCK_COLOR), false, this);
         }
 
         @Override
@@ -242,6 +244,11 @@ public class Clock extends TextView {
 
     protected void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
+
+        int mColorChanger = Settings.System.getInt(resolver,
+                Settings.System.CLOCK_COLOR, 0xFF33B5E5);
+
+        setTextColor(mColorChanger);
 
         mClockFormatString = "";
         if (mAttached) {

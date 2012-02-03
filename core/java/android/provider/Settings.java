@@ -1918,6 +1918,12 @@ public final class Settings {
         public static final String HIDE_CLOCK = "hide_clock";
 
         /**
+         * Color for the clock
+         * @hide
+         */
+        public static final String CLOCK_COLOR = "clock_color";
+
+        /**
          * Setting to hide clock.
          * @hide
          */
