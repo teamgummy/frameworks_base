@@ -2069,10 +2069,16 @@ public final class Settings {
         public static final String ACCELEROMETER_ROTATION_ANGLES = "accelerometer_rotation_angles";
 
         /**
-         * Enables long press home button, hides recent & shows search button
+         * Soft Key Colors
          * @hide
          */
         public static final String SOFT_KEY_COLOR = "soft_key_color";
+
+        /**
+         * ImageView color filter for the power controls
+         * @hide
+         */
+        public static final String NOTIFICATION_TOGGLE_COLOR_BAR = "notification_toggle_color_bar";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
