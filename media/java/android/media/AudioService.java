@@ -2337,7 +2337,6 @@ public class AudioService extends IAudioService.Stub {
                      */
                     mRingerModeAffectedStreams = ringerModeAffectedStreams;
                     setRingerModeInt(getRingerMode(), false);
-                    STREAM_VOLUME_ALIAS
                 }
             }
         }
