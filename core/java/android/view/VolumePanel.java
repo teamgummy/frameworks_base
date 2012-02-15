@@ -17,6 +17,7 @@
 package android.view;
 
 import java.util.HashMap;
+import com.android.internal.R;
 
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
@@ -231,7 +232,7 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener,
 
 		mShowCombinedVolumes = Settings.System.getInt(
 				mContext.getContentResolver(),
-				Settings.System.ENABLE_VOLUME_OPTIONS, 0) == 1 ? true : false;
+				Settings.System.ENABLE_VOLUME_OPTIONS, 0) == 1;
 		// If we don't want to show multiple volumes, hide the settings button
 		// and divider
 		if (!mShowCombinedVolumes) {
