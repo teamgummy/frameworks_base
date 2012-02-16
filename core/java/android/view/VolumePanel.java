@@ -124,7 +124,7 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener,
             super(handler);
         }
 
-        void observer() {
+        void observe() {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.ENABLE_VOLUME_OPTIONS), false, this);
@@ -268,6 +268,7 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener,
 
         mHandler = new Handler();
         SettingsObserver settingsObserver = new SettingsObserver(mHandler);
+        settingsObserver.observe();
         listenToRingerMode();
     }
 
