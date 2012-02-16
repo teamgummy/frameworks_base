@@ -276,7 +276,7 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener,
     public void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
         mShowCombinedVolumes = Settings.System.getInt(
-                mContext.getContentResolver(),
+                resolver,
                 Settings.System.ENABLE_VOLUME_OPTIONS, 0) == 1;
         // If we don't want to show multiple volumes, hide the settings button
         // and divider
