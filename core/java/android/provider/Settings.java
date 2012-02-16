@@ -1928,6 +1928,12 @@ public final class Settings {
          * @hide
          */
         public static final String HIDE_ALARM = "hide_alarm";
+        
+        /**
+         * Setting to enable volume options.
+         * @hide
+         */
+        public static final String ENABLE_VOLUME_OPTIONS = "enable_volume_options";
 
         /*
          * 0: Default no 1%
