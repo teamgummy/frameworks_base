@@ -124,7 +124,7 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener,
             super(handler);
         }
 
-        void observer() {
+        void observe() {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.ENABLE_VOLUME_OPTIONS), false, this);
@@ -256,18 +256,13 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener,
 
         mShowCombinedVolumes = Settings.System.getInt(
                 mContext.getContentResolver(),
-                Settings.System.ENABLE_VOLUME_OPTIONS, 0) == 1;
-        // If we don't want to show multiple volumes, hide the settings button
-        // and divider
-        if (!mShowCombinedVolumes) {
-            mMoreButton.setVisibility(View.GONE);
-            mDivider.setVisibility(View.GONE);
-        } else {
-            mMoreButton.setOnClickListener(this);
-        }
+                Settings.System.ENABLE_VOLUME_OPTIONS, 0) == 1
+                || !context.getResources().getBoolean(R.bool.config_voice_capable);
+        toggleMore(mShowCombinedVolumes);
 
         mHandler = new Handler();
         SettingsObserver settingsObserver = new SettingsObserver(mHandler);
+        settingsObserver.observe();
         listenToRingerMode();
     }
 
@@ -275,17 +270,20 @@ public class VolumePanel extends Handler implements OnSeekBarChangeListener,
     public void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
         mShowCombinedVolumes = Settings.System.getInt(
-                mContext.getContentResolver(),
+                resolver,
                 Settings.System.ENABLE_VOLUME_OPTIONS, 0) == 1;
+        toggleMore(mShowCombinedVolumes);
+    }
+
+    private void toggleMore(boolean toggle) {
         // If we don't want to show multiple volumes, hide the settings button
         // and divider
-        if (!mShowCombinedVolumes) {
+        if (!toggle) {
             mMoreButton.setVisibility(View.GONE);
             mDivider.setVisibility(View.GONE);
         } else {
             mMoreButton.setOnClickListener(this);
         }
-
     }
 
     private void listenToRingerMode() {
