@@ -203,8 +203,8 @@ public class SignalClusterView
     protected void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
 
-        mWifiSignalColor = Settings.System.getInt(resolver, Settings.System.WIFI_SIGNAL_COLOR, 0x7733B5E5);
-	mMobileSignalColor = Settings.System.getInt(resolver, Settings.System.MOBILE_SIGNAL_COLOR, 0x7733B5E5);
+        mWifiSignalColor = Settings.System.getInt(resolver, Settings.System.WIFI_SIGNAL_COLOR, 0xFF33B5E5);
+	mMobileSignalColor = Settings.System.getInt(resolver, Settings.System.MOBILE_SIGNAL_COLOR, 0xFF33B5E5);
 
     }
 
