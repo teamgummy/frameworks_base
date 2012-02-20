@@ -28,6 +28,7 @@ import android.os.Handler;
 import android.content.ContentResolver;
 import android.provider.Settings;
 import android.database.ContentObserver;
+import android.graphics.PorterDuff.Mode;
 
 
 import com.android.systemui.statusbar.policy.NetworkController;
@@ -57,6 +58,7 @@ public class SignalClusterView
 
     private int mWifiSignalColor;
     private int mMobileSignalColor;
+    private static final Mode SCREEN_MODE = Mode.MULTIPLY;
 
     public SignalClusterView(Context context) {
         this(context, null);
@@ -140,7 +142,7 @@ public class SignalClusterView
         if (mWifiVisible) {
             mWifiGroup.setVisibility(View.VISIBLE);
             mWifi.setImageResource(mWifiStrengthId);
-            mWifi.setColorFilter(mWifiSignalColor);
+            mWifi.setColorFilter(mWifiSignalColor, SCREEN_MODE);
             mWifiActivity.setImageResource(mWifiActivityId);
             mWifiGroup.setContentDescription(mWifiDescription);
         } else {
@@ -155,7 +157,7 @@ public class SignalClusterView
         if (mMobileVisible) {
             mMobileGroup.setVisibility(View.VISIBLE);
             mMobile.setImageResource(mMobileStrengthId);
-	    mMobile.setColorFilter(mMobileSignalColor);
+	    mMobile.setColorFilter(mMobileSignalColor, SCREEN_MODE);
             mMobileActivity.setImageResource(mMobileActivityId);
             mMobileType.setImageResource(mMobileTypeId);
             mMobileGroup.setContentDescription(mMobileTypeDescription + " " + mMobileDescription);
