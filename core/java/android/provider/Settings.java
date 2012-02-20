@@ -2085,6 +2085,18 @@ public final class Settings {
          * @hide
          */
         public static final String NOTIFICATION_TOGGLE_COLOR_BAR = "notification_toggle_color_bar";
+	
+        /**
+         * ImageView color filter for the wifi data icons
+         * @hide
+         */
+	public static final String WIFI_SIGNAL_COLOR = "wifi_signal_color";
+
+        /**
+         * ImageView color filter for the mobile data icons
+         * @hide
+         */
+	public static final String MOBILE_SIGNAL_COLOR = "mobile_signal_color";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings

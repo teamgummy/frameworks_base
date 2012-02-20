@@ -24,6 +24,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.os.Handler;
+import android.content.ContentResolver;
+import android.provider.Settings;
+import android.database.ContentObserver;
+
 
 import com.android.systemui.statusbar.policy.NetworkController;
 
@@ -50,6 +55,9 @@ public class SignalClusterView
     ImageView mWifi, mMobile, mWifiActivity, mMobileActivity, mMobileType;
     View mSpacer;
 
+    private int mWifiSignalColor;
+    private int mMobileSignalColor;
+
     public SignalClusterView(Context context) {
         this(context, null);
     }
@@ -60,6 +68,9 @@ public class SignalClusterView
 
     public SignalClusterView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+
+	SettingsObserver settingsObserver = new SettingsObserver(new Handler());
+        settingsObserver.observe();
     }
 
     public void setNetworkController(NetworkController nc) {
@@ -129,6 +140,7 @@ public class SignalClusterView
         if (mWifiVisible) {
             mWifiGroup.setVisibility(View.VISIBLE);
             mWifi.setImageResource(mWifiStrengthId);
+            mWifi.setColorFilter(mWifiSignalColor);
             mWifiActivity.setImageResource(mWifiActivityId);
             mWifiGroup.setContentDescription(mWifiDescription);
         } else {
@@ -143,6 +155,7 @@ public class SignalClusterView
         if (mMobileVisible) {
             mMobileGroup.setVisibility(View.VISIBLE);
             mMobile.setImageResource(mMobileStrengthId);
+	    mMobile.setColorFilter(mMobileSignalColor);
             mMobileActivity.setImageResource(mMobileActivityId);
             mMobileType.setImageResource(mMobileTypeId);
             mMobileGroup.setContentDescription(mMobileTypeDescription + " " + mMobileDescription);
@@ -164,5 +177,34 @@ public class SignalClusterView
         mMobileType.setVisibility(
                 !mWifiVisible ? View.VISIBLE : View.GONE);
     }
+
+    class SettingsObserver extends ContentObserver {
+        SettingsObserver(Handler handler) {
+            super(handler);
+        }
+
+        void observe() {
+            ContentResolver resolver = mContext.getContentResolver();
+
+            resolver.registerContentObserver(Settings.System.getUriFor(Settings.System.WIFI_SIGNAL_COLOR), false, this);
+	    resolver.registerContentObserver(Settings.System.getUriFor(Settings.System.MOBILE_SIGNAL_COLOR), false, this);
+
+            updateSettings();
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            updateSettings();
+        }
+    }
+
+    protected void updateSettings() {
+        ContentResolver resolver = mContext.getContentResolver();
+
+        mWifiSignalColor = Settings.System.getInt(resolver, Settings.System.WIFI_SIGNAL_COLOR, 0x7733B5E5);
+	mMobileSignalColor = Settings.System.getInt(resolver, Settings.System.MOBILE_SIGNAL_COLOR, 0x7733B5E5);
+
+    }
+
 }
 
