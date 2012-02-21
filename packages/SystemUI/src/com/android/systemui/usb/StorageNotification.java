@@ -27,6 +27,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.storage.StorageEventListener;
 import android.os.storage.StorageManager;
+import android.os.SystemProperties;
 import android.provider.Settings;
 import android.util.Slog;
 
