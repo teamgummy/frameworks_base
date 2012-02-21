@@ -33,7 +33,8 @@ import android.util.Slog;
 public class StorageNotification extends StorageEventListener {
     private static final String TAG = "StorageNotification";
 
-    private static final boolean POP_UMS_ACTIVITY_ON_CONNECT = true;
+    private static final boolean POP_UMS_ACTIVITY_ON_CONNECT =
+        (SystemProperties.getInt("ro.usb.use_custom_service", 0) == 0);
 
     /**
      * Binder context for this service
