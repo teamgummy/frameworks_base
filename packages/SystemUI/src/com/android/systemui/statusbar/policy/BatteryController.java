@@ -32,24 +32,27 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.graphics.PorterDuff.Mode;
 
 import com.android.systemui.R;
 
 public class BatteryController extends BroadcastReceiver {
     private static final String TAG = "StatusBar.BatteryController";
-
+    private static final Mode SCREEN_MODE = Mode.MULTIPLY;
+    
     private Context mContext;
     private ArrayList<ImageView> mIconViews = new ArrayList<ImageView>();
     private ArrayList<TextView> mLabelViews = new ArrayList<TextView>();
     private int mBattIcon;
     private int mChargeIcon;
-
+    private int mBatteryIconColor;
+    
     private boolean mHideBatt;
     private boolean mUseBattPercentages;
     private boolean mUseCircleBatt;
     private boolean mUseBarBatt;
     private Handler mHandler;
-
+   
     public BatteryController(Context context) {
         mContext = context;
 
@@ -74,6 +77,7 @@ public class BatteryController extends BroadcastReceiver {
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(Settings.System.getUriFor(Settings.System.BATTERY_PERCENTAGES), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(Settings.System.BATTERY_ICON_COLOR), false, this);
         }
 
         @Override
@@ -114,6 +118,7 @@ public class BatteryController extends BroadcastReceiver {
             for (int i=0; i<N; i++) {
                 ImageView v = mIconViews.get(i);
                 v.setImageResource(icon);
+                v.setColorFilter(mBatteryIconColor, SCREEN_MODE);
                 v.setImageLevel(level);
                 v.setContentDescription(mContext.getString(R.string.accessibility_battery_level,
                         level));
@@ -137,5 +142,6 @@ public class BatteryController extends BroadcastReceiver {
         mUseBarBatt = (Settings.System.getInt(resolver, Settings.System.BATTERY_PERCENTAGES, 1) == 2);
         mUseCircleBatt = (Settings.System.getInt(resolver, Settings.System.BATTERY_PERCENTAGES, 1) == 3);
         mHideBatt = (Settings.System.getInt(resolver, Settings.System.BATTERY_PERCENTAGES, 1) == 4);
+        mBatteryIconColor = Settings.System.getInt(resolver, Settings.System.BATTERY_ICON_COLOR, 0xFF33B5E5);
     }
 }

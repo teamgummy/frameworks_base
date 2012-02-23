@@ -2099,6 +2099,12 @@ public final class Settings {
 	public static final String MOBILE_SIGNAL_COLOR = "mobile_signal_color";
 
         /**
+         * ImageView color filter for the battery icons
+         * @hide
+         */
+	public static final String BATTERY_ICON_COLOR = "battery_icon_color";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *
