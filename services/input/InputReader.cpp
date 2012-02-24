@@ -19,22 +19,22 @@
 //#define LOG_NDEBUG 0
 
 // Log debug messages for each raw event received from the EventHub.
-#define DEBUG_RAW_EVENTS 0
+//#define DEBUG_RAW_EVENTS 0
 
 // Log debug messages about touch screen filtering hacks.
-#define DEBUG_HACKS 0
+//#define DEBUG_HACKS 0
 
 // Log debug messages about virtual key processing.
-#define DEBUG_VIRTUAL_KEYS 0
+//#define DEBUG_VIRTUAL_KEYS 0
 
 // Log debug messages about pointers.
-#define DEBUG_POINTERS 0
+//#define DEBUG_POINTERS 0
 
 // Log debug messages about pointer assignment calculations.
-#define DEBUG_POINTER_ASSIGNMENT 0
+//#define DEBUG_POINTER_ASSIGNMENT 0
 
 // Log debug messages about gesture detection.
-#define DEBUG_GESTURES 0
+//#define DEBUG_GESTURES 0
 
 #include "InputReader.h"
 
@@ -645,7 +645,7 @@ int32_t InputReader::getStateLocked(int32_t deviceId, uint32_t sourceMask, int32
             InputDevice* device = mDevices.valueAt(i);
             if (! device->isIgnored() && sourcesMatchMask(device->getSources(), sourceMask)) {
                 result = (device->*getStateFunc)(sourceMask, code);
-                if (result >= AKEY_STATE_DOWN) {
+                if (result >= AKEY_STATE_UP) {
                     return result;
                 }
             }
@@ -1001,7 +1001,7 @@ int32_t InputDevice::getState(uint32_t sourceMask, int32_t code, GetStateFunc ge
         InputMapper* mapper = mMappers[i];
         if (sourcesMatchMask(mapper->getSources(), sourceMask)) {
             result = (mapper->*getStateFunc)(sourceMask, code);
-            if (result >= AKEY_STATE_DOWN) {
+            if (result >= AKEY_STATE_UP) {
                 return result;
             }
         }
@@ -1862,6 +1862,7 @@ void KeyboardInputMapper::reset(nsecs_t when) {
 }
 
 void KeyboardInputMapper::process(const RawEvent* rawEvent) {
+    // LOGE("process(), type=%d, keyCode=%d, scanCode=%d, flags=0x%08x", rawEvent->type, rawEvent->keyCode, rawEvent->scanCode, rawEvent->flags);
     switch (rawEvent->type) {
     case EV_KEY: {
         int32_t scanCode = rawEvent->scanCode;
@@ -2192,6 +2193,13 @@ void CursorInputMapper::process(const RawEvent* rawEvent) {
     if (rawEvent->type == EV_SYN && rawEvent->scanCode == SYN_REPORT) {
         sync(rawEvent->when);
     }
+#ifdef LEGACY_TRACKPAD
+    // sync now since BTN_MOUSE is not necessarily followed by SYN_REPORT and
+    // we need to ensure that we report the up/down promptly.
+    else if (rawEvent->type == EV_KEY && rawEvent->scanCode == BTN_MOUSE) {
+        sync(rawEvent->when);
+    }
+#endif
 }
 
 void CursorInputMapper::sync(nsecs_t when) {
