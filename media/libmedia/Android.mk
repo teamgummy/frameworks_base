@@ -2,14 +2,20 @@ LOCAL_PATH:= $(call my-dir)
 
 include $(CLEAR_VARS)
 
+ifeq ($(BOARD_USES_AUDIO_LEGACY),true)
+LOCAL_SRC_FILES:= \
+    LibMedia_Helper_Dummy.cpp
+else
 LOCAL_SRC_FILES:= \
     AudioParameter.cpp
+endif
 LOCAL_MODULE:= libmedia_helper
 LOCAL_MODULE_TAGS := optional
 
 include $(BUILD_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
+
 
 LOCAL_SRC_FILES:= \
     AudioTrack.cpp \
@@ -54,6 +60,10 @@ ifeq ($(BOARD_USES_AUDIO_LEGACY),true)
     ifeq ($(BOARD_USE_KINETO_COMPATIBILITY),true)
         LOCAL_CFLAGS += -DUSE_KINETO_COMPATIBILITY
     endif
+endif
+
+ifeq ($(BOARD_USE_YAMAHAPLAYER),true)
+    LOCAL_CFLAGS += -DYAMAHAPLAYER
 endif
 
 LOCAL_SHARED_LIBRARIES := \

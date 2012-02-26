@@ -37,7 +37,111 @@ class String8;
 class AudioSystem
 {
 public:
+#ifdef BOARD_USES_AUDIO_LEGACY
 
+    enum audio_devices {
+        // output devices
+        DEVICE_OUT_EARPIECE = 0x1,
+        DEVICE_OUT_SPEAKER = 0x2,
+        DEVICE_OUT_WIRED_HEADSET = 0x4,
+        DEVICE_OUT_WIRED_HEADPHONE = 0x8,
+        DEVICE_OUT_BLUETOOTH_SCO = 0x10,
+        DEVICE_OUT_BLUETOOTH_SCO_HEADSET = 0x20,
+        DEVICE_OUT_BLUETOOTH_SCO_CARKIT = 0x40,
+        DEVICE_OUT_BLUETOOTH_A2DP = 0x80,
+        DEVICE_OUT_BLUETOOTH_A2DP_HEADPHONES = 0x100,
+        DEVICE_OUT_BLUETOOTH_A2DP_SPEAKER = 0x200,
+        DEVICE_OUT_AUX_DIGITAL = 0x400,
+#ifdef HAVE_FM_RADIO
+        DEVICE_OUT_FM = 0x800,
+        DEVICE_OUT_FM_SPEAKER = 0x1000,
+        DEVICE_OUT_FM_ALL = (DEVICE_OUT_FM | DEVICE_OUT_FM_SPEAKER),
+#elif defined(OMAP_ENHANCEMENT)
+        DEVICE_OUT_FM_TRANSMIT = 0x800,
+        DEVICE_OUT_LOW_POWER = 0x1000,
+#endif
+        DEVICE_OUT_HDMI = 0x2000,
+        DEVICE_OUT_DEFAULT = 0x8000,
+        DEVICE_OUT_ALL = (DEVICE_OUT_EARPIECE | DEVICE_OUT_SPEAKER | DEVICE_OUT_WIRED_HEADSET |
+#ifdef HAVE_FM_RADIO
+                DEVICE_OUT_WIRED_HEADPHONE | DEVICE_OUT_FM | DEVICE_OUT_FM_SPEAKER | DEVICE_OUT_BLUETOOTH_SCO | DEVICE_OUT_BLUETOOTH_SCO_HEADSET |
+#else
+                DEVICE_OUT_WIRED_HEADPHONE | DEVICE_OUT_BLUETOOTH_SCO | DEVICE_OUT_BLUETOOTH_SCO_HEADSET |
+#endif
+                DEVICE_OUT_BLUETOOTH_SCO_CARKIT | DEVICE_OUT_BLUETOOTH_A2DP | DEVICE_OUT_BLUETOOTH_A2DP_HEADPHONES |
+#if defined(OMAP_ENHANCEMENT) && !defined(HAVE_FM_RADIO)
+                DEVICE_OUT_BLUETOOTH_A2DP_SPEAKER | DEVICE_OUT_AUX_DIGITAL | DEVICE_OUT_LOW_POWER |
+                DEVICE_OUT_FM_TRANSMIT | DEVICE_OUT_DEFAULT),
+#else
+                DEVICE_OUT_BLUETOOTH_A2DP_SPEAKER | DEVICE_OUT_AUX_DIGITAL | DEVICE_OUT_HDMI | DEVICE_OUT_DEFAULT),
+#endif
+        DEVICE_OUT_ALL_A2DP = (DEVICE_OUT_BLUETOOTH_A2DP | DEVICE_OUT_BLUETOOTH_A2DP_HEADPHONES |
+                DEVICE_OUT_BLUETOOTH_A2DP_SPEAKER),
+
+        // input devices
+        DEVICE_IN_COMMUNICATION = 0x10000,
+        DEVICE_IN_AMBIENT = 0x20000,
+        DEVICE_IN_BUILTIN_MIC = 0x40000,
+        DEVICE_IN_BLUETOOTH_SCO_HEADSET = 0x80000,
+        DEVICE_IN_WIRED_HEADSET = 0x100000,
+        DEVICE_IN_AUX_DIGITAL = 0x200000,
+        DEVICE_IN_VOICE_CALL = 0x400000,
+        DEVICE_IN_BACK_MIC = 0x800000,
+#ifdef HAVE_FM_RADIO
+        DEVICE_IN_FM_RX = 0x1000000,
+        DEVICE_IN_FM_RX_A2DP = 0x2000000,
+#endif
+#ifdef OMAP_ENHANCEMENT
+        DEVICE_IN_FM_ANALOG = 0x1000000,
+#endif
+        DEVICE_IN_DEFAULT = 0x80000000,
+
+        DEVICE_IN_ALL = (DEVICE_IN_COMMUNICATION | DEVICE_IN_AMBIENT | DEVICE_IN_BUILTIN_MIC |
+                DEVICE_IN_BLUETOOTH_SCO_HEADSET | DEVICE_IN_WIRED_HEADSET | DEVICE_IN_AUX_DIGITAL |
+#ifdef HAVE_FM_RADIO
+                DEVICE_IN_VOICE_CALL | DEVICE_IN_BACK_MIC | DEVICE_IN_FM_RX | DEVICE_IN_FM_RX_A2DP | DEVICE_IN_DEFAULT)
+#elif OMAP_ENHANCEMENT
+                DEVICE_IN_VOICE_CALL | DEVICE_IN_BACK_MIC  | DEVICE_IN_FM_ANALOG | DEVICE_IN_DEFAULT)
+#else
+                DEVICE_IN_VOICE_CALL | DEVICE_IN_BACK_MIC | DEVICE_IN_DEFAULT)
+#endif
+    };
+
+    // device connection states used for setDeviceConnectionState()
+    enum device_connection_state {
+        DEVICE_STATE_UNAVAILABLE,
+        DEVICE_STATE_AVAILABLE,
+        NUM_DEVICE_STATES
+    };
+
+    enum stream_type {
+        DEFAULT          =-1,
+        VOICE_CALL       = 0,
+        SYSTEM           = 1,
+        RING             = 2,
+        MUSIC            = 3,
+        ALARM            = 4,
+        NOTIFICATION     = 5,
+        BLUETOOTH_SCO    = 6,
+        ENFORCED_AUDIBLE = 7, // Sounds that cannot be muted by user and must be routed to speaker
+        DTMF             = 8,
+        TTS              = 9,
+#ifdef HAVE_FM_RADIO
+        FM              = 10,
+#endif
+        NUM_STREAM_TYPES
+    };
+
+    enum audio_in_acoustics {
+        AGC_ENABLE    = 0x0001,
+        AGC_DISABLE   = 0,
+        NS_ENABLE     = 0x0002,
+        NS_DISABLE    = 0,
+        TX_IIR_ENABLE = 0x0004,
+        TX_DISABLE    = 0
+    };
+
+#endif
     /* These are static methods to control the system-wide AudioFlinger
      * only privileged processes can have access to them
      */
@@ -184,12 +288,28 @@ public:
                                     int id);
     static status_t unregisterEffect(int id);
     static status_t setEffectEnabled(int id, bool enabled);
-
     // clear stream to output mapping cache (gStreamOutputMap)
     // and output configuration cache (gOutputs)
     static void clearAudioConfigCache();
 
     static const sp<IAudioPolicyService>& get_audio_policy_service();
+#ifdef BOARD_USES_AUDIO_LEGACY
+    static uint32_t popCount(uint32_t u);
+    static bool isOutputDevice(audio_devices device);
+    static bool isInputDevice(audio_devices device);
+#ifdef HAVE_FM_RADIO
+    static bool isFmDevice(audio_devices device);
+#endif
+    static bool isA2dpDevice(audio_devices device);
+    static bool isBluetoothScoDevice(audio_devices device);
+    static bool isLowVisibility(stream_type stream);
+    static bool isInputChannel(uint32_t channel);
+    static bool isOutputChannel(uint32_t channel);
+    static bool isValidFormat(uint32_t format);
+    static bool isLinearPCM(uint32_t format);
+    static status_t setDeviceConnectionState(audio_devices device, device_connection_state state, const char *device_address);
+    static device_connection_state getDeviceConnectionState(audio_devices device, const char *device_address);
+#endif
 
     // ----------------------------------------------------------------------------
 
