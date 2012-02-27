@@ -329,14 +329,17 @@ public class CDMAPhone extends PhoneBase {
     }
 
     public void enableEnhancedVoicePrivacy(boolean enable, Message onComplete) {
+        if (this.mCT == null) return;
         this.mCM.setPreferredVoicePrivacy(enable, onComplete);
     }
 
     public void getEnhancedVoicePrivacy(Message onComplete) {
+        if (this.mCT == null) return;
         this.mCM.getPreferredVoicePrivacy(onComplete);
     }
 
     public void clearDisconnected() {
+        if (mCT == null) return;
         mCT.clearDisconnected();
     }
 
