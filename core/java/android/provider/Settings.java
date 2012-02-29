@@ -1883,18 +1883,6 @@ public final class Settings {
          */
         public static final String POINTER_SPEED = "pointer_speed";
 
-        /**
-        * Setting to show full menu button in nav bar
-        * @hide
-        */
-        public static final String SHOW_MENU_BUTTON = "show_menu_button";
-
-        /**
-        * Setting to show search button in nav bar
-        * @hide
-        */
-        public static final String SHOW_SEARCH_BUTTON = "show_search_button";
-
         /*
          * 0: hide
          * 1: show right clock
@@ -2055,13 +2043,6 @@ public final class Settings {
         public static final String VOLUME_WAKE = "volume_wake";
 
         /**
-         * Enables long press home button, hides recent & shows search button
-         * @hide
-         */
-        public static final String LONG_PRESS_HOME = "long_press_home";
-
-
-        /**
          * Control the type of rotation which can be performed using the accelerometer
          * if ACCELEROMETER_ROTATION is enabled.
          * Value is a bitwise combination of
@@ -2075,16 +2056,77 @@ public final class Settings {
         public static final String ACCELEROMETER_ROTATION_ANGLES = "accelerometer_rotation_angles";
 
         /**
-         * Soft Key Colors
-         * @hide
-         */
-        public static final String SOFT_KEY_COLOR = "soft_key_color";
-
-        /**
          * ImageView color filter for the power controls
          * @hide
          */
         public static final String NOTIFICATION_TOGGLE_COLOR_BAR = "notification_toggle_color_bar";
+
+        /**
+         * @hide
+         */
+        public static final String NAVIGATION_BAR_TINT = "navigation_bar_tint";
+
+        /**
+         * [0] = how long to animate glow off
+         * [1] = how long to animate glow on
+         * 
+         * @hide
+         */
+        public static final String[] NAVIGATION_BAR_GLOW_DURATION = new String[] {
+                "navigation_bar_glow_duration_off",
+                "navigation_bar_glow_duration_on"
+        };
+
+        /**
+         * 
+         * @hide
+         */
+        public static final String NAVIGATION_BAR_BUTTON_ALPHA = "navigation_bar_button_alpha";
+
+        /**
+         * Whether to hide the NavBar Buttons
+         *
+         * @hide
+         */
+        public static final String NAVIGATION_BAR_BUTTONS = "navigation_bar_buttons";
+
+        /**
+         * Menu visibility style
+         * 
+         * @hide
+         */
+        public static final String MENU_VISIBILITY = "menu_visibility";
+
+        /**
+         * where to show the legacy menu key
+         * 0 = right (default)
+         * 1 = left
+         * 2 = both
+         * 
+         * @hide
+         */
+        public static final String MENU_LOCATION = "menu_location";
+
+	/**
+	 * whether to hide the navigation bar on the lockscreen
+	 *
+	 * @hide
+	 */
+        public static final String LOCKSCREEN_HIDE_NAV = "lockscreen_hide_nav";
+
+        /**
+         * The action to take when long pressing home
+         * 
+         * @hide
+         */
+        public static final String NAVIGATION_BAR_HOME_LONGPRESS = "navigation_bar_home_longpress";
+
+        /**
+         * Order of phone navigation buttons
+         *
+         * @hide
+         */
+        public static final String NAVIGATION_BAR_BUTTONS_HIDE = "navigation_bar_buttons_hide";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings

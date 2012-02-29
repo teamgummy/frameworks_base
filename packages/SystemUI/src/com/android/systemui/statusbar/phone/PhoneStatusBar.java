@@ -304,10 +304,11 @@ public class PhoneStatusBar extends StatusBar {
         mStatusBarView = sb;
 
         try {
+            int layoutToInflate = R.layout.navigation_bar;
             boolean showNav = mWindowManager.hasNavigationBar();
             if (showNav) {
                 mNavigationBarView =
-                    (NavigationBarView) View.inflate(context, R.layout.navigation_bar, null);
+                    (NavigationBarView) View.inflate(context, R.layout.navigation_bar_naked, null);
                 mNavigationBarView.setDisabledFlags(mDisabled);
                 SettingsObserver settingsObserver = new SettingsObserver(new Handler());
                 settingsObserver.observe();
@@ -396,10 +397,6 @@ public class PhoneStatusBar extends StatusBar {
 
         public void observe() {
             ContentResolver resolver = mContext.getContentResolver();
-            resolver.registerContentObserver(Settings.System.getUriFor(Settings.System.SHOW_MENU_BUTTON), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(Settings.System.SHOW_SEARCH_BUTTON), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(Settings.System.LONG_PRESS_HOME), false, this);
-            onChange(true);
         }
 
         @Override
@@ -478,8 +475,12 @@ public class PhoneStatusBar extends StatusBar {
     private void prepareNavigationBarView() {
         mNavigationBarView.reorient();
 
-        mNavigationBarView.getRecentsButton().setOnClickListener(mRecentsClickListener);
-        mNavigationBarView.getRecentsButton().setOnTouchListener(mRecentsPanel);
+        try {
+            mNavigationBarView.getRecentsButton().setOnClickListener(mRecentsClickListener);
+            mNavigationBarView.getRecentsButton().setOnTouchListener(mRecentsPanel);
+        } catch (NullPointerException e) {
+            //just in case the layout doesn't use the recents button ;)
+        };
     }
 
     // For small-screen devices (read: phones) that lack hardware navigation buttons

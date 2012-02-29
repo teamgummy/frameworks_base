@@ -929,13 +929,14 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             else if (navBarOverride.equals("0")) mHasNavigationBar = true;
         }
 
-        mNavigationBarHeight = mHasNavigationBar
+
+        mNavigationBarHeight = mHasNavigationBar  	
                 ? mContext.getResources().getDimensionPixelSize(
-                    com.android.internal.R.dimen.navigation_bar_height)
-                : 0;
-        mNavigationBarWidth = mHasNavigationBar
+                    com.android.internal.R.dimen.navigation_bar_height)	
+                : 0;	  	
+        mNavigationBarWidth = mHasNavigationBar	  	
                 ? mContext.getResources().getDimensionPixelSize(
-                    com.android.internal.R.dimen.navigation_bar_width)
+                    com.android.internal.R.dimen.navigation_bar_width) 	
                 : 0;
 
         if ("portrait".equals(SystemProperties.get("persist.demo.hdmirotation"))) {
