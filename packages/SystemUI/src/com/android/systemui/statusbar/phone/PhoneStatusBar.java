@@ -2333,7 +2333,7 @@ public class PhoneStatusBar extends StatusBar {
                 ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
             } catch (RemoteException e) {
             }
-            Intent intent = new Intent(Intent.ACTION_VIEW);
+            Intent intent = new Intent(Intent.ACTION_VIEW).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.setClassName("com.android.calendar", "com.android.calendar.LaunchActivity");
             v.getContext().startActivity(intent);
             animateCollapse();
