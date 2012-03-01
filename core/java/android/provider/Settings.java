@@ -1941,6 +1941,13 @@ public final class Settings {
         public static final String CLOCK_COLOR = "clock_color";
 
         /**
+         * Color for the soft key
+         * 
+         * @hide
+         */
+        public static final String SOFT_KEY_COLOR = "softkey_color";
+
+        /**
          * Setting to hide clock.
          * 
          * @hide
