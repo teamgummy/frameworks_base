@@ -93,7 +93,7 @@ import com.android.systemui.statusbar.policy.LocationController;
 import com.android.systemui.statusbar.policy.NetworkController;
 import com.android.systemui.statusbar.policy.NotificationRowLayout;
 
-public class PhoneStatusBar extends StatusBar implements OnClickListener {
+public class PhoneStatusBar extends StatusBar {
     static final String TAG = "PhoneStatusBar";
     public static final boolean DEBUG = false;
     public static final boolean SPEW = false;
@@ -346,6 +346,7 @@ public class PhoneStatusBar extends StatusBar implements OnClickListener {
         mClearButton.setAlpha(0f);
         mClearButton.setEnabled(false);
         mDateView = (DateView) expanded.findViewById(R.id.date);
+        mDateView.setOnClickListener(mCalendarButtonListener);
         mSettingsButton = expanded.findViewById(R.id.settings_button);
         mSettingsButton.setOnClickListener(mSettingsButtonListener);
 
@@ -2325,6 +2326,20 @@ public class PhoneStatusBar extends StatusBar implements OnClickListener {
         }
     };
 
+    private View.OnClickListener mCalendarButtonListener = new View.OnClickListener() {
+        public void onClick(View v) {
+            try {
+                // Dismiss the lock screen when Settings starts.
+                ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
+            } catch (RemoteException e) {
+            }
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setClassName("com.android.calendar", "com.android.calendar.LaunchActivity");
+            v.getContext().startActivity(intent);
+            animateCollapse();
+        }
+    };
+
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
@@ -2461,13 +2476,4 @@ public class PhoneStatusBar extends StatusBar implements OnClickListener {
         }
     }
 
-    @Override
-    public void onClick(View v) {
-        // TODO Auto-generated method stub
-        if (v.equals(mDateView)) {
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setClassName("com.android.calendar", "com.android.calendar.LaunchActivity");
-            mContext.startActivity(intent);
-        }
-    }
 }
