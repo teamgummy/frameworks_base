@@ -2096,12 +2096,12 @@ public final class Settings {
         public static final String VOLUME_WAKE = "volume_wake";
 
         /**
-         * <<<<<<< Updated upstream Control the type of rotation which can be
-         * performed using the accelerometer if ACCELEROMETER_ROTATION is
-         * enabled. Value is a bitwise combination of 1 = 0 degrees (portrait) 2
-         * = 90 degrees (left) 4 = 180 degrees (inverted portrait) 8 = 270
-         * degrees (right) Setting to 0 is effectively orientation lock =======
-         * Enables long press home button, hides recent & shows search button
+         * Control the type of rotation which can be performed using the
+         * accelerometer if ACCELEROMETER_ROTATION is enabled. Value is a
+         * bitwise combination of 1 = 0 degrees (portrait) 2 = 90 degrees (left)
+         * 4 = 180 degrees (inverted portrait) 8 = 270 degrees (right) Setting
+         * to 0 is effectively orientation lock Enables long press home button,
+         * hides recent & shows search button
          * 
          * @hide
          */
@@ -2112,23 +2112,23 @@ public final class Settings {
          * accelerometer if ACCELEROMETER_ROTATION is enabled. Value is a
          * bitwise combination of 1 = 0 degrees (portrait) 2 = 90 degrees (left)
          * 4 = 180 degrees (inverted portrait) 8 = 270 degrees (right) Setting
-         * to 0 is effectively orientation lock >>>>>>> Stashed changes
+         * to 0 is effectively orientation lock
          * 
          * @hide
          */
         public static final String ACCELEROMETER_ROTATION_ANGLES = "accelerometer_rotation_angles";
 
         /**
-         * <<<<<<< Updated upstream ImageView color filter for the power
-         * controls ======= Soft Key Colors >>>>>>> Stashed changes
+         * Updated upstream ImageView color filter for the power controls
+         * ======= Soft Key Colors
          * 
          * @hide
          */
         public static final String NOTIFICATION_TOGGLE_COLOR_BAR = "notification_toggle_color_bar";
 
         /**
-         * <<<<<<< Updated upstream ======= ImageView color filter for the power
-         * controls >>>>>>> Stashed changes
+         * Updated upstream ======= ImageView color filter for the power
+         * controls
          * 
          * @hide
          */
