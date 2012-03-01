@@ -2068,6 +2068,14 @@ public final class Settings {
         public static final String STATUSBAR_BATTERY_BAR_COLOR = "statusbar_battery_bar_color";
 
         /**
+         * The Date Text View opens the calendar app on the notification
+         * expanded view
+         * 
+         * @hide
+         */
+        public static final String DATE_OPENS_CALENDAR = "date_opens_calendar";
+
+        /**
          * Standard battery text color
          * 
          * @hide
@@ -2551,6 +2559,7 @@ public final class Settings {
         @Deprecated
         public static final String WIFI_WATCHDOG_PING_TIMEOUT_MS =
                 Secure.WIFI_WATCHDOG_PING_TIMEOUT_MS;
+
     }
 
     /**
