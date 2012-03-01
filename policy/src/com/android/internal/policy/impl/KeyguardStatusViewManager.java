@@ -22,7 +22,6 @@ import com.android.internal.telephony.IccCard.State;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.internal.widget.TransportControlView;
 import com.android.internal.policy.impl.KeyguardUpdateMonitor.SimStateCallback;
-import com.android.systemui.statusbar.policy.HomeButton.SettingsObserver;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -378,7 +377,8 @@ class KeyguardStatusViewManager implements OnClickListener {
     private void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
 
-        mTextColor = Settings.System.getInt(resolver, Settings.System.SOFT_KEY_COLOR, 0xFFB0B0B0);
+        mTextColor = Settings.System.getInt(resolver, Settings.System.LOCKSCREEN_TEXT_COLOR,
+                0xFFB0B0B0);
 
     }
 
