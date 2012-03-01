@@ -2019,6 +2019,13 @@ public final class Settings {
         public static final String LOCKSCREEN_ROTATION = "lockscreen_rotation";
 
         /**
+         * Enable the text color of the views on the lockscreen
+         * 
+         * @hide
+         */
+        public static final String LOCKSCREEN_TEXT_COLOR = "lockscreen_text_color";
+
+        /**
          * Lockscreen custom app one
          * 
          * @hide
