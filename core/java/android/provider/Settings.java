@@ -1898,8 +1898,6 @@ public final class Settings {
          */
         public static final String POINTER_SPEED = "pointer_speed";
 
-<<<<<<< Updated upstream
-=======
         /**
          * Setting to show full menu button in nav bar
          * 
@@ -1914,9 +1912,9 @@ public final class Settings {
          */
         public static final String SHOW_SEARCH_BUTTON = "show_search_button";
 
->>>>>>> Stashed changes
-        /*
+        /**
          * 0: hide 1: show right clock 2: show center clock
+         * 
          * @hide
          */
         public static final String STATUS_BAR_CLOCK = "status_bar_clock";
@@ -2098,16 +2096,11 @@ public final class Settings {
         public static final String VOLUME_WAKE = "volume_wake";
 
         /**
-<<<<<<< Updated upstream
-         * Control the type of rotation which can be performed using the accelerometer
-         * if ACCELEROMETER_ROTATION is enabled.
-         * Value is a bitwise combination of
-         * 1 = 0 degrees (portrait)
-         * 2 = 90 degrees (left)
-         * 4 = 180 degrees (inverted portrait)
-         * 8 = 270 degrees (right)
-         * Setting to 0 is effectively orientation lock
-=======
+         * <<<<<<< Updated upstream Control the type of rotation which can be
+         * performed using the accelerometer if ACCELEROMETER_ROTATION is
+         * enabled. Value is a bitwise combination of 1 = 0 degrees (portrait) 2
+         * = 90 degrees (left) 4 = 180 degrees (inverted portrait) 8 = 270
+         * degrees (right) Setting to 0 is effectively orientation lock =======
          * Enables long press home button, hides recent & shows search button
          * 
          * @hide
@@ -2119,37 +2112,30 @@ public final class Settings {
          * accelerometer if ACCELEROMETER_ROTATION is enabled. Value is a
          * bitwise combination of 1 = 0 degrees (portrait) 2 = 90 degrees (left)
          * 4 = 180 degrees (inverted portrait) 8 = 270 degrees (right) Setting
-         * to 0 is effectively orientation lock
+         * to 0 is effectively orientation lock >>>>>>> Stashed changes
          * 
->>>>>>> Stashed changes
          * @hide
          */
         public static final String ACCELEROMETER_ROTATION_ANGLES = "accelerometer_rotation_angles";
 
         /**
-<<<<<<< Updated upstream
-         * ImageView color filter for the power controls
-=======
-         * Soft Key Colors
+         * <<<<<<< Updated upstream ImageView color filter for the power
+         * controls ======= Soft Key Colors >>>>>>> Stashed changes
          * 
->>>>>>> Stashed changes
          * @hide
          */
         public static final String NOTIFICATION_TOGGLE_COLOR_BAR = "notification_toggle_color_bar";
 
         /**
-<<<<<<< Updated upstream
-=======
-         * ImageView color filter for the power controls
+         * <<<<<<< Updated upstream ======= ImageView color filter for the power
+         * controls >>>>>>> Stashed changes
          * 
->>>>>>> Stashed changes
          * @hide
          */
         public static final String NAVIGATION_BAR_TINT = "navigation_bar_tint";
 
         /**
-         * [0] = how long to animate glow off
-         * [1] = how long to animate glow on
+         * [0] = how long to animate glow off [1] = how long to animate glow on
          * 
          * @hide
          */
@@ -2159,14 +2145,13 @@ public final class Settings {
         };
 
         /**
-         * 
          * @hide
          */
         public static final String NAVIGATION_BAR_BUTTON_ALPHA = "navigation_bar_button_alpha";
 
         /**
          * Whether to hide the NavBar Buttons
-         *
+         * 
          * @hide
          */
         public static final String NAVIGATION_BAR_BUTTONS = "navigation_bar_buttons";
@@ -2179,20 +2164,18 @@ public final class Settings {
         public static final String MENU_VISIBILITY = "menu_visibility";
 
         /**
-         * where to show the legacy menu key
-         * 0 = right (default)
-         * 1 = left
-         * 2 = both
+         * where to show the legacy menu key 0 = right (default) 1 = left 2 =
+         * both
          * 
          * @hide
          */
         public static final String MENU_LOCATION = "menu_location";
 
-	/**
-	 * whether to hide the navigation bar on the lockscreen
-	 *
-	 * @hide
-	 */
+        /**
+         * whether to hide the navigation bar on the lockscreen
+         * 
+         * @hide
+         */
         public static final String LOCKSCREEN_HIDE_NAV = "lockscreen_hide_nav";
 
         /**
@@ -2204,7 +2187,7 @@ public final class Settings {
 
         /**
          * Order of phone navigation buttons
-         *
+         * 
          * @hide
          */
         public static final String NAVIGATION_BAR_BUTTONS_HIDE = "navigation_bar_buttons_hide";
