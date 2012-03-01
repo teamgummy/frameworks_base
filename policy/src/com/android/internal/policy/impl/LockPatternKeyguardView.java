@@ -105,7 +105,8 @@ public class LockPatternKeyguardView extends KeyguardViewBase implements Handler
     private boolean mEnableFallback = false; // assume no fallback UI until we
                                              // know better
 
-    private boolean mShowLockBeforeUnlock = false || Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_BEFORE_UNLOCK, 0) == 1 );
+    private boolean mShowLockBeforeUnlock = false || Settings.System.getInt(
+            mContext.getContentResolver(), Settings.System.LOCKSCREEN_BEFORE_UNLOCK, 0) == 1;
 
     // The following were added to support FaceLock
     private IFaceLockInterface mFaceLockService;
@@ -751,7 +752,9 @@ public class LockPatternKeyguardView extends KeyguardViewBase implements Handler
 
     protected void onConfigurationChanged(Configuration newConfig) {
         Resources resources = getResources();
-        mShowLockBeforeUnlock = resources.getBoolean(R.bool.config_enableLockBeforeUnlockScreen) || Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_BEFORE_UNLOCK, 0) == 1 );
+        mShowLockBeforeUnlock = resources.getBoolean(R.bool.config_enableLockBeforeUnlockScreen)
+                || (Settings.System.getInt(mContext.getContentResolver(),
+                        Settings.System.LOCKSCREEN_BEFORE_UNLOCK, 0) == 1);
         mConfiguration = newConfig;
         if (DEBUG_CONFIGURATION)
             Log.v(TAG, "**** re-creating lock screen since config changed");
