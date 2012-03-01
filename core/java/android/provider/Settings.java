@@ -2012,6 +2012,13 @@ public final class Settings {
         public static final String LOCKSCREEN_BEFORE_UNLOCK = "lockscreen_before_unlock";
 
         /**
+         * Enable Lockscreen Rotation for any lockscreen
+         * 
+         * @hide
+         */
+        public static final String LOCKSCREEN_ROTATION = "lockscreen_rotation";
+
+        /**
          * Lockscreen custom app one
          * 
          * @hide
