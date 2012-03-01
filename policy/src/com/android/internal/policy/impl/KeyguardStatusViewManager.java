@@ -19,6 +19,7 @@ package com.android.internal.policy.impl;
 import com.android.internal.R;
 import com.android.internal.telephony.IccCard;
 import com.android.internal.telephony.IccCard.State;
+import com.android.internal.widget.DigitalClock;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.internal.widget.TransportControlView;
 import com.android.internal.policy.impl.KeyguardUpdateMonitor.SimStateCallback;
@@ -122,6 +123,7 @@ class KeyguardStatusViewManager implements OnClickListener {
     // for text color
     Handler mHandler;
     private int mTextColor = R.color.white;
+    private DigitalClock mTimeView;
 
     class SettingsObserver extends ContentObserver {
 
@@ -215,6 +217,7 @@ class KeyguardStatusViewManager implements OnClickListener {
         mUpdateMonitor = updateMonitor;
         mCallback = callback;
 
+        mTimeView = (DigitalClock) findViewById(R.id.time);
         mCarrierView = (TextView) findViewById(R.id.carrier);
         mDateView = (TextView) findViewById(R.id.date);
         mStatus1View = (TextView) findViewById(R.id.status1);
@@ -367,6 +370,7 @@ class KeyguardStatusViewManager implements OnClickListener {
         if (DEBUG)
             Log.v(TAG, "updateStatusLines(" + showStatusLines + ")");
         mShowingStatus = showStatusLines;
+        updateTimeInfo();
         updateAlarmInfo();
         updateOwnerInfo();
         updateStatus1();
@@ -380,6 +384,15 @@ class KeyguardStatusViewManager implements OnClickListener {
         mTextColor = Settings.System.getInt(resolver, Settings.System.LOCKSCREEN_TEXT_COLOR,
                 0xFFB0B0B0);
 
+    }
+
+    private void updateTimeInfo() {
+        if (mTimeView != null) {
+            TextView timeBack = (TextView) mTimeView.getChildAt(0);
+            TextView timeFore = (TextView) mTimeView.getChildAt(1);
+            timeBack.setTextColor(mTextColor);
+            timeFore.setTextColor(mTextColor);
+        }
     }
 
     private void updateAlarmInfo() {
