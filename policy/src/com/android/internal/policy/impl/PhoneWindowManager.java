@@ -499,7 +499,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     Settings.System.VOLUME_WAKE), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.ACCELEROMETER_ROTATION_ANGLES), false, this);
-
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.NAVBAR_TOGGLE_SHOW), false, this);
             updateSettings();
         }
 
@@ -919,8 +920,12 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 ? com.android.internal.R.dimen.status_bar_height
                 : com.android.internal.R.dimen.system_bar_height);
 
-        mHasNavigationBar = mContext.getResources().getBoolean(
-                com.android.internal.R.bool.config_showNavigationBar);
+        //change the bool of the navbar config file to an int for toggling
+        final int mHasBar = mContext.getResources().getBoolean(
+                com.android.internal.R.bool.config_showNavigationBar) ? 1 : 0;
+
+        mHasNavigationBar = Settings.System.getInt(mContext.getContentResolver(), Settings.System.NAVBAR_TOGGLE_SHOW, mHasBar) == 1;
+
         // Allow a system property to override this. Used by the emulator.
         // See also hasNavigationBar().
         String navBarOverride = SystemProperties.get("qemu.hw.mainkeys");
@@ -928,7 +933,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             if      (navBarOverride.equals("1")) mHasNavigationBar = false;
             else if (navBarOverride.equals("0")) mHasNavigationBar = true;
         }
-
 
         mNavigationBarHeight = mHasNavigationBar  	
                 ? mContext.getResources().getDimensionPixelSize(
@@ -970,6 +974,11 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     Surface.ROTATION_0);
             mUserRotationAngles = Settings.System.getInt(resolver,
                     Settings.System.ACCELEROMETER_ROTATION_ANGLES, -1);
+            boolean changed = Settings.System.getInt(resolver, Settings.System.NAVBAR_TOGGLE_SHOW,
+                            0) == 1;
+            if (mHasNavigationBar != changed) {
+                setInitialDisplaySize(mUnrestrictedScreenWidth,mUnrestrictedScreenHeight);
+            }
 
             if (mAccelerometerDefault != accelerometerDefault) {
                 mAccelerometerDefault = accelerometerDefault;
