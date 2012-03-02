@@ -240,6 +240,8 @@ public class PhoneStatusBar extends StatusBar {
     int mSystemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE;
 
     DisplayMetrics mDisplayMetrics = new DisplayMetrics();
+    // boolean to check for enableing the date to calender clicky
+    private boolean enableDateOpensCalendar;
 
     private class ExpandedDialog extends Dialog {
         ExpandedDialog(Context context) {
@@ -346,8 +348,7 @@ public class PhoneStatusBar extends StatusBar {
         mClearButton.setAlpha(0f);
         mClearButton.setEnabled(false);
         mDateView = (DateView) expanded.findViewById(R.id.date);
-        if (Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.DATE_OPENS_CALENDAR, 0) == 1)
+        if (enableDateOpensCalendar)
             mDateView.setOnClickListener(mCalendarButtonListener);
         mSettingsButton = expanded.findViewById(R.id.settings_button);
         mSettingsButton.setOnClickListener(mSettingsButtonListener);
@@ -406,10 +407,15 @@ public class PhoneStatusBar extends StatusBar {
 
         public void observe() {
             ContentResolver resolver = mContext.getContentResolver();
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.DATE_OPENS_CALENDAR), false, this);
         }
 
         @Override
         public void onChange(boolean selfChange) {
+            enableDateOpensCalendar = Settings.System.getInt(
+                    mContext.getContentResolver(),
+                    Settings.System.DATE_OPENS_CALENDAR, 0) == 1;
             prepareNavigationBarView();
         }
     }
