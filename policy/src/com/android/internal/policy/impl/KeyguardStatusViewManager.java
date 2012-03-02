@@ -121,7 +121,7 @@ class KeyguardStatusViewManager implements OnClickListener {
 
     // for text color
     Handler mHandler;
-    private int mTextColor = R.color.white;
+    private int mTextColor; // = R.color.white;
     private DigitalClock mTimeView;
 
     class SettingsObserver extends ContentObserver {
@@ -216,7 +216,7 @@ class KeyguardStatusViewManager implements OnClickListener {
         mUpdateMonitor = updateMonitor;
         mCallback = callback;
 
-        mTimeView = (DigitalClock) findViewById(R.id.time);
+        // mTimeView = (DigitalClock) findViewById(R.id.time);
         mCarrierView = (TextView) findViewById(R.id.carrier);
         mDateView = (TextView) findViewById(R.id.date);
         mStatus1View = (TextView) findViewById(R.id.status1);
@@ -369,7 +369,7 @@ class KeyguardStatusViewManager implements OnClickListener {
         if (DEBUG)
             Log.v(TAG, "updateStatusLines(" + showStatusLines + ")");
         mShowingStatus = showStatusLines;
-        updateTimeInfo();
+        // updateTimeInfo();
         updateAlarmInfo();
         updateOwnerInfo();
         updateStatus1();
@@ -378,21 +378,19 @@ class KeyguardStatusViewManager implements OnClickListener {
     }
 
     private void updateSettings() {
-        ContentResolver resolver = mContext.getContentResolver();
-
-        mTextColor = Settings.System.getInt(resolver, Settings.System.LOCKSCREEN_TEXT_COLOR,
-                0xFFB0B0B0);
-
+        mTextColor = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.LOCKSCREEN_TEXT_COLOR,
+                0xFFFFFF);
     }
 
-    private void updateTimeInfo() {
-        if (mTimeView != null) {
-            TextView timeBack = (TextView) mTimeView.getChildAt(0);
-            TextView timeFore = (TextView) mTimeView.getChildAt(1);
-            timeBack.setTextColor(mTextColor);
-            timeFore.setTextColor(mTextColor);
-        }
-    }
+    // private void updateTimeInfo() {
+    // if (mTimeView != null) {
+    // TextView timeBack = (TextView) mTimeView.getChildAt(0);
+    // TextView timeFore = (TextView) mTimeView.getChildAt(1);
+    // timeBack.setTextColor(mTextColor);
+    // timeFore.setTextColor(mTextColor);
+    // }
+    // }
 
     private void updateAlarmInfo() {
         if (mAlarmStatusView != null) {
