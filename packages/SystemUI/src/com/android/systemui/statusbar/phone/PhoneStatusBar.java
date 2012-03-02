@@ -348,8 +348,6 @@ public class PhoneStatusBar extends StatusBar {
         mClearButton.setAlpha(0f);
         mClearButton.setEnabled(false);
         mDateView = (DateView) expanded.findViewById(R.id.date);
-        if (enableDateOpensCalendar)
-            mDateView.setOnClickListener(mCalendarButtonListener);
         mSettingsButton = expanded.findViewById(R.id.settings_button);
         mSettingsButton.setOnClickListener(mSettingsButtonListener);
 
@@ -416,6 +414,8 @@ public class PhoneStatusBar extends StatusBar {
             enableDateOpensCalendar = Settings.System.getInt(
                     mContext.getContentResolver(),
                     Settings.System.DATE_OPENS_CALENDAR, 0) == 1;
+            if (enableDateOpensCalendar)
+                mDateView.setOnClickListener(mCalendarButtonListener);
             prepareNavigationBarView();
         }
     }
