@@ -244,9 +244,9 @@ class KeyguardStatusViewManager implements OnClickListener {
         mUpdateMonitor.registerInfoCallback(mInfoCallback);
         mUpdateMonitor.registerSimStateCallback(mSimStateCallback);
 
-        mHandler = new Handler();
-        SettingsObserver settingsObserver = new SettingsObserver(mHandler);
-        settingsObserver.observe();
+        // mHandler = new Handler();
+        // SettingsObserver settingsObserver = new SettingsObserver(mHandler);
+        // settingsObserver.observe();
 
         resetStatusInfo();
         refreshDate();
