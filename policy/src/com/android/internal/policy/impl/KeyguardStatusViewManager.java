@@ -119,29 +119,30 @@ class KeyguardStatusViewManager implements OnClickListener {
     private CharSequence mSpn;
     protected int mPhoneState;
 
-    // for text color
-    Handler mHandler;
-    private int mTextColor; // = R.color.white;
-    private DigitalClock mTimeView;
-
-    class SettingsObserver extends ContentObserver {
-
-        SettingsObserver(Handler handler) {
-            super(handler);
-        }
-
-        void observe() {
-            ContentResolver resolver = mContext.getContentResolver();
-            resolver.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.LOCKSCREEN_TEXT_COLOR), false, this);
-        }
-
-        @Override
-        public void onChange(boolean selfChange) {
-            updateSettings();
-        }
-
-    }
+    // // for text color
+    // Handler mHandler;
+    // private int mTextColor; // = R.color.white;
+    // private DigitalClock mTimeView;
+    //
+    // class SettingsObserver extends ContentObserver {
+    //
+    // SettingsObserver(Handler handler) {
+    // super(handler);
+    // }
+    //
+    // void observe() {
+    // ContentResolver resolver = mContext.getContentResolver();
+    // resolver.registerContentObserver(
+    // Settings.System.getUriFor(Settings.System.LOCKSCREEN_TEXT_COLOR), false,
+    // this);
+    // }
+    //
+    // @Override
+    // public void onChange(boolean selfChange) {
+    // updateSettings();
+    // }
+    //
+    // }
 
     private class TransientTextManager {
         private TextView mTextView;
@@ -377,11 +378,11 @@ class KeyguardStatusViewManager implements OnClickListener {
         updateCarrierText();
     }
 
-    private void updateSettings() {
-        mTextColor = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.LOCKSCREEN_TEXT_COLOR,
-                0xFFFFFF);
-    }
+    // private void updateSettings() {
+    // mTextColor = Settings.System.getInt(mContext.getContentResolver(),
+    // Settings.System.LOCKSCREEN_TEXT_COLOR,
+    // 0xFFFFFF);
+    // }
 
     // private void updateTimeInfo() {
     // if (mTimeView != null) {
@@ -397,7 +398,7 @@ class KeyguardStatusViewManager implements OnClickListener {
             String nextAlarm = mLockPatternUtils.getNextAlarm();
             boolean showAlarm = mShowingStatus && !TextUtils.isEmpty(nextAlarm);
             mAlarmStatusView.setText(nextAlarm);
-            mAlarmStatusView.setTextColor(mTextColor);
+            // mAlarmStatusView.setTextColor(mTextColor);
             mAlarmStatusView.setCompoundDrawablesWithIntrinsicBounds(ALARM_ICON, 0, 0, 0);
             mAlarmStatusView.setVisibility(showAlarm ? View.VISIBLE : View.GONE);
         }
@@ -411,7 +412,7 @@ class KeyguardStatusViewManager implements OnClickListener {
                 Settings.Secure.getString(res, Settings.Secure.LOCK_SCREEN_OWNER_INFO) : null;
         if (mOwnerInfoView != null) {
             mOwnerInfoView.setText(mOwnerInfoText);
-            mOwnerInfoView.setTextColor(mTextColor);
+            // mOwnerInfoView.setTextColor(mTextColor);
             mOwnerInfoView.setVisibility(TextUtils.isEmpty(mOwnerInfoText) ? View.GONE
                     : View.VISIBLE);
         }
@@ -422,7 +423,7 @@ class KeyguardStatusViewManager implements OnClickListener {
             MutableInt icon = new MutableInt(0);
             CharSequence string = getPriorityTextMessage(icon);
             mStatus1View.setText(string);
-            mStatus1View.setTextColor(mTextColor);
+            // mStatus1View.setTextColor(mTextColor);
             mStatus1View.setCompoundDrawablesWithIntrinsicBounds(icon.value, 0, 0, 0);
             mStatus1View.setVisibility(mShowingStatus ? View.VISIBLE : View.INVISIBLE);
         }
@@ -433,7 +434,7 @@ class KeyguardStatusViewManager implements OnClickListener {
             MutableInt icon = new MutableInt(0);
             CharSequence string = getSecondPriorityTextMessage(icon);
             mStatus2View.setText(string);
-            mStatus2View.setTextColor(mTextColor);
+            // mStatus2View.setTextColor(mTextColor);
             mStatus2View.setCompoundDrawablesWithIntrinsicBounds(icon.value, 0, 0, 0);
             mStatus2View.setVisibility(mShowingStatus ? View.VISIBLE : View.INVISIBLE);
         }
@@ -442,7 +443,7 @@ class KeyguardStatusViewManager implements OnClickListener {
     private void updateCarrierText() {
         if (!inWidgetMode() && mCarrierView != null) {
             mCarrierView.setText(mCarrierText);
-            mCarrierView.setTextColor(mTextColor);
+            // mCarrierView.setTextColor(mTextColor);
         }
     }
 
