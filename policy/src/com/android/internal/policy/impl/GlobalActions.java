@@ -75,12 +75,14 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
     private SilentModeAction mSilentModeAction;
     private ToggleAction mAirplaneModeOn;
+    private ToggleAction mNavBarOn;
 
     private MyAdapter mAdapter;
 
     private boolean mKeyguardShowing = false;
     private boolean mDeviceProvisioned = false;
     private ToggleAction.State mAirplaneState = ToggleAction.State.Off;
+    private ToggleAction.State mNavState = ToggleAction.State.Off;
     private boolean mIsWaitingForEcmExit = false;
 
     /**
@@ -166,6 +168,33 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             }
         };
 
+        // create the toggleaction for the soft key show/hide togle
+        mNavBarOn = new ToggleAction(
+                R.drawable.zzic_lock_navbar_on,
+                R.drawable.zzic_lock_navbar_off,
+                R.string.zzglobal_actions_navbar_mode,
+                R.string.zzglobal_actions_navbar_mode_on,
+                R.string.zzglobal_actions_navbar_mode_off) {
+
+            void onToggle(boolean on) {
+                changeNavBar(on);
+            }
+
+            @Override
+            protected void changeStateFromPress(boolean buttonOn) {
+                mState = buttonOn ? State.TurningOn : State.TurningOff;
+                    mNavState = mState;
+            }
+
+            public boolean showDuringKeyguard() {
+                return true;
+            }
+
+            public boolean showBeforeProvisioning() {
+                return false;
+            }
+        };
+
         mItems = new ArrayList<Action>();
 
         // first: silent mode
@@ -227,6 +256,13 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                     return true;
                 }
             });
+
+        //finally for reals this time: soft key toggles if needed
+        boolean mHasSoftKeys = mContext.getResources().getBoolean(
+                com.android.internal.R.bool.config_showNavigationBar);
+        if (mHasSoftKeys) {
+            mItems.add(mNavBarOn);
+        }
 
 
         mAdapter = new MyAdapter();
@@ -331,6 +367,12 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         final boolean silentModeOn =
                 mAudioManager.getRingerMode() != AudioManager.RINGER_MODE_NORMAL;
         mAirplaneModeOn.updateState(mAirplaneState);
+
+        //need to get the initial navbutton toggle on or off
+        final boolean whatToggle = Settings.System.getInt(mContext.getContentResolver(), Settings.System.NAVBAR_TOGGLE_SHOW, 0) == 1;
+        mNavState = whatToggle ? ToggleAction.State.On : ToggleAction.State.Off;
+        mNavBarOn.updateState(mNavState);
+
         mAdapter.notifyDataSetChanged();
         if (mKeyguardShowing) {
             mDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
@@ -750,5 +792,10 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         intent.addFlags(Intent.FLAG_RECEIVER_REPLACE_PENDING);
         intent.putExtra("state", on);
         mContext.sendBroadcast(intent);
+    }
+
+    // Change the soft key toggles
+    private void changeNavBar(boolean on) {
+        Settings.System.putInt(mContext.getContentResolver(), Settings.System.NAVBAR_TOGGLE_SHOW, on ? 1 : 0);
     }
 }
