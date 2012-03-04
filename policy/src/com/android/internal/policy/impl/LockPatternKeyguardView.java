@@ -593,6 +593,10 @@ public class LockPatternKeyguardView extends KeyguardViewBase implements Handler
             ((KeyguardScreen) mUnlockScreen).onPause();
         }
 
+        // When screen off reset back to LockScreen when mShowLockBeforeUnlock
+        // is enabled
+        mMode = mShowLockBeforeUnlock ? Mode.LockScreen : mMode;
+
         saveWidgetState();
 
         // When screen is turned off, need to unbind from FaceLock service if
