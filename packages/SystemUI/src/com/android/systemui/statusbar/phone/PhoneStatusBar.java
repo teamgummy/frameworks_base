@@ -133,7 +133,7 @@ public class PhoneStatusBar extends StatusBar {
 
     private float mExpandAccelPx; // classic value: 2000px/s/s
     private float mCollapseAccelPx; // classic value: 2000px/s/s (will be negated to collapse "up")
-    private float ScreenWidth;
+    private float mScreenWidth;
     private int mMinBrightness;
 
     PhoneStatusBarPolicy mIconPolicy;
