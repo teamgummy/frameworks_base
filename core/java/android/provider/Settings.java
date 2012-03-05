@@ -2207,6 +2207,13 @@ public final class Settings {
         public static final String NAVBAR_TOGGLE_SHOW = "navbar_toggle_show";
 
         /**
+         * Whether to control brightness from status bar
+         * 
+         * @hide
+         */
+        public static final String STATUS_BAR_BRIGHTNESS_TOGGLE = "status_bar_brightness_toggle";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as
          * the settings keys and easy to update. NOTE: Settings are backed up
          * and restored in the order they appear in this array. If you have one
