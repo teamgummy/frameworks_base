@@ -197,7 +197,7 @@ public class AudioService extends IAudioService.Stub {
         AudioSystem.STREAM_RING,  // STREAM_RING
         AudioSystem.STREAM_MUSIC, // STREAM_MUSIC
         AudioSystem.STREAM_ALARM,  // STREAM_ALARM
-        AudioSystem.STREAM_NOTIFICATION,   // STREAM_NOTIFICATION
+        AudioSystem.STREAM_RING,   // STREAM_NOTIFICATION
         AudioSystem.STREAM_BLUETOOTH_SCO, // STREAM_BLUETOOTH_SCO
         AudioSystem.STREAM_SYSTEM,  // STREAM_SYSTEM_ENFORCED
         AudioSystem.STREAM_VOICE_CALL, // STREAM_DTMF
@@ -459,6 +459,14 @@ public class AudioService extends IAudioService.Stub {
         } else {
             mRingerModeAffectedStreams |= (1 << AudioSystem.STREAM_MUSIC);
         }
+
+        //initial check for linked volumes
+        boolean unLinkVolumes = (Settings.System.getInt(mContentResolver, Settings.System.UNLINK_VOLUMES_TOGETHER, 0) == 1);
+        if (unLinkVolumes)
+            STREAM_VOLUME_ALIAS[AudioSystem.STREAM_NOTIFICATION] = AudioSystem.STREAM_NOTIFICATION;
+        else
+            STREAM_VOLUME_ALIAS[AudioSystem.STREAM_NOTIFICATION] = AudioSystem.STREAM_RING;
+
         Settings.System.putInt(cr,
                 Settings.System.MODE_RINGER_STREAMS_AFFECTED, mRingerModeAffectedStreams);
 
@@ -2315,6 +2323,8 @@ public class AudioService extends IAudioService.Stub {
             super(new Handler());
             mContentResolver.registerContentObserver(Settings.System.getUriFor(
                 Settings.System.MODE_RINGER_STREAMS_AFFECTED), false, this);
+            mContentResolver.registerContentObserver(Settings.System.getUriFor(
+                Settings.System.UNLINK_VOLUMES_TOGETHER), false, this);
         }
 
         @Override
@@ -2338,6 +2348,13 @@ public class AudioService extends IAudioService.Stub {
                     mRingerModeAffectedStreams = ringerModeAffectedStreams;
                     setRingerModeInt(getRingerMode(), false);
                 }
+                
+                //setup onchange for toggle
+                boolean unLinkVolumes = (Settings.System.getInt(mContentResolver, Settings.System.UNLINK_VOLUMES_TOGETHER, 0) == 1);
+                if (unLinkVolumes)
+                    STREAM_VOLUME_ALIAS[AudioSystem.STREAM_NOTIFICATION] = AudioSystem.STREAM_NOTIFICATION;
+                else
+                    STREAM_VOLUME_ALIAS[AudioSystem.STREAM_NOTIFICATION] = AudioSystem.STREAM_RING;
             }
         }
     }
