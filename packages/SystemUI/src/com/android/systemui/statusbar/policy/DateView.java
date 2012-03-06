@@ -82,7 +82,7 @@ public final class DateView extends TextView {
         ContentResolver resolver = mContext.getContentResolver();
 
         int mColorChanger = Settings.System.getInt(resolver,
-                Settings.System.CLOCK_COLOR, 0xFF33B5E5);
+                Settings.System.NOTIFICATION_TOGGLE_COLOR_BAR, 0xFF33B5E5);
 
         setTextColor(mColorChanger);
     }

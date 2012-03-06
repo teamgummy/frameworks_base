@@ -428,9 +428,13 @@ public class PhoneStatusBar extends StatusBar {
         mEnableDateOpensCalendar = Settings.System.getInt(
                 mContext.getContentResolver(),
                 Settings.System.DATE_OPENS_CALENDAR, 0) == 1;
+
         if (mEnableDateOpensCalendar) {
             mDateView.setOnClickListener(mCalendarClickListener);
             mDateView.setOnTouchListener(mCalendarTouchListener);
+        } else {
+            mDateView.setOnClickListener(null);
+            mDateView.setOnTouchListener(null);
         }
 
     }
@@ -2364,18 +2368,18 @@ public class PhoneStatusBar extends StatusBar {
         }
     };
 
-    private OnTouchListener mCalendarTouchListener = new OnTouchListener() {
+    private OnTouchListener mCalendarTouchListener = new View.OnTouchListener() {
 
         @Override
         public boolean onTouch(View v, MotionEvent event) {
             int action = event.getAction();
             if (action == MotionEvent.ACTION_DOWN) {
-                mDateView.setShadowLayer(100, 3, 3, mDateViewColor);
+                mDateView.setShadowLayer(4, 1, 1, mDateViewColor);
             } else if (action == MotionEvent.ACTION_UP) {
                 mDateView.setShadowLayer(0, 0, 0, mDateViewColor);
             }
 
-            return true;
+            return false;
         }
     };
 
