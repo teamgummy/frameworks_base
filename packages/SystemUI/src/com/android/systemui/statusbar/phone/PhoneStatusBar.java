@@ -418,15 +418,13 @@ public class PhoneStatusBar extends StatusBar {
         }
     }
 
-    private void updateSettings(){
-        
+    private void updateSettings() {
+
         enableDateOpensCalendar = Settings.System.getInt(
                 mContext.getContentResolver(),
                 Settings.System.DATE_OPENS_CALENDAR, 0) == 1;
         if (enableDateOpensCalendar)
             mDateView.setOnClickListener(mCalendarButtonListener);
-        
-        updateResources()
 
     }
 
