@@ -2228,6 +2228,13 @@ public final class Settings {
         public static final String LOCKSCREEN_QUICK_UNLOCK_CONTROL = "lockscreen_quick_unlock_control";
 
         /**
+         * Option to link and unlink the notification/ringer volumes
+         * 
+         * @hide
+         */
+        public static final String UNLINK_VOLUMES_TOGETHER = "unlink_volumes_together";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as
          * the settings keys and easy to update. NOTE: Settings are backed up
          * and restored in the order they appear in this array. If you have one
