@@ -2146,6 +2146,27 @@ public final class Settings {
          * 
          * @hide
          */
+<<<<<<< HEAD
+        public static final String NOTIFICATION_TOGGLE_COLOR_BAR = "notification_toggle_color_bar";
+	
+        /**
+         * ImageView color filter for the wifi data icons
+         * @hide
+         */
+	public static final String WIFI_SIGNAL_COLOR = "wifi_signal_color";
+
+        /**
+         * ImageView color filter for the mobile data icons
+         * @hide
+         */
+	public static final String MOBILE_SIGNAL_COLOR = "mobile_signal_color";
+
+        /**
+         * ImageView color filter for the battery icons
+         * @hide
+         */
+	public static final String BATTERY_ICON_COLOR = "battery_icon_color";
+=======
         public static final String NAVIGATION_BAR_TINT = "navigation_bar_tint";
 
         /**
@@ -2219,6 +2240,7 @@ public final class Settings {
          * @hide
          */
         public static final String STATUS_BAR_BRIGHTNESS_TOGGLE = "status_bar_brightness_toggle";
+>>>>>>> upstream/master
 
         /**
          * Option to allow Quick Password Unlock
