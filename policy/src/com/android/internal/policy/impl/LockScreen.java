@@ -34,6 +34,7 @@ import android.view.ViewGroup;
 import android.widget.*;
 import android.util.Log;
 import android.media.AudioManager;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.provider.Settings;
 
@@ -340,6 +341,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     private void toggleRingMode() {
         // toggle silent mode
         mSilentMode = !mSilentMode;
+        Handler handler = new Handler();
         if (mSilentMode) {
             final boolean vibe = (Settings.System.getInt(
                 mContext.getContentResolver(),
@@ -348,8 +350,24 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
             mAudioManager.setRingerMode(vibe
                 ? AudioManager.RINGER_MODE_VIBRATE
                 : AudioManager.RINGER_MODE_SILENT);
+            //add a Toastbox to popup for sound on/off
+            mStatusViewManager.toastMessage(0);
+            //add delay to switch back to normal
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    mStatusViewManager.toastMessage(2);
+                }
+            }, 500);
         } else {
             mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+            //add a Toastbox to popup for sound on/off
+            mStatusViewManager.toastMessage(1);
+            //add delay to switch back to normal
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    mStatusViewManager.toastMessage(2);
+                }
+            }, 500);
         }
     }
 

@@ -374,6 +374,24 @@ class KeyguardStatusViewManager implements OnClickListener {
         }
     }
 
+    protected void toastMessage(int toggle) {
+        CharSequence carrierText = null;
+        CharSequence nyanCat = null;
+        switch (toggle) {
+            case 0:
+                carrierText = makeCarierString(nyanCat, getContext().getText(R.string.zzlockscreen_sound_off));
+                setCarrierText(carrierText);
+                break;
+            case 1:
+                carrierText = makeCarierString(nyanCat, getContext().getText(R.string.zzlockscreen_sound_on));
+                setCarrierText(carrierText);
+                break;
+            case 2:
+                updateCarrierStateWithSimStatus(mSimState);
+                break;        
+        }
+    }
+
     private CharSequence getAltTextMessage(MutableInt icon) {
         // If we have replaced the status area with a single widget, then this code
         // prioritizes what to show in that space when all transient messages are gone.
