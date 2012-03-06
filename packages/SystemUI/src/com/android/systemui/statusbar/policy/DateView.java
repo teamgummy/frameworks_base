@@ -17,11 +17,16 @@
 package com.android.systemui.statusbar.policy;
 
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.ContentObserver;
+import android.os.Handler;
+import android.provider.Settings;
 import android.text.format.DateFormat;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewParent;
 import android.widget.TextView;
@@ -36,6 +41,26 @@ public final class DateView extends TextView {
     private boolean mAttachedToWindow;
     private boolean mWindowVisible;
     private boolean mUpdating;
+
+    Handler mHandler;
+
+    class SettingsObserver extends ContentObserver {
+        SettingsObserver(Handler handler) {
+            super(handler);
+        }
+
+        void observe() {
+            ContentResolver resolver = mContext.getContentResolver();
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.NOTIFICATION_TOGGLE_COLOR_BAR),
+                    false, this);
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            updateSettings();
+        }
+    }
 
     private BroadcastReceiver mIntentReceiver = new BroadcastReceiver() {
         @Override
@@ -53,13 +78,22 @@ public final class DateView extends TextView {
         super(context, attrs);
     }
 
+    protected void updateSettings() {
+        ContentResolver resolver = mContext.getContentResolver();
+
+        int mColorChanger = Settings.System.getInt(resolver,
+                Settings.System.CLOCK_COLOR, 0xFF33B5E5);
+
+        setTextColor(mColorChanger);
+    }
+
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         mAttachedToWindow = true;
         setUpdates();
     }
-    
+
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
@@ -102,7 +136,7 @@ public final class DateView extends TextView {
             }
             final ViewParent parent = v.getParent();
             if (parent instanceof View) {
-                v = (View)parent;
+                v = (View) parent;
             } else {
                 return true;
             }

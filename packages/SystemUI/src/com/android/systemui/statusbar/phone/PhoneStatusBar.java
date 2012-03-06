@@ -58,6 +58,7 @@ import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
@@ -241,7 +242,8 @@ public class PhoneStatusBar extends StatusBar {
 
     DisplayMetrics mDisplayMetrics = new DisplayMetrics();
     // boolean to check for enableing the date to calender clicky
-    private boolean enableDateOpensCalendar;
+    private boolean mEnableDateOpensCalendar = false;
+    private int mDateViewColor;
 
     private class ExpandedDialog extends Dialog {
         ExpandedDialog(Context context) {
@@ -420,11 +422,16 @@ public class PhoneStatusBar extends StatusBar {
 
     private void updateSettings() {
 
-        enableDateOpensCalendar = Settings.System.getInt(
+        mDateViewColor = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.NOTIFICATION_TOGGLE_COLOR_BAR, 0xFF33B5E5);
+
+        mEnableDateOpensCalendar = Settings.System.getInt(
                 mContext.getContentResolver(),
                 Settings.System.DATE_OPENS_CALENDAR, 0) == 1;
-        if (enableDateOpensCalendar)
-            mDateView.setOnClickListener(mCalendarButtonListener);
+        if (mEnableDateOpensCalendar) {
+            mDateView.setOnClickListener(mCalendarClickListener);
+            mDateView.setOnTouchListener(mCalendarTouchListener);
+        }
 
     }
 
@@ -2342,7 +2349,7 @@ public class PhoneStatusBar extends StatusBar {
         }
     };
 
-    private View.OnClickListener mCalendarButtonListener = new View.OnClickListener() {
+    private View.OnClickListener mCalendarClickListener = new View.OnClickListener() {
         public void onClick(View v) {
             try {
                 // Dismiss the lock screen when Calendar starts.
@@ -2353,6 +2360,22 @@ public class PhoneStatusBar extends StatusBar {
             v.getContext().startActivity(
                     new Intent().addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).setClassName(
                             "com.android.calendar", "com.android.calendar.LaunchActivity"));
+            animateCollapse();
+        }
+    };
+
+    private OnTouchListener mCalendarTouchListener = new OnTouchListener() {
+
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            int action = event.getAction();
+            if (action == MotionEvent.ACTION_DOWN) {
+                mDateView.setShadowLayer(100, 3, 3, mDateViewColor);
+            } else if (action == MotionEvent.ACTION_UP) {
+                mDateView.setShadowLayer(0, 0, 0, mDateViewColor);
+            }
+
+            return true;
         }
     };
 
