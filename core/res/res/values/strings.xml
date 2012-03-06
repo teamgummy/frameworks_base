@@ -3443,4 +3443,8 @@
     <!-- status message in phone options dialog when soft keys are off -->
     <string name="zzglobal_actions_navbar_mode_off">Soft Keys are OFF</string>
 
+    <!-- strings for the toastbox on the lockscreen for sound on/off -->
+    <string name="zzlockscreen_sound_on">Sound ON</string>
+    <string name="zzlockscreen_sound_off">Sound OFF</string>
+
 </resources>

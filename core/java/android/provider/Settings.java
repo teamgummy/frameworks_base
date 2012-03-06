@@ -2003,6 +2003,13 @@ public final class Settings {
         public static final String LOCKSCREEN_EXTRA_ICONS = "lockscreen_extra_icons";
 
         /**
+         * Lockscreen toggle to force sound icon used instead of camera
+         * 
+         * @hide
+         */
+        public static final String LOCKSCREEN_FORCE_SOUND_ICON = "lockscreen_force_sound_icon";
+
+        /**
          * Setting to allow % on lockscreen always showing.
          * 
          * @hide

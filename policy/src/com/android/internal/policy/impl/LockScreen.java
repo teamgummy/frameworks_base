@@ -32,6 +32,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
+import android.widget.Toast;
 import android.util.Log;
 import android.media.AudioManager;
 import android.provider.MediaStore;
@@ -70,8 +71,9 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     private UnlockWidgetCommonMethods mUnlockWidgetMethods;
     private View mUnlockWidget;
 
-    // lockscreen toggle for 4 icons
+    // lockscreen toggles
     private boolean mLockscreenCustom = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_EXTRA_ICONS, 0) == 1);
+    private boolean mForceSoundIcon = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_FORCE_SOUND_ICON, 0) == 1);
 
     private interface UnlockWidgetCommonMethods {
         // Update resources based on phone state
@@ -194,7 +196,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
             mMultiWaveView = multiWaveView;
             final boolean cameraDisabled = mLockPatternUtils.getDevicePolicyManager()
                     .getCameraDisabled(null);
-            if (cameraDisabled) {
+            if (cameraDisabled || mForceSoundIcon) {
                 Log.v(TAG, "Camera disabled by Device Policy");
                 mCameraDisabled = true;
             } else {
@@ -207,12 +209,18 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 
         public void updateResources() {
             int resId;
-            if (mLockscreenCustom) {
-                resId = R.array.zzlockscreen_extra_apps;
-            }else if (mCameraDisabled) {
+            if (mCameraDisabled) {
                 // Fall back to showing ring/silence if camera is disabled by DPM...
+                if (mLockscreenCustom) {
+                    resId = mSilentMode ? R.array.zzlockscreen_when_silent
+                    : R.array.zzlockscreen_extra_apps_soundon;
+
+                } else {
                 resId = mSilentMode ? R.array.lockscreen_targets_when_silent
                     : R.array.lockscreen_targets_when_soundon;
+                }
+            } else if (!mCameraDisabled && mLockscreenCustom) {
+                resId = R.array.zzlockscreen_extra_apps;
             } else {
                 resId = R.array.lockscreen_targets_with_camera;
             }
@@ -341,8 +349,12 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
             mAudioManager.setRingerMode(vibe
                 ? AudioManager.RINGER_MODE_VIBRATE
                 : AudioManager.RINGER_MODE_SILENT);
+            //add a Toastbox to popup for sound on/off
+            Toast.makeText(mContext, R.string.zzlockscreen_sound_off, Toast.LENGTH_SHORT).show();
         } else {
+            //add a Toastbox to popup for sound on/off
             mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+            Toast.makeText(mContext, R.string.zzlockscreen_sound_on, Toast.LENGTH_SHORT).show();
         }
     }
 
