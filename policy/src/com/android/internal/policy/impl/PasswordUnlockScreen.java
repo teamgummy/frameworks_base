@@ -78,6 +78,8 @@ public class PasswordUnlockScreen extends LinearLayout implements KeyguardScreen
     private final boolean mUseSystemIME = true; // TODO: Make configurable
     private boolean mResuming; // used to prevent poking the wakelock during onResume()
 
+    private boolean mQuickUnlock;
+
     // To avoid accidental lockout due to events while the device in in the pocket, ignore
     // any passwords with length less than or equal to this length.
     private static final int MINIMUM_PASSWORD_LENGTH_BEFORE_REPORT = 3;
@@ -166,6 +168,9 @@ public class PasswordUnlockScreen extends LinearLayout implements KeyguardScreen
                 mCallback.pokeWakelock();
             }
         });
+
+        mQuickUnlock = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_QUICK_UNLOCK_CONTROL, 0) == 1);
+
         mPasswordEntry.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
             }
@@ -176,6 +181,21 @@ public class PasswordUnlockScreen extends LinearLayout implements KeyguardScreen
             public void afterTextChanged(Editable s) {
                 if (!mResuming) {
                     mCallback.pokeWakelock();
+                }
+                if (mQuickUnlock) {
+                    String entry = mPasswordEntry.getText().toString();
+                    if (entry.length() > MINIMUM_PASSWORD_LENGTH_BEFORE_REPORT) {
+                        if (mLockPatternUtils.checkPassword(entry)) {
+                            mCallback.keyguardDone(true);
+                            mCallback.reportSuccessfulUnlockAttempt();
+                        } else {
+                            mCallback.reportFailedUnlockAttempt();
+                            if (0 == (mUpdateMonitor.getFailedAttempts() % LockPatternUtils.FAILED_ATTEMPTS_BEFORE_TIMEOUT)) {
+                                long deadline = mLockPatternUtils.setLockoutAttemptDeadline();
+                                handleAttemptLockout(deadline);
+                            }
+                        }
+                    }
                 }
             }
         });

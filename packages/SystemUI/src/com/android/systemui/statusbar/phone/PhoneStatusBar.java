@@ -39,6 +39,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.IBinder;
+import android.os.IPowerManager;
 import android.os.RemoteException;
 import android.os.Handler;
 import android.os.Message;
@@ -132,6 +133,8 @@ public class PhoneStatusBar extends StatusBar {
 
     private float mExpandAccelPx; // classic value: 2000px/s/s
     private float mCollapseAccelPx; // classic value: 2000px/s/s (will be negated to collapse "up")
+    private float mScreenWidth;
+    private int mMinBrightness;
 
     PhoneStatusBarPolicy mIconPolicy;
 
@@ -222,6 +225,7 @@ public class PhoneStatusBar extends StatusBar {
     boolean mAnimatingReveal = false;
     int mViewDelta;
     int[] mAbsPos = new int[2];
+    int mLinger = 0;
     Runnable mPostCollapseCleanup = null;
 
 
@@ -286,7 +290,9 @@ public class PhoneStatusBar extends StatusBar {
         loadDimens();
 
         mIconSize = res.getDimensionPixelSize(com.android.internal.R.dimen.status_bar_icon_size);
-
+        mScreenWidth = (float) context.getResources().getDisplayMetrics().widthPixels;
+        mMinBrightness = context.getResources().getInteger(
+                com.android.internal.R.integer.config_screenBrightnessDim);
         ExpandedView expanded = (ExpandedView)View.inflate(context,
                 R.layout.status_bar_expanded, null);
         if (DEBUG) {
@@ -304,10 +310,11 @@ public class PhoneStatusBar extends StatusBar {
         mStatusBarView = sb;
 
         try {
+            int layoutToInflate = R.layout.navigation_bar;
             boolean showNav = mWindowManager.hasNavigationBar();
             if (showNav) {
                 mNavigationBarView =
-                    (NavigationBarView) View.inflate(context, R.layout.navigation_bar, null);
+                    (NavigationBarView) View.inflate(context, R.layout.navigation_bar_naked, null);
                 mNavigationBarView.setDisabledFlags(mDisabled);
                 SettingsObserver settingsObserver = new SettingsObserver(new Handler());
                 settingsObserver.observe();
@@ -396,10 +403,6 @@ public class PhoneStatusBar extends StatusBar {
 
         public void observe() {
             ContentResolver resolver = mContext.getContentResolver();
-            resolver.registerContentObserver(Settings.System.getUriFor(Settings.System.SHOW_MENU_BUTTON), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(Settings.System.SHOW_SEARCH_BUTTON), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(Settings.System.LONG_PRESS_HOME), false, this);
-            onChange(true);
         }
 
         @Override
@@ -478,8 +481,12 @@ public class PhoneStatusBar extends StatusBar {
     private void prepareNavigationBarView() {
         mNavigationBarView.reorient();
 
-        mNavigationBarView.getRecentsButton().setOnClickListener(mRecentsClickListener);
-        mNavigationBarView.getRecentsButton().setOnTouchListener(mRecentsPanel);
+        try {
+            mNavigationBarView.getRecentsButton().setOnClickListener(mRecentsClickListener);
+            mNavigationBarView.getRecentsButton().setOnTouchListener(mRecentsPanel);
+        } catch (NullPointerException e) {
+            //just in case the layout doesn't use the recents button ;)
+        };
     }
 
     // For small-screen devices (read: phones) that lack hardware navigation buttons
@@ -1509,6 +1516,7 @@ mNoNotificationsTitle.setAlpha(any ? 0.0f : 0.75f);
         final int hitSize = statusBarSize*2;
         final int y = (int)event.getRawY();
         if (action == MotionEvent.ACTION_DOWN) {
+            mLinger = 0;
             if (!mExpanded) {
                 mViewDelta = statusBarSize - y;
             } else {
@@ -1533,7 +1541,40 @@ mNoNotificationsTitle.setAlpha(any ? 0.0f : 0.75f);
             final int minY = statusBarSize + mCloseView.getHeight();
             if (action == MotionEvent.ACTION_MOVE) {
                 if (mAnimatingReveal && y < minY) {
-                    // nothing
+                    boolean brightnessControl = Settings.System.getInt(mStatusBarView.getContext().getContentResolver(),
+                                Settings.System.STATUS_BAR_BRIGHTNESS_TOGGLE, 0) == 1;
+                        if (brightnessControl){
+                            mVelocityTracker.computeCurrentVelocity(1000);
+                            float yVel = mVelocityTracker.getYVelocity();
+                            yVel = Math.abs(yVel);
+                            if (yVel < 50.0f) {
+                                if (mLinger > 20) {
+                                    Context context = mStatusBarView.getContext();
+                                    boolean autoBrightness = Settings.System.getInt(context.getContentResolver(),
+                                                Settings.System.SCREEN_BRIGHTNESS_MODE, 0) == Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC;
+                                    if (!autoBrightness) {
+                                        float x = (float) event.getRawX();
+                                        int newBrightness = (int) Math.round(((x/mScreenWidth) * android.os.Power.BRIGHTNESS_ON));
+                                        newBrightness = Math.min(newBrightness, android.os.Power.BRIGHTNESS_ON);
+                                        newBrightness = Math.max(newBrightness, mMinBrightness);
+                                        try {
+                                            IPowerManager power = IPowerManager.Stub.asInterface(ServiceManager.getService("power"));
+                                            if (power != null) {
+                                                power.setBacklightBrightness(newBrightness);
+                                                Settings.System.putInt(context.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS,
+                                                        newBrightness);
+                                            }
+                                        } catch (RemoteException e) {
+                                            Slog.w(TAG, "Setting Brightness failed: " + e);
+                                        }
+                                    }
+                                } else {
+                                    mLinger++;
+                                }
+                            } else {
+                                mLinger = 0;
+                            }
+                        }
                 } else {
                     mAnimatingReveal = false;
                     updateExpandedViewPos(y + mViewDelta);

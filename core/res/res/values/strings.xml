@@ -3434,4 +3434,13 @@
     <!--Application killed toast -->
     <string name="zzapp_killed_message">Application killed</string>
 
+    <!-- label for item that toggles navbar mode -->
+    <string name="zzglobal_actions_navbar_mode">Soft Keys</string>
+
+    <!-- status message in phone options dialog for when soft keys are on -->
+    <string name="zzglobal_actions_navbar_mode_on">Soft Keys are ON</string>
+
+    <!-- status message in phone options dialog when soft keys are off -->
+    <string name="zzglobal_actions_navbar_mode_off">Soft Keys are OFF</string>
+
 </resources>
