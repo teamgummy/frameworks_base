@@ -32,7 +32,6 @@ import android.view.ViewParent;
 import android.widget.TextView;
 
 import com.android.systemui.R;
-import com.android.systemui.statusbar.policy.Clock.SettingsObserver;
 
 import java.util.Date;
 
@@ -75,16 +74,8 @@ public final class DateView extends TextView {
         }
     };
 
-    public DateView(Context context) {
-        this(context, null);
-    }
-
     public DateView(Context context, AttributeSet attrs) {
-        this(context, attrs);
-    }
-
-    public DateView(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
+        super(context, attrs);
 
         mHandler = new Handler();
         SettingsObserver settingsObserver = new SettingsObserver(mHandler);
