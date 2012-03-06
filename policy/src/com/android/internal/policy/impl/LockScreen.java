@@ -32,7 +32,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
-import android.widget.Toast;
 import android.util.Log;
 import android.media.AudioManager;
 import android.provider.MediaStore;
@@ -349,12 +348,8 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
             mAudioManager.setRingerMode(vibe
                 ? AudioManager.RINGER_MODE_VIBRATE
                 : AudioManager.RINGER_MODE_SILENT);
-            //add a Toastbox to popup for sound on/off
-            Toast.makeText(mContext, R.string.zzlockscreen_sound_off, Toast.LENGTH_SHORT).show();
         } else {
-            //add a Toastbox to popup for sound on/off
             mAudioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
-            Toast.makeText(mContext, R.string.zzlockscreen_sound_on, Toast.LENGTH_SHORT).show();
         }
     }
 
