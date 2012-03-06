@@ -85,6 +85,9 @@ public final class DateView extends TextView {
                 Settings.System.NOTIFICATION_TOGGLE_COLOR_BAR, 0xFF33B5E5);
 
         setTextColor(mColorChanger);
+
+        if (mAttachedToWindow)
+            updateClock();
     }
 
     @Override
