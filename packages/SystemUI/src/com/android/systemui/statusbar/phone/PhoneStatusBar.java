@@ -347,7 +347,9 @@ public class PhoneStatusBar extends StatusBar {
         mClearButton.setOnClickListener(mClearButtonListener);
         mClearButton.setAlpha(0f);
         mClearButton.setEnabled(false);
+
         mDateView = (DateView) expanded.findViewById(R.id.date);
+
         mSettingsButton = expanded.findViewById(R.id.settings_button);
         mSettingsButton.setOnClickListener(mSettingsButtonListener);
 
@@ -411,13 +413,21 @@ public class PhoneStatusBar extends StatusBar {
 
         @Override
         public void onChange(boolean selfChange) {
-            enableDateOpensCalendar = Settings.System.getInt(
-                    mContext.getContentResolver(),
-                    Settings.System.DATE_OPENS_CALENDAR, 0) == 1;
-            if (enableDateOpensCalendar)
-                mDateView.setOnClickListener(mCalendarButtonListener);
+            updateSettings();
             prepareNavigationBarView();
         }
+    }
+
+    private void updateSettings(){
+        
+        enableDateOpensCalendar = Settings.System.getInt(
+                mContext.getContentResolver(),
+                Settings.System.DATE_OPENS_CALENDAR, 0) == 1;
+        if (enableDateOpensCalendar)
+            mDateView.setOnClickListener(mCalendarButtonListener);
+        
+        updateResources()
+
     }
 
     protected WindowManager.LayoutParams getRecentsLayoutParams(LayoutParams layoutParams) {
@@ -497,7 +507,7 @@ public class PhoneStatusBar extends StatusBar {
         } catch (NullPointerException e) {
             // just in case the layout doesn't use the recents button ;)
         }
-        ;
+
     }
 
     // For small-screen devices (read: phones) that lack hardware navigation
@@ -2337,14 +2347,14 @@ public class PhoneStatusBar extends StatusBar {
     private View.OnClickListener mCalendarButtonListener = new View.OnClickListener() {
         public void onClick(View v) {
             try {
-                // Dismiss the lock screen when Settings starts.
+                // Dismiss the lock screen when Calendar starts.
                 ActivityManagerNative.getDefault().dismissKeyguardOnNextActivity();
             } catch (RemoteException e) {
+
             }
-            Intent intent = new Intent(Intent.ACTION_VIEW).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.setClassName("com.android.calendar", "com.android.calendar.LaunchActivity");
-            v.getContext().startActivity(intent);
-            animateCollapse();
+            v.getContext().startActivity(
+                    new Intent().addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).setClassName(
+                            "com.android.calendar", "com.android.calendar.LaunchActivity"));
         }
     };
 
