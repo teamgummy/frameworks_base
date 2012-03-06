@@ -46,6 +46,7 @@ import android.os.ServiceManager;
 import android.os.SystemClock;
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Slog;
 import android.util.Log;
@@ -75,6 +76,7 @@ import android.widget.TextView;
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.jar.Attributes;
 
 import com.android.internal.statusbar.StatusBarIcon;
 import com.android.internal.statusbar.StatusBarNotification;
@@ -2374,7 +2376,7 @@ public class PhoneStatusBar extends StatusBar {
         public boolean onTouch(View v, MotionEvent event) {
             int action = event.getAction();
             if (action == MotionEvent.ACTION_DOWN) {
-                mDateView.setShadowLayer(4, 1, 1, mDateViewColor);
+                mDateView.setShadowLayer(10, 1, 1, mDateViewColor);
             } else if (action == MotionEvent.ACTION_UP) {
                 mDateView.setShadowLayer(0, 0, 0, mDateViewColor);
             }
