@@ -24,10 +24,13 @@ import com.android.internal.widget.WaveView;
 import com.android.internal.widget.multiwaveview.MultiWaveView;
 
 import android.app.ActivityManager;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -77,8 +80,17 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     private boolean mForceSoundIcon = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_FORCE_SOUND_ICON, 0) == 1);
     private boolean mUseSlider = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_TYPE, 0) == 1);
     private boolean mUseRotary = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_TYPE, 0) == 2);
+    private boolean mRotaryRevamp = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_TYPE, 0) == 3);
+
+    // custom apps made easy!
+    private String mCustomOne = (Settings.System.getString(mContext.getContentResolver(), Settings.System.LOCKSCREEN_CUSTOM_ONE));
     // hide rotary arrows
     private boolean mHideArrows = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_HIDE_ARROWS, 0) == 1);
+    // rotary lock pull down
+    private boolean mRotaryDown = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_ROTARY_UNLOCK_DOWN, 0) == 1);
+
+
+    private Bitmap mCustomAppIcon;
 
     private interface UnlockWidgetCommonMethods {
         // Update resources based on phone state
@@ -172,8 +184,29 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 
         /** {@inheritDoc} */
         public void onDialTrigger(View v, int whichHandle) {
+            boolean mUnlockTrigger = false;
+            boolean mCustomAppTrigger = false;
+
             if (whichHandle == RotarySelector.OnDialTriggerListener.LEFT_HANDLE) {
+                if (mRotaryDown)
+                    mCustomAppTrigger = true;
+                else
+                    mUnlockTrigger = true;
+            }
+
+            if (whichHandle == RotarySelector.OnDialTriggerListener.MID_HANDLE) {
+                if (mRotaryDown)
+                    mUnlockTrigger = true;
+                else
+                    mCustomAppTrigger = true;
+            }
+
+            if (mUnlockTrigger) {
                 mCallback.goToUnlockScreen();
+            } else if (mCustomAppTrigger) {
+                if (mCustomOne != null) {
+                    runActivity(mCustomOne);
+                }
             } else if (whichHandle == RotarySelector.OnDialTriggerListener.RIGHT_HANDLE) {
                 toggleRingMode();
                 mUnlockWidgetMethods.updateResources();
@@ -422,6 +455,18 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         }
     }
 
+    private void runActivity(String uri) {
+        try {
+            Intent i = Intent.parseUri(uri, 0);
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+            mContext.startActivity(i);
+            mCallback.goToUnlockScreen();
+        } catch (URISyntaxException e) {
+        } catch (ActivityNotFoundException e) {
+        }
+    }
+
     /**
      * In general, we enable unlocking the insecure key guard with the menu key. However, there are
      * some cases where we wish to disable it, notably when the menu button placement or technology
@@ -459,6 +504,9 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 
         mKeyboardHidden = configuration.hardKeyboardHidden;
 
+        if (mCustomAppIcon == null)
+            mCustomAppIcon = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.ic_jog_dial_custom);
+
         if (LockPatternKeyguardView.DEBUG_CONFIGURATION) {
             Log.v(TAG, "***** CREATING LOCK SCREEN", new RuntimeException());
             Log.v(TAG, "Cur orient=" + mCreationOrientation
@@ -470,14 +518,14 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         if (mCreationOrientation != Configuration.ORIENTATION_LANDSCAPE) {
             if (mUseSlider)
                 inflater.inflate(R.layout.keyguard_screen_slider_unlock, this, true);
-            else if (mUseRotary)
+            else if (mUseRotary || mRotaryRevamp)
                 inflater.inflate(R.layout.keyguard_screen_rotary_unlock, this, true);
             else
                 inflater.inflate(R.layout.keyguard_screen_tab_unlock, this, true);
         } else {
             if (mUseSlider)
                 inflater.inflate(R.layout.keyguard_screen_slider_unlock_land, this, true);
-            else if (mUseRotary)
+            else if (mUseRotary || mRotaryRevamp)
                 inflater.inflate(R.layout.keyguard_screen_rotary_unlock_land, this, true);
             else
                 inflater.inflate(R.layout.keyguard_screen_tab_unlock_land, this, true);
@@ -508,8 +556,19 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
             mUnlockWidgetMethods = slidingTabMethods;
         } else if (mUnlockWidget instanceof RotarySelector) {
             RotarySelector rotarySelectorView = (RotarySelector) mUnlockWidget;
-            rotarySelectorView.setLeftHandleResource(
+            if (!mRotaryDown) {
+                rotarySelectorView.setLeftHandleResource(
                     R.drawable.ic_jog_dial_unlock);
+                rotarySelectorView.setMidHandleResource(
+                    mCustomAppIcon);
+            } else {
+                rotarySelectorView.setLeftHandleResource(
+                    mCustomAppIcon);
+                rotarySelectorView.setMidHandleResource(
+                    R.drawable.ic_jog_dial_unlock);
+            }
+            rotarySelectorView.enableCustomAppDimple(mRotaryRevamp);
+            rotarySelectorView.setRevamped(mRotaryRevamp);
             if (mHideArrows)
                 rotarySelectorView.hideArrows(true);
             RotarySelectorMethods rotarySelectorMethods = new RotarySelectorMethods(rotarySelectorView);
