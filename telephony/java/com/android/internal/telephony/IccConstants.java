@@ -41,6 +41,9 @@ public interface IccConstants {
     static final int EF_SST = 0x6f38;
     static final int EF_CFIS = 0x6FCB;
     static final int EF_IMG = 0x4f20;
+    // FIXME-HASH: Added for Motorola
+    static final int EF_OPL = 0x6fc6;  // 28614
+    static final int EF_SMSP = 0x6f42; // 28482
 
     // USIM SIM file ids from TS 31.102
     public static final int EF_PBR = 0x4F30;
