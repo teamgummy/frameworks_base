@@ -68,6 +68,8 @@ public class BatteryController extends BroadcastReceiver {
         IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_BATTERY_CHANGED);
         context.registerReceiver(this, filter);
+
+	updateSettings();
     }
 
     class SettingsObserver extends ContentObserver {
