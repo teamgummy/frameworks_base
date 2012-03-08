@@ -18,6 +18,7 @@ package com.android.internal.policy.impl;
 
 import com.android.internal.R;
 import com.android.internal.widget.LockPatternUtils;
+import com.android.internal.widget.RotarySelector;
 import com.android.internal.widget.SlidingTab;
 import com.android.internal.widget.WaveView;
 import com.android.internal.widget.multiwaveview.MultiWaveView;
@@ -74,6 +75,10 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     // lockscreen toggles
     private boolean mLockscreenCustom = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_EXTRA_ICONS, 0) == 1);
     private boolean mForceSoundIcon = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_FORCE_SOUND_ICON, 0) == 1);
+    private boolean mUseSlider = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_TYPE, 0) == 1);
+    private boolean mUseRotary = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_TYPE, 0) == 2);
+    // hide rotary arrows
+    private boolean mHideArrows = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_HIDE_ARROWS, 0) == 1);
 
     private interface UnlockWidgetCommonMethods {
         // Update resources based on phone state
@@ -118,6 +123,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                 mCallback.goToUnlockScreen();
             } else if (whichHandle == SlidingTab.OnTriggerListener.RIGHT_HANDLE) {
                 toggleRingMode();
+                mUnlockWidgetMethods.updateResources();
                 mCallback.pokeWakelock();
             }
         }
@@ -143,6 +149,51 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 
         public void reset(boolean animate) {
             mSlidingTab.reset(animate);
+        }
+
+        public void ping() {
+        }
+    }
+
+    class RotarySelectorMethods implements RotarySelector.OnDialTriggerListener, UnlockWidgetCommonMethods {
+        private final RotarySelector mRotarySelector;
+
+        RotarySelectorMethods(RotarySelector rotarySelector) {
+            mRotarySelector = rotarySelector;
+        }
+
+        public void updateResources() {
+            boolean vibe = mSilentMode
+                && (mAudioManager.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE);
+
+            mRotarySelector.setRightHandleResource(mSilentMode ? (vibe ? R.drawable.ic_jog_dial_vibrate_on
+                : R.drawable.ic_jog_dial_sound_off) : R.drawable.ic_jog_dial_sound_on);
+        }
+
+        /** {@inheritDoc} */
+        public void onDialTrigger(View v, int whichHandle) {
+            if (whichHandle == RotarySelector.OnDialTriggerListener.LEFT_HANDLE) {
+                mCallback.goToUnlockScreen();
+            } else if (whichHandle == RotarySelector.OnDialTriggerListener.RIGHT_HANDLE) {
+                toggleRingMode();
+                mUnlockWidgetMethods.updateResources();
+                mCallback.pokeWakelock();
+            }
+        }
+
+        /** {@inheritDoc} */
+        public void onGrabbedStateChange(View v, int grabbedState) {
+            if (grabbedState == RotarySelector.OnDialTriggerListener.RIGHT_HANDLE) {
+                mSilentMode = isSilentMode();
+            }
+        }
+
+        public View getView() {
+            return mRotarySelector;
+        }
+
+        public void reset(boolean animate) {
+            mRotarySelector.reset();
         }
 
         public void ping() {
@@ -417,9 +468,19 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         final LayoutInflater inflater = LayoutInflater.from(context);
         if (DBG) Log.v(TAG, "Creation orientation = " + mCreationOrientation);
         if (mCreationOrientation != Configuration.ORIENTATION_LANDSCAPE) {
-            inflater.inflate(R.layout.keyguard_screen_tab_unlock, this, true);
+            if (mUseSlider)
+                inflater.inflate(R.layout.keyguard_screen_slider_unlock, this, true);
+            else if (mUseRotary)
+                inflater.inflate(R.layout.keyguard_screen_rotary_unlock, this, true);
+            else
+                inflater.inflate(R.layout.keyguard_screen_tab_unlock, this, true);
         } else {
-            inflater.inflate(R.layout.keyguard_screen_tab_unlock_land, this, true);
+            if (mUseSlider)
+                inflater.inflate(R.layout.keyguard_screen_slider_unlock_land, this, true);
+            else if (mUseRotary)
+                inflater.inflate(R.layout.keyguard_screen_rotary_unlock_land, this, true);
+            else
+                inflater.inflate(R.layout.keyguard_screen_tab_unlock_land, this, true);
         }
 
         mStatusViewManager = new KeyguardStatusViewManager(this, mUpdateMonitor, mLockPatternUtils,
@@ -445,6 +506,15 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
             SlidingTabMethods slidingTabMethods = new SlidingTabMethods(slidingTabView);
             slidingTabView.setOnTriggerListener(slidingTabMethods);
             mUnlockWidgetMethods = slidingTabMethods;
+        } else if (mUnlockWidget instanceof RotarySelector) {
+            RotarySelector rotarySelectorView = (RotarySelector) mUnlockWidget;
+            rotarySelectorView.setLeftHandleResource(
+                    R.drawable.ic_jog_dial_unlock);
+            if (mHideArrows)
+                rotarySelectorView.hideArrows(true);
+            RotarySelectorMethods rotarySelectorMethods = new RotarySelectorMethods(rotarySelectorView);
+            rotarySelectorView.setOnDialTriggerListener(rotarySelectorMethods);
+            mUnlockWidgetMethods = rotarySelectorMethods;
         } else if (mUnlockWidget instanceof WaveView) {
             WaveView waveView = (WaveView) mUnlockWidget;
             WaveViewMethods waveViewMethods = new WaveViewMethods(waveView);
