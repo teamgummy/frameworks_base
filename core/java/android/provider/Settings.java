@@ -1996,6 +1996,14 @@ public final class Settings {
         public static final String NOTIFICATION_LIGHT_COLOR = "notification_light_color";
 
         /**
+         * The Date Text View opens the calendar app on the notification
+         * expanded view
+         * 
+         * @hide
+         */
+        public static final String DATE_OPENS_CALENDAR = "date_opens_calendar";
+
+        /**
          * Lockscreen toggle to allow 4 icons 0:false/1:true
          * 
          * @hide
