@@ -414,7 +414,7 @@ public class RotarySelector extends View {
                     canvas.drawBitmap(mArrowDown, mArrowMatrix, mPaint);
                     break;
                 case RIGHT_HANDLE_GRABBED:
-                    mArrowMatrix.setTranslate(0, 0);
+                    mArrowMatrix.setTranslate(80, 0);
                     if (!isHoriz()) {
                         mArrowMatrix.preRotate(-90, 0, 0);
                         // since bg width is > height of screen in landscape mode...
