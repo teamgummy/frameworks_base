@@ -43,7 +43,6 @@ import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader; // barrmy added for 1percent mod
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
@@ -100,7 +99,6 @@ class BatteryService extends Binder {
     private int mBatteryHealth;
     private boolean mBatteryPresent;
     private int mBatteryLevel;
-    private int mBatteryLevel1Step;  // barrmy: added new 1Step int
     private int mBatteryVoltage;
     private int mBatteryTemperature;
     private String mBatteryTechnology;
@@ -407,10 +405,7 @@ class BatteryService extends Binder {
 
         intent.putExtra(BatteryManager.EXTRA_STATUS, mBatteryStatus);
         intent.putExtra(BatteryManager.EXTRA_HEALTH, mBatteryHealth);
-        intent.putExtra(BatteryManager.EXTRA_PRESENT, mBatteryPresent); 
-        //barrmy adding 1% mod call and intent
-        getBatteryLevel1Step();
-        //this code doesn't work intent.putExtra(BatteryManager.EXTRA_LEVEL, mBatteryLevel1Step);
+        intent.putExtra(BatteryManager.EXTRA_PRESENT, mBatteryPresent);
         intent.putExtra(BatteryManager.EXTRA_LEVEL, mBatteryLevel);
         intent.putExtra(BatteryManager.EXTRA_SCALE, BATTERY_SCALE);
         intent.putExtra(BatteryManager.EXTRA_ICON_SMALL, icon);
@@ -498,32 +493,6 @@ class BatteryService extends Binder {
                 return;
             }
         }
-    }
-
-  // barrmy: add method below for 1 step mod
-    private void getBatteryLevel1Step(){
-         FileReader reader = null;
-         try{
-          reader = new FileReader("/sys/class/power_supply/battery/charge_counter");
-         }catch(IOException e){}
-         try{
-          char[] buf = new char[20];
-          int read = reader.read(buf);
-          reader.close();
-          String batteryLevelsysfs = new String(buf, 0, read);
-          batteryLevelsysfs = batteryLevelsysfs.replace("\n", "");
-          int mBatteryLevel1Step = Integer.parseInt(batteryLevelsysfs);
-          if(mBatteryLevel1Step >= 100){
-           mBatteryLevel1Step = 100;
-          }
-           
-          System.out.println(mBatteryLevel1Step);
-         mBatteryLevel=mBatteryLevel1Step;
-                     
-         }catch(Exception e){
- 
-         }
- 
     }
 
     private final int getIcon(int level) {
