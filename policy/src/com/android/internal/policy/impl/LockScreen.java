@@ -73,7 +73,9 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 
     private KeyguardStatusViewManager mStatusViewManager;
     private UnlockWidgetCommonMethods mUnlockWidgetMethods;
+    private UnlockWidgetCommonMethods mUnlockWidgetMethods2;
     private View mUnlockWidget;
+    private View mUnlockWidget2;
 
     // lockscreen toggles
     private boolean mLockscreenCustom = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_EXTRA_ICONS, 0) == 1);
@@ -91,6 +93,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 
 
     private Bitmap mCustomAppIcon;
+    private String mCustomAppName;
 
     private interface UnlockWidgetCommonMethods {
         // Update resources based on phone state
@@ -161,6 +164,47 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 
         public void reset(boolean animate) {
             mSlidingTab.reset(animate);
+        }
+
+        public void ping() {
+        }
+    }
+
+    class SlidingTabMethods2 implements SlidingTab.OnTriggerListener, UnlockWidgetCommonMethods {
+        private final SlidingTab mSlidingTab2;
+
+        SlidingTabMethods2(SlidingTab slidingTab) {
+            mSlidingTab2 = slidingTab;
+        }
+
+        public void updateResources() {
+        }
+
+        /** {@inheritDoc} */
+        public void onTrigger(View v, int whichHandle) {
+            if (whichHandle == SlidingTab.OnTriggerListener.LEFT_HANDLE) {
+                Intent intent = new Intent(Intent.ACTION_DIAL);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                getContext().startActivity(intent);
+                mCallback.goToUnlockScreen();
+            } else if (whichHandle == SlidingTab.OnTriggerListener.RIGHT_HANDLE) {
+                if (mCustomOne != null) {
+                    runActivity(mCustomOne);
+                }
+            }
+        }
+
+        /** {@inheritDoc} */
+        public void onGrabbedStateChange(View v, int grabbedState) {
+                mCallback.pokeWakelock();
+        }
+
+        public View getView() {
+            return mSlidingTab2;
+        }
+
+        public void reset(boolean animate) {
+            mSlidingTab2.reset(animate);
         }
 
         public void ping() {
@@ -542,6 +586,8 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         mSilentMode = isSilentMode();
 
         mUnlockWidget = findViewById(R.id.unlock_widget);
+        mUnlockWidget2 = findViewById(R.id.unlock_widget2);
+
         if (mUnlockWidget instanceof SlidingTab) {
             SlidingTab slidingTabView = (SlidingTab) mUnlockWidget;
             slidingTabView.setHoldAfterTrigger(true, false);
@@ -554,6 +600,27 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
             SlidingTabMethods slidingTabMethods = new SlidingTabMethods(slidingTabView);
             slidingTabView.setOnTriggerListener(slidingTabMethods);
             mUnlockWidgetMethods = slidingTabMethods;
+            SlidingTab slidingTabView2 = (SlidingTab) mUnlockWidget2;
+            slidingTabView2.setHoldAfterTrigger(true, false);
+            slidingTabView2.setLeftHintText(R.string.zzlockscreen_phone_label);
+            slidingTabView2.setLeftTabResources(
+                    R.drawable.ic_jog_dial_answer,
+                    R.drawable.jog_tab_target_green,
+                    R.drawable.jog_tab_bar_left_generic,
+                    R.drawable.jog_tab_left_generic);
+            slidingTabView2.setRightHintText(R.string.zzlockscreen_custom_label);
+            slidingTabView2.setRightTabResources(
+                    R.drawable.ic_jog_dial_custom,
+                    R.drawable.jog_tab_target_green,
+                    R.drawable.jog_tab_bar_right_generic,
+                    R.drawable.jog_tab_right_generic);
+            SlidingTabMethods2 slidingTabMethods2 = new SlidingTabMethods2(slidingTabView2);
+            slidingTabView2.setOnTriggerListener(slidingTabMethods2);
+            mUnlockWidgetMethods2 = slidingTabMethods2;
+            if (mLockscreenCustom)
+                slidingTabView2.setVisibility(View.VISIBLE);
+            else
+                slidingTabView2.setVisibility(View.GONE);
         } else if (mUnlockWidget instanceof RotarySelector) {
             RotarySelector rotarySelectorView = (RotarySelector) mUnlockWidget;
             if (!mRotaryDown) {
