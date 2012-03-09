@@ -2274,6 +2274,12 @@ public final class Settings {
          */
         public static final String LOCKSCREEN_HIDE_ARROWS = "lockscreen_hide_arrows";
 
+        /**
+         * Unlock rotary by dragging down
+         * 
+         * @hide
+         */
+        public static final String LOCKSCREEN_ROTARY_UNLOCK_DOWN = "lockscreen_rotary_unlock_down";
 
         /**
          * Settings to backup. This is here so that it's in the same place as
