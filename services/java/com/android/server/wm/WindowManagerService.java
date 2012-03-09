@@ -264,6 +264,10 @@ public class WindowManagerService extends IWindowManager.Stub
     private static final int ALLOW_DISABLE_UNKNOWN = -1; // check with DevicePolicyManager
     private int mAllowDisableKeyguard = ALLOW_DISABLE_UNKNOWN; // sync'd by mKeyguardTokenWatcher
 
+    // Useful scan codes.
+    private static final int SW_LID = 0x00;
+    private static final int BTN_MOUSE = 0x110;
+
     final TokenWatcher mKeyguardTokenWatcher = new TokenWatcher(
             new Handler(), "WindowManagerService.mKeyguardTokenWatcher") {
         public void acquired() {
@@ -564,6 +568,8 @@ public class WindowManagerService extends IWindowManager.Stub
 
     final InputManager mInputManager;
 
+    private boolean mForceDisableHardwareKeyboard = false;
+
     // Who is holding the screen on.
     Session mHoldingScreenOn;
     PowerManager.WakeLock mHoldingScreenWakeLock;
@@ -780,6 +786,9 @@ public class WindowManagerService extends IWindowManager.Stub
         mHoldingScreenWakeLock.setReferenceCounted(false);
 
         mInputManager = new InputManager(context, this);
+
+        mForceDisableHardwareKeyboard = context.getResources().getBoolean(
+                com.android.internal.R.bool.config_forceDisableHardwareKeyboard);
 
         PolicyThread thr = new PolicyThread(mPolicy, this, context, pm);
         thr.start();
@@ -5133,6 +5142,9 @@ public class WindowManagerService extends IWindowManager.Stub
 
             // The screenshot API does not apply the current screen rotation.
             rot = mDisplay.getRotation();
+            // Allow for abnormal hardware orientation
+            rot = (rot + (android.os.SystemProperties.getInt("ro.sf.hwrotation",0) / 90 )) % 4;
+
             int fw = frame.width();
             int fh = frame.height();
 
@@ -6083,8 +6095,21 @@ public class WindowManagerService extends IWindowManager.Stub
         config.compatScreenHeightDp = (int)(config.screenHeightDp / mCompatibleScreenScale);
         config.compatSmallestScreenWidthDp = computeCompatSmallestWidth(rotated, dm, dw, dh);
 
+
         // Determine whether a hard keyboard is available and enabled.
-        boolean hardKeyboardAvailable = config.keyboard != Configuration.KEYBOARD_NOKEYS;
+
+        // Check lidState
+        int sw = 1;
+        try {
+            sw = getSwitchState(SW_LID);
+        } catch (Exception e) {
+            // Ignore
+        }
+        boolean hardKeyboardAvailable = ((sw == 0) || (config.keyboard == Configuration.KEYBOARD_NOKEYS));
+
+        if (!mForceDisableHardwareKeyboard) {
+            hardKeyboardAvailable = config.keyboard != Configuration.KEYBOARD_NOKEYS;
+        }
         if (hardKeyboardAvailable != mHardKeyboardAvailable) {
             mHardKeyboardAvailable = hardKeyboardAvailable;
             mHardKeyboardEnabled = hardKeyboardAvailable;
