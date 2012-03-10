@@ -234,14 +234,7 @@ status_t SensorDevice::initCheck() const {
 }
 
 ssize_t SensorDevice::poll(sensors_event_t* buffer, size_t count) {
-<<<<<<< HEAD
-    if (!mSensorDevice) return NO_INIT;
     ssize_t c;
-    do {
-        c = mSensorDevice->poll(mSensorDevice, buffer, count);
-    } while (c == -EINTR);
-    return c;
-=======
     if (!mSensorDevice && !mOldSensorsCompatMode) return NO_INIT;
     if (mOldSensorsCompatMode) {
         size_t pollsDone = 0;
@@ -309,9 +302,11 @@ ssize_t SensorDevice::poll(sensors_event_t* buffer, size_t count) {
         }
         return pollsDone;
     } else {
-        return mSensorDevice->poll(mSensorDevice, buffer, count);
+        do {
+            c = mSensorDevice->poll(mSensorDevice, buffer, count);
+        } while (c == -EINTR);
+        return c;
     }
->>>>>>> de78c41... sensors: Add support for old libsensors HAL
 }
 
 status_t SensorDevice::activate(void* ident, int handle, int enabled)
