@@ -83,6 +83,8 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     private boolean mUseSlider = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_TYPE, 0) == 1);
     private boolean mUseRotary = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_TYPE, 0) == 2);
     private boolean mRotaryRevamp = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_TYPE, 0) == 3);
+    private boolean mUseHoneyComb = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_TYPE, 0) == 4);
+
 
     // custom apps made easy!
     private String mCustomOne = (Settings.System.getString(mContext.getContentResolver(), Settings.System.LOCKSCREEN_CUSTOM_ONE));
@@ -564,6 +566,8 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                 inflater.inflate(R.layout.keyguard_screen_slider_unlock, this, true);
             else if (mUseRotary || mRotaryRevamp)
                 inflater.inflate(R.layout.keyguard_screen_rotary_unlock, this, true);
+            else if (mUseHoneyComb)
+                inflater.inflate(R.layout.keyguard_screen_honeycomb_unlock, this, true);
             else
                 inflater.inflate(R.layout.keyguard_screen_tab_unlock, this, true);
         } else {
@@ -571,6 +575,8 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                 inflater.inflate(R.layout.keyguard_screen_slider_unlock_land, this, true);
             else if (mUseRotary || mRotaryRevamp)
                 inflater.inflate(R.layout.keyguard_screen_rotary_unlock_land, this, true);
+            else if (mUseHoneyComb)
+                inflater.inflate(R.layout.keyguard_screen_honeycomb_unlock_land, this, true);
             else
                 inflater.inflate(R.layout.keyguard_screen_tab_unlock_land, this, true);
         }
