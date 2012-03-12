@@ -288,6 +288,7 @@ public:
                                     int id);
     static status_t unregisterEffect(int id);
     static status_t setEffectEnabled(int id, bool enabled);
+
     // clear stream to output mapping cache (gStreamOutputMap)
     // and output configuration cache (gOutputs)
     static void clearAudioConfigCache();

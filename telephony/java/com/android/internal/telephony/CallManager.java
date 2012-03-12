@@ -350,20 +350,26 @@ public final class CallManager {
      * @return the phone associated with the foreground call
      */
     public Phone getFgPhone() {
-        return getActiveFgCall().getPhone();
+        Call response = getActiveFgCall();
+        if (response == null) return null;
+        return response.getPhone();
     }
 
     /**
      * @return the phone associated with the background call
      */
     public Phone getBgPhone() {
-        return getFirstActiveBgCall().getPhone();
+        Call response = getFirstActiveBgCall();
+        if (response == null) return null;
+        return response.getPhone();
     }
 
     /**
      * @return the phone associated with the ringing call
      */
     public Phone getRingingPhone() {
+        Call response = getFirstActiveRingingCall();
+        if (response == null) return null;
         return getFirstActiveRingingCall().getPhone();
     }
 
