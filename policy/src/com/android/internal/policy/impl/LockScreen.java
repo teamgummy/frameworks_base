@@ -19,6 +19,7 @@ package com.android.internal.policy.impl;
 import com.android.internal.R;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.internal.widget.RotarySelector;
+import com.android.internal.widget.RingSelector;
 import com.android.internal.widget.SlidingTab;
 import com.android.internal.widget.WaveView;
 import com.android.internal.widget.multiwaveview.MultiWaveView;
@@ -29,8 +30,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -84,6 +89,19 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     private boolean mUseRotary = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_TYPE, 0) == 2);
     private boolean mRotaryRevamp = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_TYPE, 0) == 3);
     private boolean mUseHoneyComb = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_TYPE, 0) == 4);
+    private boolean mUseRings = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_TYPE, 0) == 5);
+
+    //omg ring lock?!
+    private String[] mCustomRingAppActivities = new String[] {
+            Settings.System.getString(mContext.getContentResolver(),
+                    Settings.System.LOCKSCREEN_CUSTOM_RING_APP_ACTIVITIES[0]),
+            Settings.System.getString(mContext.getContentResolver(),
+                    Settings.System.LOCKSCREEN_CUSTOM_RING_APP_ACTIVITIES[1]),
+            Settings.System.getString(mContext.getContentResolver(),
+                    Settings.System.LOCKSCREEN_CUSTOM_RING_APP_ACTIVITIES[2]),
+            Settings.System.getString(mContext.getContentResolver(),
+                    Settings.System.LOCKSCREEN_CUSTOM_RING_APP_ACTIVITIES[3])
+    };
 
 
     // custom apps made easy!
@@ -96,6 +114,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 
     private Bitmap mCustomAppIcon;
     private String mCustomAppName;
+    private Bitmap[] mCustomRingAppIcons = new Bitmap[4];
 
     private interface UnlockWidgetCommonMethods {
         // Update resources based on phone state
@@ -459,6 +478,67 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         }
     }
 
+    class RingSelectorMethods implements RingSelector.OnRingTriggerListener, UnlockWidgetCommonMethods {
+        private final RingSelector mRingSelector;
+
+        RingSelectorMethods(RingSelector ringSelector) {
+            mRingSelector = ringSelector;
+        }
+
+        public void updateResources() {
+            boolean vibe = mSilentMode
+                && (mAudioManager.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE);
+
+            mRingSelector.setRightRingResources(
+                    mSilentMode ? ( vibe ? R.drawable.ic_jog_dial_vibrate_on
+                                         : R.drawable.ic_jog_dial_sound_off )
+                                : R.drawable.ic_jog_dial_sound_on,
+                    mSilentMode ? R.drawable.jog_tab_target_yellow
+                                : R.drawable.jog_tab_target_gray,
+                    mSilentMode ? R.drawable.jog_ring_ring_yellow
+                                : R.drawable.jog_ring_ring_gray);
+        }
+
+        /** {@inheritDoc} */
+        public void onRingTrigger(View v, int whichRing, int whichApp) {
+            if (whichRing == RingSelector.OnRingTriggerListener.LEFT_RING) {
+                mCallback.goToUnlockScreen();
+            } else if (whichRing == RingSelector.OnRingTriggerListener.RIGHT_RING) {
+                toggleRingMode();
+                mUnlockWidgetMethods.updateResources();
+                mCallback.pokeWakelock();
+            } else if (whichRing == RingSelector.OnRingTriggerListener.MIDDLE_RING) {
+                if (mCustomRingAppActivities[whichApp] != null) {
+                    runActivity(mCustomRingAppActivities[whichApp]);
+                }
+            }
+        }
+
+        /** {@inheritDoc} */
+        public void onGrabbedStateChange(View v, int grabbedState) {
+            if (grabbedState == RingSelector.OnRingTriggerListener.RIGHT_RING) {
+                mSilentMode = isSilentMode();
+            }
+            // Don't poke the wake lock when returning to a state where the handle is
+            // not grabbed since that can happen when the system (instead of the user)
+            // cancels the grab.
+            if (grabbedState != RingSelector.OnRingTriggerListener.NO_RING) {
+                mCallback.pokeWakelock();
+            }
+        }
+
+        public View getView() {
+            return mRingSelector;
+        }
+
+        public void reset(boolean animate) {
+            mRingSelector.reset(animate);
+        }
+
+        public void ping() {
+        }
+    }
+
     private void requestUnlockScreen() {
         // Delay hiding lock screen long enough for animation to finish
         postDelayed(new Runnable() {
@@ -568,6 +648,8 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                 inflater.inflate(R.layout.keyguard_screen_rotary_unlock, this, true);
             else if (mUseHoneyComb)
                 inflater.inflate(R.layout.keyguard_screen_honeycomb_unlock, this, true);
+            else if (mUseRings)
+                inflater.inflate(R.layout.keyguard_screen_ring_unlock, this, true);
             else
                 inflater.inflate(R.layout.keyguard_screen_tab_unlock, this, true);
         } else {
@@ -577,6 +659,8 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                 inflater.inflate(R.layout.keyguard_screen_rotary_unlock_land, this, true);
             else if (mUseHoneyComb)
                 inflater.inflate(R.layout.keyguard_screen_honeycomb_unlock_land, this, true);
+            else if (mUseRings)
+                inflater.inflate(R.layout.keyguard_screen_ring_unlock_land, this, true);
             else
                 inflater.inflate(R.layout.keyguard_screen_tab_unlock_land, this, true);
         }
@@ -657,6 +741,41 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
             MultiWaveViewMethods multiWaveViewMethods = new MultiWaveViewMethods(multiWaveView);
             multiWaveView.setOnTriggerListener(multiWaveViewMethods);
             mUnlockWidgetMethods = multiWaveViewMethods;
+        } else if (mUnlockWidget instanceof RingSelector) {
+            RingSelector ringSelectorView = (RingSelector) mUnlockWidget;
+            float density = getResources().getDisplayMetrics().density;
+            int ringAppIconSize = context.getResources().getInteger(R.integer.config_ringSecIconSizeDIP);
+            for (int q = 0; q < 4; q++) {
+                if (mCustomRingAppActivities[q] != null) {
+                    ringSelectorView.showSecRing(q);
+                    try {
+                        Intent i = Intent.parseUri(mCustomRingAppActivities[q], 0);
+                        PackageManager pm = context.getPackageManager();
+                        ActivityInfo ai = i.resolveActivityInfo(pm, PackageManager.GET_ACTIVITIES);
+                        if (ai != null) {
+                            Bitmap iconBmp = ((BitmapDrawable) ai.loadIcon(pm)).getBitmap();
+                            mCustomRingAppIcons[q] = Bitmap.createScaledBitmap(iconBmp,
+                                    (int) (density * ringAppIconSize), (int) (density * ringAppIconSize), true);
+                            ringSelectorView.setSecRingResources(q, mCustomRingAppIcons[q], R.drawable.jog_ring_secback_normal);
+                        }
+                    } catch (URISyntaxException e) {
+                    }
+                } else {
+                    ringSelectorView.hideSecRing(q);
+                }
+            }
+            ringSelectorView.enableMiddleRing(mLockscreenCustom);
+            ringSelectorView.setLeftRingResources(
+                    R.drawable.ic_jog_dial_unlock,
+                    R.drawable.jog_tab_target_green,
+                    R.drawable.jog_ring_ring_green);
+            ringSelectorView.setMiddleRingResources(
+                    R.drawable.ic_jog_dial_custom,
+                    R.drawable.jog_tab_target_green,
+                    R.drawable.jog_ring_ring_green);
+            RingSelectorMethods ringSelectorMethods = new RingSelectorMethods(ringSelectorView);
+            ringSelectorView.setOnRingTriggerListener(ringSelectorMethods);
+            mUnlockWidgetMethods = ringSelectorMethods;
         } else {
             throw new IllegalStateException("Unrecognized unlock widget: " + mUnlockWidget);
         }
