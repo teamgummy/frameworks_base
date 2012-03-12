@@ -414,7 +414,7 @@ uint32_t OMXCodec::getComponentQuirks(
         quirks |= kRequiresAllocateBufferOnInputPorts;
         quirks |= kRequiresAllocateBufferOnOutputPorts;
         if (!strncmp(componentName, "OMX.TI.Video.encoder", 20)) {
-            quirks |= kAvoidMemcopyInputRecordingFrames;
+            //quirks |= kAvoidMemcopyInputRecordingFrames;
         }
     }
 
