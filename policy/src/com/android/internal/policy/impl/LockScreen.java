@@ -84,7 +84,9 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 
     // lockscreen toggles
     private boolean mLockscreenCustom = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_EXTRA_ICONS, 0) == 1);
+   // camera or sound
     private boolean mForceSoundIcon = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_FORCE_SOUND_ICON, 0) == 1);
+   //toggles used between lockscreen types
     private boolean mUseSlider = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_TYPE, 0) == 1);
     private boolean mUseRotary = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_TYPE, 0) == 2);
     private boolean mRotaryRevamp = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_TYPE, 0) == 3);
@@ -140,17 +142,24 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         public void updateResources() {
             boolean vibe = mSilentMode
                 && (mAudioManager.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE);
-
-            mSlidingTab.setRightTabResources(
-                    mSilentMode ? ( vibe ? R.drawable.ic_jog_dial_vibrate_on
-                                         : R.drawable.ic_jog_dial_sound_off )
-                                : R.drawable.ic_jog_dial_sound_on,
-                    mSilentMode ? R.drawable.jog_tab_target_yellow
-                                : R.drawable.jog_tab_target_gray,
-                    mSilentMode ? R.drawable.jog_tab_bar_right_sound_on
-                                : R.drawable.jog_tab_bar_right_sound_off,
-                    mSilentMode ? R.drawable.jog_tab_right_sound_on
-                                : R.drawable.jog_tab_right_sound_off);
+           if (!mForceSoundIcon) {
+        	   mSlidingTab.setRightTabResources(
+                       R.drawable.ic_jog_dial_camera,
+                       R.drawable.jog_tab_target_gray,
+                       R.drawable.jog_tab_bar_right_generic,
+                       R.drawable.jog_tab_right_generic);
+           } else {
+        	   mSlidingTab.setRightTabResources(
+                       mSilentMode ? ( vibe ? R.drawable.ic_jog_dial_vibrate_on
+                                            : R.drawable.ic_jog_dial_sound_off )
+                                   : R.drawable.ic_jog_dial_sound_on,
+                       mSilentMode ? R.drawable.jog_tab_target_yellow
+                                   : R.drawable.jog_tab_target_gray,
+                       mSilentMode ? R.drawable.jog_tab_bar_right_sound_on
+                                   : R.drawable.jog_tab_bar_right_sound_off,
+                       mSilentMode ? R.drawable.jog_tab_right_sound_on
+                                   : R.drawable.jog_tab_right_sound_off);
+           }
         }
 
         /** {@inheritDoc} */
@@ -158,9 +167,17 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
             if (whichHandle == SlidingTab.OnTriggerListener.LEFT_HANDLE) {
                 mCallback.goToUnlockScreen();
             } else if (whichHandle == SlidingTab.OnTriggerListener.RIGHT_HANDLE) {
-                toggleRingMode();
-                mUnlockWidgetMethods.updateResources();
-                mCallback.pokeWakelock();
+            	if (!mForceSoundIcon) {
+            		// Start the Camera
+                    Intent intent = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    mContext.startActivity(intent);
+                    mCallback.goToUnlockScreen();
+            	} else {
+            		toggleRingMode();
+                    mUnlockWidgetMethods.updateResources();
+                    mCallback.pokeWakelock();
+            	}
             }
         }
 
@@ -168,8 +185,12 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         public void onGrabbedStateChange(View v, int grabbedState) {
             if (grabbedState == SlidingTab.OnTriggerListener.RIGHT_HANDLE) {
                 mSilentMode = isSilentMode();
-                mSlidingTab.setRightHintText(mSilentMode ? R.string.lockscreen_sound_on_label
-                        : R.string.lockscreen_sound_off_label);
+                if (!mForceSoundIcon) {
+                	mSlidingTab.setRightHintText(R.string.zzlockscreen_camera_label);
+                } else {
+                	mSlidingTab.setRightHintText(mSilentMode ? R.string.lockscreen_sound_on_label
+                            : R.string.lockscreen_sound_off_label);
+                }               
             }
             // Don't poke the wake lock when returning to a state where the handle is
             // not grabbed since that can happen when the system (instead of the user)
@@ -242,9 +263,13 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
         public void updateResources() {
             boolean vibe = mSilentMode
                 && (mAudioManager.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE);
-
-            mRotarySelector.setRightHandleResource(mSilentMode ? (vibe ? R.drawable.ic_jog_dial_vibrate_on
-                : R.drawable.ic_jog_dial_sound_off) : R.drawable.ic_jog_dial_sound_on);
+            if (!mForceSoundIcon) {
+            	mRotarySelector.setRightHandleResource(R.drawable.ic_jog_dial_camera);
+            } else {
+            	mRotarySelector.setRightHandleResource(mSilentMode ? (vibe ? R.drawable.ic_jog_dial_vibrate_on
+                        : R.drawable.ic_jog_dial_sound_off) : R.drawable.ic_jog_dial_sound_on);
+            }
+            
         }
 
         /** {@inheritDoc} */
@@ -273,9 +298,18 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                     runActivity(mCustomOne);
                 }
             } else if (whichHandle == RotarySelector.OnDialTriggerListener.RIGHT_HANDLE) {
-                toggleRingMode();
-                mUnlockWidgetMethods.updateResources();
-                mCallback.pokeWakelock();
+            	if (!mForceSoundIcon) {
+            		// Start the Camera
+                    Intent intent = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    mContext.startActivity(intent);
+                    mCallback.goToUnlockScreen();
+            	} else {
+            		toggleRingMode();
+                    mUnlockWidgetMethods.updateResources();
+                    mCallback.pokeWakelock();
+            	}
+                
             }
         }
 
@@ -489,7 +523,13 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
             boolean vibe = mSilentMode
                 && (mAudioManager.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE);
 
-            mRingSelector.setRightRingResources(
+            if (!mForceSoundIcon) {
+                mRingSelector.setRightRingResources(
+                    R.drawable.ic_jog_dial_camera,
+                    R.drawable.jog_tab_target_gray,
+                    R.drawable.jog_ring_ring_gray);
+            } else {
+                mRingSelector.setRightRingResources(
                     mSilentMode ? ( vibe ? R.drawable.ic_jog_dial_vibrate_on
                                          : R.drawable.ic_jog_dial_sound_off )
                                 : R.drawable.ic_jog_dial_sound_on,
@@ -497,6 +537,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
                                 : R.drawable.jog_tab_target_gray,
                     mSilentMode ? R.drawable.jog_ring_ring_yellow
                                 : R.drawable.jog_ring_ring_gray);
+            }
         }
 
         /** {@inheritDoc} */
@@ -504,9 +545,17 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
             if (whichRing == RingSelector.OnRingTriggerListener.LEFT_RING) {
                 mCallback.goToUnlockScreen();
             } else if (whichRing == RingSelector.OnRingTriggerListener.RIGHT_RING) {
-                toggleRingMode();
-                mUnlockWidgetMethods.updateResources();
-                mCallback.pokeWakelock();
+                if (!mForceSoundIcon) {
+                    // Start the Camera
+                    Intent intent = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    mContext.startActivity(intent);
+                    mCallback.goToUnlockScreen();
+                } else {
+                    toggleRingMode();
+                    mUnlockWidgetMethods.updateResources();
+                    mCallback.pokeWakelock();
+                }
             } else if (whichRing == RingSelector.OnRingTriggerListener.MIDDLE_RING) {
                 if (mCustomRingAppActivities[whichApp] != null) {
                     runActivity(mCustomRingAppActivities[whichApp]);
