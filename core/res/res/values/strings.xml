@@ -3451,5 +3451,7 @@
     <string name="zzlockscreen_phone_label">Phone</string>
     <!-- string for custom app tab on 4tab -->
     <string name="zzlockscreen_custom_label">Gummy</string>
+    <!-- string for custom app tab on 4tab -->
+    <string name="zzlockscreen_camera_label">Camera</string>
 
 </resources>
