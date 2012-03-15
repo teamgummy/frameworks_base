@@ -313,7 +313,7 @@ public class CDMAPhone extends PhoneBase {
     }
 
     public void setMute(boolean muted) {
-        if (mCT == null) {
+        if (mCT != null) {
             mCT.setMute(muted);
         }
     }

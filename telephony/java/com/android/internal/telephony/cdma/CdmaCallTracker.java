@@ -46,7 +46,7 @@ public final class CdmaCallTracker extends CallTracker {
 
     private static final boolean REPEAT_POLLING = false;
 
-    private static final boolean DBG_POLL = false;
+    private static final boolean DBG_POLL = true;
 
     //***** Constants
 
@@ -84,20 +84,53 @@ public final class CdmaCallTracker extends CallTracker {
     private boolean mIsEcmTimerCanceled = false;
 
 //    boolean needsPoll;
-
+    /* FIXME BEGIN: MOTOROLA */
+    static final int DEFAULT_NBPCD_CALL_TIMEOUT = 12000;
+    private boolean mIsSwitchedToCdma = false;
+    private int mOwnerModemId;
+    /* END: MOTOROLA */
 
 
     //***** Events
 
     //***** Constructors
+    CdmaCallTracker(int ownerModemId, CDMAPhone cdmaphone) {
+        mOwnerModemId = ownerModemId;
+        phone = cdmaphone;
+        cm = cdmaphone.mCM;
+    }
+
+    CdmaCallTracker(boolean worldPhoneFlag, boolean switchToCDMAFlag, CDMAPhone cdmaphone) {
+        if (!worldPhoneFlag) {
+            Log.e(LOG_TAG, "CdmaCallTracker, this shouldn't be called.");
+            return;
+        }
+        phone = cdmaphone;
+        cm = cdmaphone.mCM;
+        if (switchToCDMAFlag) {
+            mIsSwitchedToCdma = false;
+            switchToCdma();
+        } else {
+            mIsSwitchedToCdma = false;
+        }
+    }
+
     CdmaCallTracker(CDMAPhone phone) {
         this.phone = phone;
         cm = phone.mCM;
+        activateMe();
+    }
+
+    private void activateMe() {
         cm.registerForCallStateChanged(this, EVENT_CALL_STATE_CHANGE, null);
         cm.registerForOn(this, EVENT_RADIO_AVAILABLE, null);
         cm.registerForNotAvailable(this, EVENT_RADIO_NOT_AVAILABLE, null);
         cm.registerForCallWaitingInfo(this, EVENT_CALL_WAITING_INFO_CDMA, null);
         foregroundCall.setGeneric(false);
+    }
+
+    public void activate() {
+        activateMe();
     }
 
     public void dispose() {
@@ -107,20 +140,30 @@ public final class CdmaCallTracker extends CallTracker {
         cm.unregisterForCallWaitingInfo(this);
         for(CdmaConnection c : connections) {
             try {
-                if(c != null) hangup(c);
+                if(c != null) {
+                    hangup(c);
+                    // MOTO: c.onDisconnect(com.android.internal.telephony.Connection.DisconnectCause.LOCAL);
+                }
             } catch (CallStateException ex) {
                 Log.e(LOG_TAG, "unexpected error on hangup during dispose");
             }
         }
 
         try {
-            if(pendingMO != null) hangup(pendingMO);
+            if(pendingMO != null) {
+                hangup(pendingMO);
+                // MOTO: pendingMO.onDisconnect(com.android.internal.telephony.Connection.DisconnectCause.LOCAL);
+            }
         } catch (CallStateException ex) {
             Log.e(LOG_TAG, "unexpected error on hangup during dispose");
         }
 
         clearDisconnected();
 
+    }
+
+    public void deactivate() {
+        dispose();
     }
 
     @Override
@@ -131,6 +174,24 @@ public final class CdmaCallTracker extends CallTracker {
     //***** Instance Methods
 
     //***** Public Methods
+    /* BEGIN: MOTOROLA */
+    public void switchToCdma() {
+        if (!mIsSwitchedToCdma) {
+            mIsSwitchedToCdma = true;
+            activateMe();
+            return;
+        }
+    }
+
+    public void switchToGsm() {
+        if (mIsSwitchedToCdma) {
+            mIsSwitchedToCdma = false;
+            dispose();
+            return;
+        }
+    }
+    /* END: MOTOROLA */
+
     public void registerForVoiceCallStarted(Handler h, int what, Object obj) {
         Registrant r = new Registrant(h, what, obj);
         voiceCallStartedRegistrants.add(r);
@@ -231,6 +292,7 @@ public final class CdmaCallTracker extends CallTracker {
             // In Ecm mode, if another emergency call is dialed, Ecm mode will not exit.
             if(!isPhoneInEcmMode || (isPhoneInEcmMode && isEmergencyCall)) {
                 cm.dial(pendingMO.address, clirMode, obtainCompleteMessage());
+
             } else {
                 phone.exitEmergencyCallbackMode();
                 phone.setOnEcbModeExitResponse(this,EVENT_EXIT_ECM_RESPONSE_CDMA, null);

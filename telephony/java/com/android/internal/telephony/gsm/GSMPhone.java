@@ -983,7 +983,9 @@ public class GSMPhone extends PhoneBase {
     }
 
     public void setCallWaiting(boolean enable, Message onComplete) {
-        mCM.setCallWaiting(enable, CommandsInterface.SERVICE_CLASS_VOICE, onComplete);
+        if (mCM != null) {
+            mCM.setCallWaiting(enable, CommandsInterface.SERVICE_CLASS_VOICE, onComplete);
+        }
     }
 
     public void
@@ -1047,10 +1049,13 @@ public class GSMPhone extends PhoneBase {
     }
 
     public void setMute(boolean muted) {
-        mCT.setMute(muted);
+        if (mCT != null) {
+            mCT.setMute(muted);
+        }
     }
 
     public boolean getMute() {
+        if (mCT == null) return false;
         return mCT.getMute();
     }
 
