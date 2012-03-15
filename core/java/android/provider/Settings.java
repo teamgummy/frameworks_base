@@ -2281,6 +2281,13 @@ public final class Settings {
         };
 
         /**
+         * Choose the ICS music widget or old style on lockscreen
+         * 
+         * @hide
+         */
+        public static final String MUSIC_WIDGET_TYPE = "music_widget_type";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as
          * the settings keys and easy to update. NOTE: Settings are backed up
          * and restored in the order they appear in this array. If you have one
