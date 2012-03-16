@@ -2245,6 +2245,24 @@ public final class Settings {
          * @hide
          */
         public static final String BATTERY_TEXT = "battery_text";
+	
+	/**
+         * ImageView color filter for the wifi data icons
+         * @hide
+         */
+	public static final String WIFI_SIGNAL_COLOR = "wifi_signal_color";
+
+        /**
+         * ImageView color filter for the mobile data icons
+         * @hide
+         */
+	public static final String MOBILE_SIGNAL_COLOR = "mobile_signal_color";
+
+        /**
+         * ImageView color filter for the battery icons
+         * @hide
+         */
+	public static final String BATTERY_ICON_COLOR = "battery_icon_color";
 
         /**
          * Volume rocker wake option
