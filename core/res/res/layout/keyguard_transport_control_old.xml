@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2011 The Android Open Source Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+
+<!-- Note: This file is meant to be included in various password unlock screens. As such,
+     LayoutParams (layout_*) for TransportControlView should *NOT* be specified here,
+     but rather as include tags for this file or the layout will break. -->
+<com.android.internal.widget.TransportControlView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/transport_controls">
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="70.0dp"
+        android:background="@drawable/ic_lockscreen_player_background_old">
+
+        <LinearLayout 
+            android:layout_gravity="center"
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout 
+                android:layout_width="70.0dp"
+                android:layout_height="fill_parent">
+
+                <ImageView
+                    android:id="@+id/albumart"
+                    android:background="@drawable/ic_lockscreen_music_bg"
+                    android:layout_width="54.659973dp"
+                    android:layout_height="54.659973dp"
+                    android:layout_marginLeft="15.329987dp"
+                    android:scaleType="fitXY"
+                />
+
+            </RelativeLayout>
+
+            <RelativeLayout 
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_marginLeft="9.329987dp">
+
+                <TextView
+                    android:id="@+id/title"
+                    android:textSize="12.0sp"
+                    android:typeface="sans"
+                    android:textColor="#ffffffff"
+                    android:ellipsize="marquee"
+                    android:gravity="left"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"        
+                    android:layout_marginRight="9.329987dp"
+                    android:singleLine="true"
+                    android:drawableLeft="@drawable/ic_lockscreen_player_icon"
+                />
+
+                <ImageView 
+                    android:id="@+id/zzinfoline"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_lockscreen_music_line"
+                    android:scaleType="fitStart"
+                    android:layout_below="@id/title"
+                />
+
+                <ImageView
+                    android:id="@+id/btn_prev"
+                    android:layout_width="42.0dp"
+                    android:layout_height="42.0dp"
+                    android:layout_marginLeft="4.0dp"
+                    android:src="@drawable/ic_media_previous"
+                    android:clickable="true"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:layout_below="@id/zzinfoline"
+                    android:contentDescription="@string/lockscreen_transport_prev_description"
+                />
+
+                <ImageView
+                    android:id="@+id/btn_play"
+                    android:layout_width="42.0dp"
+                    android:layout_height="42.0dp"
+                    android:layout_marginLeft="44.0dp"
+                    android:clickable="true"
+                    android:src="@drawable/ic_media_play"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:layout_toRightOf="@id/btn_prev"
+                    android:layout_below="@id/zzinfoline"
+                    android:contentDescription="@string/lockscreen_transport_play_description"
+                 />
+
+                <ImageView
+                    android:id="@+id/btn_next"
+                    android:layout_width="42.0dp"
+                    android:layout_height="42.0dp"
+                    android:layout_marginLeft="176.0dp"
+                    android:layout_gravity="right"
+                    android:clickable="true"
+                    android:src="@drawable/ic_media_next"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:layout_below="@id/zzinfoline"
+                    android:contentDescription="@string/lockscreen_transport_next_description"
+                />
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+</com.android.internal.widget.TransportControlView>
