@@ -2418,6 +2418,13 @@ public final class Settings {
         public static final String MUSIC_WIDGET_TYPE = "music_widget_type";
 
         /**
+         * statusbar color picker
+         * 
+         * @hide
+         */
+        public static final String STATUSBAR_BACKGROUND_COLOR = "statusbar_background_color";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as
          * the settings keys and easy to update. NOTE: Settings are backed up
          * and restored in the order they appear in this array. If you have one
