@@ -371,7 +371,7 @@ status_t MatroskaSource::readBlock() {
     int64_t timeUs = mBlockIter.blockTimeUs();
     int frameCount = block->GetFrameCount();
 
-    for (int i = 0; i < frameCount; ++i) {
+    for (int i = 0; i < block->GetFrameCount(); ++i) {
         const mkvparser::Block::Frame &frame = block->GetFrame(i);
 
         MediaBuffer *mbuf = new MediaBuffer(frame.len);
