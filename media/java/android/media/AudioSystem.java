@@ -202,6 +202,9 @@ public class AudioSystem
     public static final int DEVICE_OUT_ANLG_DOCK_HEADSET = 0x800;
     public static final int DEVICE_OUT_DGTL_DOCK_HEADSET = 0x1000;
     public static final int DEVICE_OUT_DEFAULT = 0x8000;
+    public static final int DEVICE_OUT_FM = 0x800;
+    public static final int DEVICE_OUT_HDMI = 0x1000;
+    public static final int DEVICE_OUT_DEFAULT = 0x8000;
     // input devices
     public static final int DEVICE_IN_COMMUNICATION = 0x10000;
     public static final int DEVICE_IN_AMBIENT = 0x20000;
@@ -212,6 +215,10 @@ public class AudioSystem
     public static final int DEVICE_IN_WIRED_HEADSET = 0x400000;
     public static final int DEVICE_IN_AUX_DIGITAL = 0x800000;
     public static final int DEVICE_IN_DEFAULT = 0x80000000;
+    // For OMAP
+    public static final int DEVICE_OUT_FM_TRANSMIT = 0x800;
+    public static final int DEVICE_IN_FM_ANALOG = 0x1000000;
+    public static final int DEVICE_OUT_LOW_POWER = 0x900;
 
     // device states, must match AudioSystem::device_connection_state
     public static final int DEVICE_STATE_UNAVAILABLE = 0;
