@@ -114,23 +114,20 @@ public abstract class PowerButton {
 
                     int sColorMaskBase = Settings.System.getInt(context.getContentResolver(),
                             Settings.System.EXPANDED_VIEW_WIDGET_COLOR, 0xFF33B5E5);
-                    int sColorMaskOn    = sColorMaskBase;
-                    int sColorMaskOff   = sColorMaskBase;
-                    int sColorMaskInter = sColorMaskBase;
 
                     /* Button State */
                     switch(mState) {
                         case STATE_ENABLED:
                             updateImageView(buttonState,
-                                    res.getDrawable(R.drawable.pc_icon_on, sColorMaskOn, MASK_MODE));
+                                    res.getDrawable(R.drawable.pc_icon_on, sColorMaskBase, MASK_MODE));
                             break;
                         case STATE_DISABLED:
                             updateImageView(buttonState,
-                                    res.getDrawable(R.drawable.pc_icon_off, sColorMaskOff, MASK_MODE));
+                                    res.getDrawable(R.drawable.pc_icon_off));
                             break;
                         default:
                             updateImageView(buttonState,
-                                    res.getDrawable(R.drawable.pc_icon_ing, sColorMaskInter, MASK_MODE));
+                                    res.getDrawable(R.drawable.pc_icon_ing, sColorMaskBase, MASK_MODE));
                             break;
                     }
                 }
