@@ -54,7 +54,7 @@ public abstract class PowerButton {
     public static final String BUTTON_WIMAX = "toggleWimax";
     public static final String BUTTON_UNKNOWN = "unknown";
 
-    private static final Mode MASK_MODE = Mode.SCREEN;
+    private static final Mode MASK_MODE = Mode.MULTIPLY;
 
     // this is a list of all of our buttons and their corresponding classes
     private static final HashMap<String, Class<? extends PowerButton>> BUTTONS = new HashMap<String, Class<? extends PowerButton>>();
@@ -114,23 +114,23 @@ public abstract class PowerButton {
 
                     int sColorMaskBase = Settings.System.getInt(context.getContentResolver(),
                             Settings.System.EXPANDED_VIEW_WIDGET_COLOR, 0xFF33B5E5);
-                    int sColorMaskOn    = (sColorMaskBase & 0x00FFFFFF) | 0xA0000000;
-                    int sColorMaskOff   = (sColorMaskBase & 0x00FFFFFF) | 0x33000000;
-                    int sColorMaskInter = (sColorMaskBase & 0x00FFFFFF) | 0x60000000;
+                    int sColorMaskOn    = sColorMaskBase;
+                    int sColorMaskOff   = sColorMaskBase;
+                    int sColorMaskInter = sColorMaskBase;
 
                     /* Button State */
                     switch(mState) {
                         case STATE_ENABLED:
                             updateImageView(buttonState,
-                                    res.getDrawable(R.drawable.stat_bgon_custom, sColorMaskOn, MASK_MODE));
+                                    res.getDrawable(R.drawable.pc_icon_on, sColorMaskOn, MASK_MODE));
                             break;
                         case STATE_DISABLED:
                             updateImageView(buttonState,
-                                    res.getDrawable(R.drawable.stat_bgon_custom, sColorMaskOff, MASK_MODE));
+                                    res.getDrawable(R.drawable.pc_icon_off, sColorMaskOff, MASK_MODE));
                             break;
                         default:
                             updateImageView(buttonState,
-                                    res.getDrawable(R.drawable.stat_bgon_custom, sColorMaskInter, MASK_MODE));
+                                    res.getDrawable(R.drawable.pc_icon_ing, sColorMaskInter, MASK_MODE));
                             break;
                     }
                 }
