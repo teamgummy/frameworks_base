@@ -146,7 +146,7 @@ public class AudioService extends IAudioService.Stub {
 
     private static final String MAIN_MIC_CHOICE = "omap.audio.mic.main";
     private static final String SUB_MIC_CHOICE = "omap.audio.mic.sub";
-    private static final string EXTDISP_STATUS_DISPLAY = "com.motorola.intent.action.EXTDISP_STATUS_DISPLAY";
+    private static final String EXTDISP_STATUS_DISPLAY = "com.motorola.intent.action.EXTDISP_STATUS_DISPLAY";
 
     private SoundPool mSoundPool;
     private Object mSoundEffectsLock = new Object();
@@ -379,8 +379,6 @@ public class AudioService extends IAudioService.Stub {
         intentFilter.addAction(Intent.ACTION_SCREEN_ON);
         intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
         // See if this works as in GB to fix hdmi audio out
-        intentFilter.addAction(BluetoothA2dp.ACTION_SINK_STATE_CHANGED);
-        intentFilter.addAction(BluetoothHeadset.ACTION_STATE_CHANGED);
         intentFilter.addAction(EXTDISP_STATUS_DISPLAY);
         context.registerReceiver(mReceiver, intentFilter);
 
