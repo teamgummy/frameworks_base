@@ -20,7 +20,6 @@ import static android.telephony.SmsMessage.ENCODING_16BIT;
 import static android.telephony.SmsMessage.MAX_USER_DATA_BYTES;
 import static android.telephony.SmsMessage.MAX_USER_DATA_BYTES_WITH_HEADER;
 
-import android.os.SystemProperties;
 import android.util.Log;
 
 import android.telephony.SmsMessage;
