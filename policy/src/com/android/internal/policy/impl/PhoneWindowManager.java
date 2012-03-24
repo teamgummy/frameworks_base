@@ -319,7 +319,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
 	boolean mKeyboardDockFeature;
 	boolean mHallSensorFeature;
-	
+
     boolean mSystemReady;
     boolean mSystemBooted;
     boolean mHdmiPlugged;
@@ -831,9 +831,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
 
 		PackageManager packageManager = mContext.getPackageManager();
-		mKeyboardDockFeature = packageManager.hasSystemFeature(PackageManager.FEATURE_EOS_KB_DOCK);
-		mHallSensorFeature = packageManager.hasSystemFeature(PackageManager.FEATURE_EOS_HALL_SENSOR);
-		
+		mKeyboardDockFeature = packageManager.hasSystemFeature(PackageManager.FEATURE_TF101_KB_DOCK);
+		mHallSensorFeature = packageManager.hasSystemFeature(PackageManager.FEATURE_TF101_HALL_SENSOR);
+
         PowerManager pm = (PowerManager)context.getSystemService(Context.POWER_SERVICE);
         mBroadcastWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                 "PhoneWindowManager.mBroadcastWakeLock");
@@ -2600,7 +2600,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     /** {@inheritDoc} */
     public void notifyLidSwitchChanged(long whenNanos, boolean lidOpen) {
         // lid changed state
-		if ((mKeyboardDockFeature) && (mDockMode == Intent.EXTRA_DOCK_STATE_EOS_KB))
+		if ((mKeyboardDockFeature) && (mDockMode == Intent.EXTRA_DOCK_STATE_TF101_KB));
 		    lidOpen = lidOpen ? false : true;
         mLidOpen = lidOpen ? LID_OPEN : LID_CLOSED;
 		readLidStateByHardwareFeature();
@@ -2636,21 +2636,21 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             }
         }
     }
-	
+
 	boolean readLidStateByHardwareFeature()
 	{
 	    boolean flag = true;
 		if (!mHallSensorFeature)
 		    mLidOpen = LID_ABSENT;
 		else {
-		    if((mKeyboardDockFeature) && (mDockMode != Intent.EXTRA_DOCK_STATE_EOS_KB))
+		    if((mKeyboardDockFeature) && (mDockMode != Intent.EXTRA_DOCK_STATE_TF101_KB))
 			    mLidOpen = LID_ABSENT;
 			else
 			    flag = false
 		}
 		return flag;
 	}
-	
+
 	private boolean goToSleepWhenLidClose()
 	{
 	    if ((mScreenOnEarly) && (isLidClosedOnDock()))
@@ -2662,7 +2662,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 		    return false;
 		}
 	}
-	
+
 	public boolean isLidClosedOnDock()
 	{
 	    if ((mLidOpen == LID_CLOSED) && (mKeyboardDockFeature)) {
@@ -3159,7 +3159,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         }
         return result;
     }
-	
+
 	void handleFunctionKey(KeyEvent event) {
         mBroadcastWakeLock.acquire();
         mHandler.post(new PassFunctionKey(new KeyEvent(event)));
@@ -3199,7 +3199,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             }
         }
     }
-	
+
     BroadcastReceiver mBroadcastDone = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             mBroadcastWakeLock.release();
@@ -3391,7 +3391,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 // enable 180 degree rotation while docked.
                 preferredRotation = mDeskDockEnablesAccelerometer
                         ? sensorRotation : mDeskDockRotation;
-			} else if(mDockMode == Intent.EXTRA_DOCK_STATE_EOS_KB
+			} else if(mDockMode == Intent.EXTRA_DOCK_STATE_TF101_KB
                     && (mKeyboardDockEnablesAccelerometer || mKeyboardDockRotation >= 0)) {
                 // Ignore sensor when in keyboard dock unless explicitly enabled.
                 // This case can override the behavior of NOSENSOR, and can also
