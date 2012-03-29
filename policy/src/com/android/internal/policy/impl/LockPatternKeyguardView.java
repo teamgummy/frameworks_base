@@ -1444,7 +1444,7 @@ public class LockPatternKeyguardView extends KeyguardViewBase implements Handler
 
     // Tells the FaceLock service to start displaying its UI and perform
     // recognition
-    public void startFaceLock(IBinder windowToken, int x, int y, int h, int w)
+    public void startFaceLock(IBinder windowToken, int x, int y, int w, int h)
     {
         if (usingFaceLock()) {
             synchronized (mFaceLockServiceRunningLock) {
