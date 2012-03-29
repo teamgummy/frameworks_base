@@ -526,7 +526,7 @@ final class ActivityStack {
 
     final void showAskCompatModeDialogLocked(ActivityRecord r) {
         Message msg = Message.obtain();
-        msg.what = ActivityManagerService.SHOW_COMPAT_MODE_DILOG_MSG;
+        msg.what = ActivityManagerService.SHOW_COMPAT_MODE_DIALOG_MSG;
         msg.obj = r.task.askedCompatMode ? null : r;
         mService.mHandler.sendMessage(msg);
     }
