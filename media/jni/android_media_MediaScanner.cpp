@@ -48,7 +48,7 @@ static fields_t fields;
 
 static status_t checkAndClearExceptionFromCallback(JNIEnv* env, const char* methodName) {
     if (env->ExceptionCheck()) {
-        ALOGE("An exception was thrown by callback '%s'.", methodName);
+        LOGE("An exception was thrown by callback '%s'.", methodName);
         LOGE_EX(env);
         env->ExceptionClear();
         return UNKNOWN_ERROR;
@@ -113,12 +113,12 @@ public:
             mHandleStringTagMethodID(0),
             mSetMimeTypeMethodID(0)
     {
-        ALOGV("MyMediaScannerClient constructor");
+        LOGV("MyMediaScannerClient constructor");
         jclass mediaScannerClientInterface =
                 env->FindClass(kClassMediaScannerClient);
 
         if (mediaScannerClientInterface == NULL) {
-            ALOGE("Class %s not found", kClassMediaScannerClient);
+            LOGE("Class %s not found", kClassMediaScannerClient);
         } else {
             mScanFileMethodID = env->GetMethodID(
                                     mediaScannerClientInterface,
@@ -139,14 +139,14 @@ public:
 
     virtual ~MyMediaScannerClient()
     {
-        ALOGV("MyMediaScannerClient destructor");
+        LOGV("MyMediaScannerClient destructor");
         mEnv->DeleteGlobalRef(mClient);
     }
 
     virtual status_t scanFile(const char* path, long long lastModified,
             long long fileSize, bool isDirectory, bool noMedia)
     {
-        ALOGV("scanFile: path(%s), time(%lld), size(%lld) and isDir(%d)",
+        LOGV("scanFile: path(%s), time(%lld), size(%lld) and isDir(%d)",
             path, lastModified, fileSize, isDirectory);
 
         jstring pathStr;
@@ -164,7 +164,7 @@ public:
 
     virtual status_t handleStringTag(const char* name, const char* value)
     {
-        ALOGV("handleStringTag: name(%s) and value(%s)", name, value);
+        LOGV("handleStringTag: name(%s) and value(%s)", name, value);
         jstring nameStr, valueStr;
         if ((nameStr = mEnv->NewStringUTF(name)) == NULL) {
             mEnv->ExceptionClear();
@@ -201,7 +201,7 @@ public:
 
     virtual status_t setMimeType(const char* mimeType)
     {
-        ALOGV("setMimeType: %s", mimeType);
+        LOGV("setMimeType: %s", mimeType);
         jstring mimeTypeStr;
         if ((mimeTypeStr = mEnv->NewStringUTF(mimeType)) == NULL) {
             mEnv->ExceptionClear();
@@ -237,7 +237,7 @@ static void
 android_media_MediaScanner_processDirectory(
         JNIEnv *env, jobject thiz, jstring path, jobject client)
 {
-    ALOGV("processDirectory");
+    LOGV("processDirectory");
     MediaScanner *mp = getNativeScanner_l(env, thiz);
     if (mp == NULL) {
         jniThrowException(env, kRunTimeException, "No scanner available");
@@ -257,7 +257,7 @@ android_media_MediaScanner_processDirectory(
     MyMediaScannerClient myClient(env, client);
     MediaScanResult result = mp->processDirectory(pathStr, myClient);
     if (result == MEDIA_SCAN_RESULT_ERROR) {
-        ALOGE("An error occurred while scanning directory '%s'.", pathStr);
+        LOGE("An error occurred while scanning directory '%s'.", pathStr);
     }
     env->ReleaseStringUTFChars(path, pathStr);
 }
@@ -267,7 +267,7 @@ android_media_MediaScanner_processFile(
         JNIEnv *env, jobject thiz, jstring path,
         jstring mimeType, jobject client)
 {
-    ALOGV("processFile");
+    LOGV("processFile");
 
     // Lock already hold by processDirectory
     MediaScanner *mp = getNativeScanner_l(env, thiz);
@@ -297,7 +297,7 @@ android_media_MediaScanner_processFile(
     MyMediaScannerClient myClient(env, client);
     MediaScanResult result = mp->processFile(pathStr, mimeTypeStr, myClient);
     if (result == MEDIA_SCAN_RESULT_ERROR) {
-        ALOGE("An error occurred while scanning file '%s'.", pathStr);
+        LOGE("An error occurred while scanning file '%s'.", pathStr);
     }
     env->ReleaseStringUTFChars(path, pathStr);
     if (mimeType) {
@@ -309,7 +309,7 @@ static void
 android_media_MediaScanner_setLocale(
         JNIEnv *env, jobject thiz, jstring locale)
 {
-    ALOGV("setLocale");
+    LOGV("setLocale");
     MediaScanner *mp = getNativeScanner_l(env, thiz);
     if (mp == NULL) {
         jniThrowException(env, kRunTimeException, "No scanner available");
@@ -333,7 +333,7 @@ static jbyteArray
 android_media_MediaScanner_extractAlbumArt(
         JNIEnv *env, jobject thiz, jobject fileDescriptor)
 {
-    ALOGV("extractAlbumArt");
+    LOGV("extractAlbumArt");
     MediaScanner *mp = getNativeScanner_l(env, thiz);
     if (mp == NULL) {
         jniThrowException(env, kRunTimeException, "No scanner available");
@@ -374,7 +374,7 @@ done:
 static void
 android_media_MediaScanner_native_init(JNIEnv *env)
 {
-    ALOGV("native_init");
+    LOGV("native_init");
     jclass clazz = env->FindClass(kClassMediaScanner);
     if (clazz == NULL) {
         return;
@@ -389,7 +389,7 @@ android_media_MediaScanner_native_init(JNIEnv *env)
 static void
 android_media_MediaScanner_native_setup(JNIEnv *env, jobject thiz)
 {
-    ALOGV("native_setup");
+    LOGV("native_setup");
     MediaScanner *mp = new StagefrightMediaScanner;
 
     if (mp == NULL) {
@@ -403,7 +403,7 @@ android_media_MediaScanner_native_setup(JNIEnv *env, jobject thiz)
 static void
 android_media_MediaScanner_native_finalize(JNIEnv *env, jobject thiz)
 {
-    ALOGV("native_finalize");
+    LOGV("native_finalize");
     MediaScanner *mp = getNativeScanner_l(env, thiz);
     if (mp == 0) {
         return;

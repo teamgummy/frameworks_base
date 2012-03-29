@@ -174,7 +174,7 @@ status_t buildAPyramid(ogles_context_t* c, EGLTextureObject* tex)
                 }
             }
         } else {
-            ALOGE("Unsupported format (%d)", base->format);
+            LOGE("Unsupported format (%d)", base->format);
             return BAD_TYPE;
         }
 

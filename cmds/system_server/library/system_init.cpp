@@ -42,7 +42,7 @@ public:
 
     virtual void binderDied(const wp<IBinder>& who)
     {
-        ALOGI("Grim Reaper killing system_server...");
+        LOGI("Grim Reaper killing system_server...");
         kill(getpid(), SIGKILL);
     }
 };
@@ -53,12 +53,12 @@ public:
 
 extern "C" status_t system_init()
 {
-    ALOGI("Entered system_init()");
+    LOGI("Entered system_init()");
 
     sp<ProcessState> proc(ProcessState::self());
 
     sp<IServiceManager> sm = defaultServiceManager();
-    ALOGI("ServiceManager: %p\n", sm.get());
+    LOGI("ServiceManager: %p\n", sm.get());
 
     sp<GrimReaper> grim = new GrimReaper();
     sm->asBinder()->linkToDeath(grim, grim.get(), 0);
@@ -82,10 +82,10 @@ extern "C" status_t system_init()
     // All other servers should just start the Android runtime at
     // the beginning of their processes's main(), before calling
     // the init function.
-    ALOGI("System server: starting Android runtime.\n");
+    LOGI("System server: starting Android runtime.\n");
     AndroidRuntime* runtime = AndroidRuntime::getRuntime();
 
-    ALOGI("System server: starting Android services.\n");
+    LOGI("System server: starting Android services.\n");
     JNIEnv* env = runtime->getJNIEnv();
     if (env == NULL) {
         return UNKNOWN_ERROR;
@@ -100,10 +100,10 @@ extern "C" status_t system_init()
     }
     env->CallStaticVoidMethod(clazz, methodId);
 
-    ALOGI("System server: entering thread pool.\n");
+    LOGI("System server: entering thread pool.\n");
     ProcessState::self()->startThreadPool();
     IPCThreadState::self()->joinThreadPool();
-    ALOGI("System server: exiting thread pool.\n");
+    LOGI("System server: exiting thread pool.\n");
 
     return NO_ERROR;
 }

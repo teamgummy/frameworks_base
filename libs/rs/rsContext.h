@@ -50,13 +50,13 @@ namespace renderscript {
 #define CHECK_OBJ(o) { \
     GET_TLS(); \
     if (!ObjectBase::isValid(rsc, (const ObjectBase *)o)) {  \
-        ALOGE("Bad object %p at %s, %i", o, __FILE__, __LINE__);  \
+        LOGE("Bad object %p at %s, %i", o, __FILE__, __LINE__);  \
     } \
 }
 #define CHECK_OBJ_OR_NULL(o) { \
     GET_TLS(); \
     if (o && !ObjectBase::isValid(rsc, (const ObjectBase *)o)) {  \
-        ALOGE("Bad object %p at %s, %i", o, __FILE__, __LINE__);  \
+        LOGE("Bad object %p at %s, %i", o, __FILE__, __LINE__);  \
     } \
 }
 #else

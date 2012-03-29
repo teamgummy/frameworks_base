@@ -97,12 +97,12 @@ static int backupToTar(JNIEnv* env, jobject clazz, jstring packageNameObj,
 
     // Validate
     if (!writer) {
-        ALOGE("No output stream provided [%s]", path.string());
+        LOGE("No output stream provided [%s]", path.string());
         return -1;
     }
 
     if (path.length() < rootpath.length()) {
-        ALOGE("file path [%s] shorter than root path [%s]",
+        LOGE("file path [%s] shorter than root path [%s]",
                 path.string(), rootpath.string());
         return -1;
     }

@@ -204,11 +204,11 @@ TEST_F(LayerUpdateTest, LayerResizeWorks) {
         sc->checkPixel(145, 145,  63,  63, 195);
     }
 
-    ALOGD("resizing");
+    LOGD("resizing");
     SurfaceComposerClient::openGlobalTransaction();
     ASSERT_EQ(NO_ERROR, mFGSurfaceControl->setSize(128, 128));
     SurfaceComposerClient::closeGlobalTransaction(true);
-    ALOGD("resized");
+    LOGD("resized");
     {
         // This should not reflect the new size or color because SurfaceFlinger
         // has not yet received a buffer of the correct size.
@@ -219,10 +219,10 @@ TEST_F(LayerUpdateTest, LayerResizeWorks) {
         sc->checkPixel(145, 145,  63,  63, 195);
     }
 
-    ALOGD("drawing");
+    LOGD("drawing");
     fillSurfaceRGBA8(mFGSurfaceControl, 63, 195, 63);
     waitForPostedBuffers();
-    ALOGD("drawn");
+    LOGD("drawn");
     {
         // This should reflect the new size and the new color.
         SCOPED_TRACE("after redraw");

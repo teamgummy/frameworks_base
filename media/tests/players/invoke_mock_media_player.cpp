@@ -59,7 +59,7 @@ class Player: public MediaPlayerBase
     virtual status_t    setDataSource(
             const char *url,
             const KeyedVector<String8, String8> *) {
-        ALOGV("setDataSource %s", url);
+        LOGV("setDataSource %s", url);
         mTest = TEST_UNKNOWN;
         if (strncmp(url, kPing, strlen(kPing)) == 0) {
             mTest = PING;
@@ -118,13 +118,13 @@ void Player::ping(const Parcel& request, Parcel *reply)
 
 extern "C" android::MediaPlayerBase* newPlayer()
 {
-    ALOGD("New invoke test player");
+    LOGD("New invoke test player");
     return new Player();
 }
 
 extern "C" android::status_t deletePlayer(android::MediaPlayerBase *player)
 {
-    ALOGD("Delete invoke test player");
+    LOGD("Delete invoke test player");
     delete player;
     return OK;
 }

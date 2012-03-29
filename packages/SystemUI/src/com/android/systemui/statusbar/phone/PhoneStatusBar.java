@@ -429,7 +429,7 @@ public class PhoneStatusBar extends StatusBar {
         // receive broadcasts
         IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_CONFIGURATION_CHANGED);
-        filter.addAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
+        filter.addAction(Intent.ACTION_CLOSE_SYSTEM_DILOGS);
         filter.addAction(Intent.ACTION_SCREEN_OFF);
         context.registerReceiver(mBroadcastReceiver, filter);
         
@@ -2517,10 +2517,10 @@ public class PhoneStatusBar extends StatusBar {
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (Intent.ACTION_CLOSE_SYSTEM_DIALOGS.equals(action)
+            if (Intent.ACTION_CLOSE_SYSTEM_DILOGS.equals(action)
                     || Intent.ACTION_SCREEN_OFF.equals(action)) {
                 boolean excludeRecents = false;
-                if (Intent.ACTION_CLOSE_SYSTEM_DIALOGS.equals(action)) {
+                if (Intent.ACTION_CLOSE_SYSTEM_DILOGS.equals(action)) {
                     String reason = intent.getStringExtra("reason");
                     if (reason != null) {
                         excludeRecents = reason.equals("recentapps");

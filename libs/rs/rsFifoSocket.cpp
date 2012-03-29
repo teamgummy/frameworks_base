@@ -48,31 +48,31 @@ void FifoSocket::writeAsync(const void *data, size_t bytes) {
     if (bytes == 0) {
         return;
     }
-    //ALOGE("writeAsync %p %i", data, bytes);
+    //LOGE("writeAsync %p %i", data, bytes);
     size_t ret = ::send(sv[0], data, bytes, 0);
-    //ALOGE("writeAsync ret %i", ret);
+    //LOGE("writeAsync ret %i", ret);
     rsAssert(ret == bytes);
 }
 
 void FifoSocket::writeWaitReturn(void *retData, size_t retBytes) {
-    //ALOGE("writeWaitReturn %p %i", retData, retBytes);
+    //LOGE("writeWaitReturn %p %i", retData, retBytes);
     size_t ret = ::recv(sv[0], retData, retBytes, 0);
-    //ALOGE("writeWaitReturn %i", ret);
+    //LOGE("writeWaitReturn %i", ret);
     rsAssert(ret == retBytes);
 }
 
 size_t FifoSocket::read(void *data, size_t bytes) {
-    //ALOGE("read %p %i", data, bytes);
+    //LOGE("read %p %i", data, bytes);
     size_t ret = ::recv(sv[1], data, bytes, 0);
     rsAssert(ret == bytes);
-    //ALOGE("read ret %i", ret);
+    //LOGE("read ret %i", ret);
     return ret;
 }
 
 void FifoSocket::readReturn(const void *data, size_t bytes) {
-    ALOGE("readReturn %p %Zu", data, bytes);
+    LOGE("readReturn %p %Zu", data, bytes);
     size_t ret = ::send(sv[1], data, bytes, 0);
-    ALOGE("readReturn %Zu", ret);
+    LOGE("readReturn %Zu", ret);
     rsAssert(ret == bytes);
 }
 

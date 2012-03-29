@@ -89,7 +89,7 @@ const String16& BBinder::getInterfaceDescriptor() const
     // This is a local static rather than a global static,
     // to avoid static initializer ordering issues.
     static String16 sEmptyDescriptor;
-    ALOGW("reached BBinder::getInterfaceDescriptor (this=%p)", this);
+    LOGW("reached BBinder::getInterfaceDescriptor (this=%p)", this);
     return sEmptyDescriptor;
 }
 

@@ -45,7 +45,7 @@ private Button mPickTime;
 private int mHour;
 private int mMinute;
 
-static final int TIME_DIALOG_ID = 0;
+static final int TIME_DILOG_ID = 0;
 
 &#64;Override
 protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +59,7 @@ protected void onCreate(Bundle savedInstanceState) {
     // add a click listener to the button
     mPickTime.setOnClickListener(new View.OnClickListener() {
         public void onClick(View v) {
-            showDialog(TIME_DIALOG_ID);
+            showDialog(TIME_DILOG_ID);
         }
     });
 
@@ -74,7 +74,7 @@ protected void onCreate(Bundle savedInstanceState) {
 </pre>
 <p class="note"><strong>Tip:</strong> Press Ctrl(or Cmd) + Shift + O to import all needed packages.</p>
         <p>We start by instantiating variables for our View elements and time fields.
-	The <code>TIME_DIALOG_ID</code> is a static integer that uniquely identifies the dialog. In the
+	The <code>TIME_DILOG_ID</code> is a static integer that uniquely identifies the dialog. In the
 	<code>onCreate()</code> method, we get prepared by setting the layout and capturing the View elements. 
 	We then set an on-click listener for the Button, so that when it is clicked, it will
 	show our TimePicker dialog. The <code>showDialog()</code> method will perform a callback
@@ -88,7 +88,7 @@ protected void onCreate(Bundle savedInstanceState) {
 &#64;Override
 protected Dialog onCreateDialog(int id) {
     switch (id) {
-    case TIME_DIALOG_ID:
+    case TIME_DILOG_ID:
         return new TimePickerDialog(this,
                 mTimeSetListener, mHour, mMinute, false);
     }

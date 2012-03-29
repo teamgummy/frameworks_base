@@ -26,12 +26,12 @@ namespace uirenderer {
 ///////////////////////////////////////////////////////////////////////////////
 
 void ResourceCache::logCache() {
-    ALOGD("ResourceCache: cacheReport:");
+    LOGD("ResourceCache: cacheReport:");
     for (size_t i = 0; i < mCache->size(); ++i) {
         ResourceReference* ref = mCache->valueAt(i);
-        ALOGD("  ResourceCache: mCache(%d): resource, ref = 0x%p, 0x%p",
+        LOGD("  ResourceCache: mCache(%d): resource, ref = 0x%p, 0x%p",
                 i, mCache->keyAt(i), mCache->valueAt(i));
-        ALOGD("  ResourceCache: mCache(%d): refCount, recycled, destroyed, type = %d, %d, %d, %d",
+        LOGD("  ResourceCache: mCache(%d): refCount, recycled, destroyed, type = %d, %d, %d, %d",
                 i, ref->refCount, ref->recycled, ref->destroyed, ref->resourceType);
     }
 }

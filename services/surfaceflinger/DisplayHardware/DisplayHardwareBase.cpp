@@ -76,10 +76,10 @@ bool DisplayHardwareBase::DisplayEventThread::threadLoop()
       err = read(fd, &buf, 1);
     } while (err < 0 && errno == EINTR);
     close(fd);
-    ALOGW_IF(err<0, "ANDROID_WAIT_FOR_FB_SLEEP failed (%s)", strerror(errno));
+    LOGW_IF(err<0, "ANDROID_WAIT_FOR_FB_SLEEP failed (%s)", strerror(errno));
     if (err >= 0) {
         sp<SurfaceFlinger> flinger = mFlinger.promote();
-        ALOGD("About to give-up screen, flinger = %p", flinger.get());
+        LOGD("About to give-up screen, flinger = %p", flinger.get());
         if (flinger != 0) {
             mBarrier.close();
             flinger->screenReleased(0);
@@ -91,10 +91,10 @@ bool DisplayHardwareBase::DisplayEventThread::threadLoop()
       err = read(fd, &buf, 1);
     } while (err < 0 && errno == EINTR);
     close(fd);
-    ALOGW_IF(err<0, "ANDROID_WAIT_FOR_FB_WAKE failed (%s)", strerror(errno));
+    LOGW_IF(err<0, "ANDROID_WAIT_FOR_FB_WAKE failed (%s)", strerror(errno));
     if (err >= 0) {
         sp<SurfaceFlinger> flinger = mFlinger.promote();
-        ALOGD("Screen about to return, flinger = %p", flinger.get());
+        LOGD("Screen about to return, flinger = %p", flinger.get());
         if (flinger != 0)
             flinger->screenAcquired(0);
     }

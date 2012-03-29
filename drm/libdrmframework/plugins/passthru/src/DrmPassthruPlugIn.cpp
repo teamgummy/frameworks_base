@@ -58,7 +58,7 @@ DrmMetadata* DrmPassthruPlugIn::onGetMetadata(int uniqueId, const String8* path)
 
 DrmConstraints* DrmPassthruPlugIn::onGetConstraints(
         int uniqueId, const String8* path, int action) {
-    ALOGD("DrmPassthruPlugIn::onGetConstraints From Path: %d", uniqueId);
+    LOGD("DrmPassthruPlugIn::onGetConstraints From Path: %d", uniqueId);
     DrmConstraints* drmConstraints = new DrmConstraints();
 
     String8 value("dummy_available_time");
@@ -73,7 +73,7 @@ DrmConstraints* DrmPassthruPlugIn::onGetConstraints(
 }
 
 DrmInfoStatus* DrmPassthruPlugIn::onProcessDrmInfo(int uniqueId, const DrmInfo* drmInfo) {
-    ALOGD("DrmPassthruPlugIn::onProcessDrmInfo - Enter : %d", uniqueId);
+    LOGD("DrmPassthruPlugIn::onProcessDrmInfo - Enter : %d", uniqueId);
     DrmInfoStatus* drmInfoStatus = NULL;
     if (NULL != drmInfo) {
         switch (drmInfo->getInfoType()) {
@@ -102,28 +102,28 @@ DrmInfoStatus* DrmPassthruPlugIn::onProcessDrmInfo(int uniqueId, const DrmInfo* 
         }
         }
     }
-    ALOGD("DrmPassthruPlugIn::onProcessDrmInfo - Exit");
+    LOGD("DrmPassthruPlugIn::onProcessDrmInfo - Exit");
     return drmInfoStatus;
 }
 
 status_t DrmPassthruPlugIn::onSetOnInfoListener(
             int uniqueId, const IDrmEngine::OnInfoListener* infoListener) {
-    ALOGD("DrmPassthruPlugIn::onSetOnInfoListener : %d", uniqueId);
+    LOGD("DrmPassthruPlugIn::onSetOnInfoListener : %d", uniqueId);
     return DRM_NO_ERROR;
 }
 
 status_t DrmPassthruPlugIn::onInitialize(int uniqueId) {
-    ALOGD("DrmPassthruPlugIn::onInitialize : %d", uniqueId);
+    LOGD("DrmPassthruPlugIn::onInitialize : %d", uniqueId);
     return DRM_NO_ERROR;
 }
 
 status_t DrmPassthruPlugIn::onTerminate(int uniqueId) {
-    ALOGD("DrmPassthruPlugIn::onTerminate : %d", uniqueId);
+    LOGD("DrmPassthruPlugIn::onTerminate : %d", uniqueId);
     return DRM_NO_ERROR;
 }
 
 DrmSupportInfo* DrmPassthruPlugIn::onGetSupportInfo(int uniqueId) {
-    ALOGD("DrmPassthruPlugIn::onGetSupportInfo : %d", uniqueId);
+    LOGD("DrmPassthruPlugIn::onGetSupportInfo : %d", uniqueId);
     DrmSupportInfo* drmSupportInfo = new DrmSupportInfo();
     // Add mimetype's
     drmSupportInfo->addMimeType(String8("application/vnd.passthru.drm"));
@@ -136,12 +136,12 @@ DrmSupportInfo* DrmPassthruPlugIn::onGetSupportInfo(int uniqueId) {
 
 status_t DrmPassthruPlugIn::onSaveRights(int uniqueId, const DrmRights& drmRights,
             const String8& rightsPath, const String8& contentPath) {
-    ALOGD("DrmPassthruPlugIn::onSaveRights : %d", uniqueId);
+    LOGD("DrmPassthruPlugIn::onSaveRights : %d", uniqueId);
     return DRM_NO_ERROR;
 }
 
 DrmInfo* DrmPassthruPlugIn::onAcquireDrmInfo(int uniqueId, const DrmInfoRequest* drmInfoRequest) {
-    ALOGD("DrmPassthruPlugIn::onAcquireDrmInfo : %d", uniqueId);
+    LOGD("DrmPassthruPlugIn::onAcquireDrmInfo : %d", uniqueId);
     DrmInfo* drmInfo = NULL;
 
     if (NULL != drmInfoRequest) {
@@ -157,65 +157,65 @@ DrmInfo* DrmPassthruPlugIn::onAcquireDrmInfo(int uniqueId, const DrmInfoRequest*
 }
 
 bool DrmPassthruPlugIn::onCanHandle(int uniqueId, const String8& path) {
-    ALOGD("DrmPassthruPlugIn::canHandle: %s ", path.string());
+    LOGD("DrmPassthruPlugIn::canHandle: %s ", path.string());
     String8 extension = path.getPathExtension();
     extension.toLower();
     return (String8(".passthru") == extension);
 }
 
 String8 DrmPassthruPlugIn::onGetOriginalMimeType(int uniqueId, const String8& path) {
-    ALOGD("DrmPassthruPlugIn::onGetOriginalMimeType() : %d", uniqueId);
+    LOGD("DrmPassthruPlugIn::onGetOriginalMimeType() : %d", uniqueId);
     return String8("video/passthru");
 }
 
 int DrmPassthruPlugIn::onGetDrmObjectType(
             int uniqueId, const String8& path, const String8& mimeType) {
-    ALOGD("DrmPassthruPlugIn::onGetDrmObjectType() : %d", uniqueId);
+    LOGD("DrmPassthruPlugIn::onGetDrmObjectType() : %d", uniqueId);
     return DrmObjectType::UNKNOWN;
 }
 
 int DrmPassthruPlugIn::onCheckRightsStatus(int uniqueId, const String8& path, int action) {
-    ALOGD("DrmPassthruPlugIn::onCheckRightsStatus() : %d", uniqueId);
+    LOGD("DrmPassthruPlugIn::onCheckRightsStatus() : %d", uniqueId);
     int rightsStatus = RightsStatus::RIGHTS_VALID;
     return rightsStatus;
 }
 
 status_t DrmPassthruPlugIn::onConsumeRights(int uniqueId, DecryptHandle* decryptHandle,
             int action, bool reserve) {
-    ALOGD("DrmPassthruPlugIn::onConsumeRights() : %d", uniqueId);
+    LOGD("DrmPassthruPlugIn::onConsumeRights() : %d", uniqueId);
     return DRM_NO_ERROR;
 }
 
 status_t DrmPassthruPlugIn::onSetPlaybackStatus(int uniqueId, DecryptHandle* decryptHandle,
             int playbackStatus, int64_t position) {
-    ALOGD("DrmPassthruPlugIn::onSetPlaybackStatus() : %d", uniqueId);
+    LOGD("DrmPassthruPlugIn::onSetPlaybackStatus() : %d", uniqueId);
     return DRM_NO_ERROR;
 }
 
 bool DrmPassthruPlugIn::onValidateAction(int uniqueId, const String8& path,
             int action, const ActionDescription& description) {
-    ALOGD("DrmPassthruPlugIn::onValidateAction() : %d", uniqueId);
+    LOGD("DrmPassthruPlugIn::onValidateAction() : %d", uniqueId);
     return true;
 }
 
 status_t DrmPassthruPlugIn::onRemoveRights(int uniqueId, const String8& path) {
-    ALOGD("DrmPassthruPlugIn::onRemoveRights() : %d", uniqueId);
+    LOGD("DrmPassthruPlugIn::onRemoveRights() : %d", uniqueId);
     return DRM_NO_ERROR;
 }
 
 status_t DrmPassthruPlugIn::onRemoveAllRights(int uniqueId) {
-    ALOGD("DrmPassthruPlugIn::onRemoveAllRights() : %d", uniqueId);
+    LOGD("DrmPassthruPlugIn::onRemoveAllRights() : %d", uniqueId);
     return DRM_NO_ERROR;
 }
 
 status_t DrmPassthruPlugIn::onOpenConvertSession(int uniqueId, int convertId) {
-    ALOGD("DrmPassthruPlugIn::onOpenConvertSession() : %d", uniqueId);
+    LOGD("DrmPassthruPlugIn::onOpenConvertSession() : %d", uniqueId);
     return DRM_NO_ERROR;
 }
 
 DrmConvertedStatus* DrmPassthruPlugIn::onConvertData(
             int uniqueId, int convertId, const DrmBuffer* inputData) {
-    ALOGD("DrmPassthruPlugIn::onConvertData() : %d", uniqueId);
+    LOGD("DrmPassthruPlugIn::onConvertData() : %d", uniqueId);
     DrmBuffer* convertedData = NULL;
 
     if (NULL != inputData && 0 < inputData->length) {
@@ -229,13 +229,13 @@ DrmConvertedStatus* DrmPassthruPlugIn::onConvertData(
 }
 
 DrmConvertedStatus* DrmPassthruPlugIn::onCloseConvertSession(int uniqueId, int convertId) {
-    ALOGD("DrmPassthruPlugIn::onCloseConvertSession() : %d", uniqueId);
+    LOGD("DrmPassthruPlugIn::onCloseConvertSession() : %d", uniqueId);
     return new DrmConvertedStatus(DrmConvertedStatus::STATUS_OK, NULL, 0 /*offset*/);
 }
 
 status_t DrmPassthruPlugIn::onOpenDecryptSession(
             int uniqueId, DecryptHandle* decryptHandle, int fd, off64_t offset, off64_t length) {
-    ALOGD("DrmPassthruPlugIn::onOpenDecryptSession() : %d", uniqueId);
+    LOGD("DrmPassthruPlugIn::onOpenDecryptSession() : %d", uniqueId);
 
 #ifdef ENABLE_PASSTHRU_DECRYPTION
     decryptHandle->mimeType = String8("video/passthru");
@@ -254,7 +254,7 @@ status_t DrmPassthruPlugIn::onOpenDecryptSession(
 }
 
 status_t DrmPassthruPlugIn::onCloseDecryptSession(int uniqueId, DecryptHandle* decryptHandle) {
-    ALOGD("DrmPassthruPlugIn::onCloseDecryptSession() : %d", uniqueId);
+    LOGD("DrmPassthruPlugIn::onCloseDecryptSession() : %d", uniqueId);
     if (NULL != decryptHandle) {
         if (NULL != decryptHandle->decryptInfo) {
             delete decryptHandle->decryptInfo; decryptHandle->decryptInfo = NULL;
@@ -266,13 +266,13 @@ status_t DrmPassthruPlugIn::onCloseDecryptSession(int uniqueId, DecryptHandle* d
 
 status_t DrmPassthruPlugIn::onInitializeDecryptUnit(int uniqueId, DecryptHandle* decryptHandle,
             int decryptUnitId, const DrmBuffer* headerInfo) {
-    ALOGD("DrmPassthruPlugIn::onInitializeDecryptUnit() : %d", uniqueId);
+    LOGD("DrmPassthruPlugIn::onInitializeDecryptUnit() : %d", uniqueId);
     return DRM_NO_ERROR;
 }
 
 status_t DrmPassthruPlugIn::onDecrypt(int uniqueId, DecryptHandle* decryptHandle,
             int decryptUnitId, const DrmBuffer* encBuffer, DrmBuffer** decBuffer, DrmBuffer* IV) {
-    ALOGD("DrmPassthruPlugIn::onDecrypt() : %d", uniqueId);
+    LOGD("DrmPassthruPlugIn::onDecrypt() : %d", uniqueId);
     /**
      * As a workaround implementation passthru would copy the given
      * encrypted buffer as it is to decrypted buffer. Note, decBuffer
@@ -287,13 +287,13 @@ status_t DrmPassthruPlugIn::onDecrypt(int uniqueId, DecryptHandle* decryptHandle
 
 status_t DrmPassthruPlugIn::onFinalizeDecryptUnit(
             int uniqueId, DecryptHandle* decryptHandle, int decryptUnitId) {
-    ALOGD("DrmPassthruPlugIn::onFinalizeDecryptUnit() : %d", uniqueId);
+    LOGD("DrmPassthruPlugIn::onFinalizeDecryptUnit() : %d", uniqueId);
     return DRM_NO_ERROR;
 }
 
 ssize_t DrmPassthruPlugIn::onPread(int uniqueId, DecryptHandle* decryptHandle,
             void* buffer, ssize_t numBytes, off64_t offset) {
-    ALOGD("DrmPassthruPlugIn::onPread() : %d", uniqueId);
+    LOGD("DrmPassthruPlugIn::onPread() : %d", uniqueId);
     return 0;
 }
 

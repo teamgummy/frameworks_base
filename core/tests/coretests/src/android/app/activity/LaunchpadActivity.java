@@ -88,8 +88,8 @@ public class LaunchpadActivity extends Activity {
             "com.android.frameworks.coretests.activity.LIFECYCLE_BASIC";
     public static final String LIFECYCLE_SCREEN =
             "com.android.frameworks.coretests.activity.LIFECYCLE_SCREEN";
-    public static final String LIFECYCLE_DIALOG =
-            "com.android.frameworks.coretests.activity.LIFECYCLE_DIALOG";
+    public static final String LIFECYCLE_DILOG =
+            "com.android.frameworks.coretests.activity.LIFECYCLE_DILOG";
     public static final String LIFECYCLE_FINISH_CREATE =
             "com.android.frameworks.coretests.activity.LIFECYCLE_FINISH_CREATE";
     public static final String LIFECYCLE_FINISH_START =
@@ -133,7 +133,7 @@ public class LaunchpadActivity extends Activity {
 
     public static final String DO_FINISH = "finish";
     public static final String DO_LOCAL_SCREEN = "local-screen";
-    public static final String DO_LOCAL_DIALOG = "local-dialog";
+    public static final String DO_LOCAL_DILOG = "local-dialog";
 
     private boolean mBadParcelable = false;
 
@@ -179,9 +179,9 @@ public class LaunchpadActivity extends Activity {
                     DO_LOCAL_SCREEN, ON_FREEZE, ON_PAUSE, ON_STOP,
                     ON_RESTART, ON_START, ON_RESUME,
                     DO_FINISH, ON_PAUSE, ON_STOP, ON_DESTROY});
-        } else if (LIFECYCLE_DIALOG.equals(action)) {
+        } else if (LIFECYCLE_DILOG.equals(action)) {
             setExpectedLifecycle(new String[]{ON_START, ON_RESUME,
-                    DO_LOCAL_DIALOG, ON_FREEZE, ON_PAUSE, ON_RESUME,
+                    DO_LOCAL_DILOG, ON_FREEZE, ON_PAUSE, ON_RESUME,
                     DO_FINISH, ON_PAUSE, ON_STOP, ON_DESTROY});
         } else if (LIFECYCLE_FINISH_CREATE.equals(action)) {
             // This one behaves a little differently when running in a group.
@@ -417,7 +417,7 @@ public class LaunchpadActivity extends Activity {
             Intent intent = new Intent(TestedScreen.WAIT_BEFORE_FINISH);
             intent.setClass(this, LocalScreen.class);
             startActivity(intent);
-        } else if (next.equals(DO_LOCAL_DIALOG)) {
+        } else if (next.equals(DO_LOCAL_DILOG)) {
             mNextLifecycle++;
             Intent intent = new Intent(TestedScreen.WAIT_BEFORE_FINISH);
             intent.setClass(this, LocalDialog.class);

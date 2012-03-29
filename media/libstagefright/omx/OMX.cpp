@@ -115,7 +115,7 @@ void OMX::CallbackDispatcher::post(const omx_message &msg) {
 
 void OMX::CallbackDispatcher::dispatch(const omx_message &msg) {
     if (mOwner == NULL) {
-        ALOGV("Would have dispatched a message to a node that's already gone.");
+        LOGV("Would have dispatched a message to a node that's already gone.");
         return;
     }
     mOwner->onMessage(msg);
@@ -231,7 +231,7 @@ status_t OMX::allocateNode(
             instance, &handle);
 
     if (err != OMX_ErrorNone) {
-        ALOGV("FAILED to allocate omx component '%s'", name);
+        LOGV("FAILED to allocate omx component '%s'", name);
 
         instance->onGetHandleFailed();
 
@@ -384,7 +384,7 @@ OMX_ERRORTYPE OMX::OnEvent(
         OMX_IN OMX_U32 nData1,
         OMX_IN OMX_U32 nData2,
         OMX_IN OMX_PTR pEventData) {
-    ALOGV("OnEvent(%d, %ld, %ld)", eEvent, nData1, nData2);
+    LOGV("OnEvent(%d, %ld, %ld)", eEvent, nData1, nData2);
 
     omx_message msg;
     msg.type = omx_message::EVENT;
@@ -400,7 +400,7 @@ OMX_ERRORTYPE OMX::OnEvent(
 
 OMX_ERRORTYPE OMX::OnEmptyBufferDone(
         node_id node, OMX_IN OMX_BUFFERHEADERTYPE *pBuffer) {
-    ALOGV("OnEmptyBufferDone buffer=%p", pBuffer);
+    LOGV("OnEmptyBufferDone buffer=%p", pBuffer);
 
     omx_message msg;
     msg.type = omx_message::EMPTY_BUFFER_DONE;
@@ -414,7 +414,7 @@ OMX_ERRORTYPE OMX::OnEmptyBufferDone(
 
 OMX_ERRORTYPE OMX::OnFillBufferDone(
         node_id node, OMX_IN OMX_BUFFERHEADERTYPE *pBuffer) {
-    ALOGV("OnFillBufferDone buffer=%p", pBuffer);
+    LOGV("OnFillBufferDone buffer=%p", pBuffer);
 
     omx_message msg;
     msg.type = omx_message::FILL_BUFFER_DONE;

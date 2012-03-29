@@ -1169,7 +1169,7 @@ public class LockPatternKeyguardView extends KeyguardViewBase implements Handler
                 .setMessage(message)
                 .setNeutralButton(R.string.ok, null)
                 .create();
-        dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
+        dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DILOG);
         dialog.show();
     }
 

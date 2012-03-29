@@ -36,13 +36,13 @@ static jboolean vibratorExists(JNIEnv *env, jobject clazz)
 
 static void vibratorOn(JNIEnv *env, jobject clazz, jlong timeout_ms)
 {
-    // ALOGI("vibratorOn\n");
+    // LOGI("vibratorOn\n");
     vibrator_on(timeout_ms);
 }
 
 static void vibratorOff(JNIEnv *env, jobject clazz)
 {
-    // ALOGI("vibratorOff\n");
+    // LOGI("vibratorOff\n");
     vibrator_off();
 }
 

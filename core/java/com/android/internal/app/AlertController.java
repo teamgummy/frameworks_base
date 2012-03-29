@@ -141,14 +141,14 @@ public class AlertController {
             }
 
             // Post a message so we dismiss after the above handlers are executed
-            mHandler.obtainMessage(ButtonHandler.MSG_DISMISS_DIALOG, mDialogInterface)
+            mHandler.obtainMessage(ButtonHandler.MSG_DISMISS_DILOG, mDialogInterface)
                     .sendToTarget();
         }
     };
 
     private static final class ButtonHandler extends Handler {
         // Button clicks have Message.what as the BUTTON{1,2,3} constant
-        private static final int MSG_DISMISS_DIALOG = 1;
+        private static final int MSG_DISMISS_DILOG = 1;
         
         private WeakReference<DialogInterface> mDialog;
 
@@ -166,7 +166,7 @@ public class AlertController {
                     ((DialogInterface.OnClickListener) msg.obj).onClick(mDialog.get(), msg.what);
                     break;
                     
-                case MSG_DISMISS_DIALOG:
+                case MSG_DISMISS_DILOG:
                     ((DialogInterface) msg.obj).dismiss();
             }
         }

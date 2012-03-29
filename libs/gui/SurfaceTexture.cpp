@@ -60,11 +60,11 @@
 #endif
 
 // Macros for including the SurfaceTexture name in log messages
-#define ST_LOGV(x, ...) ALOGV("[%s] "x, mName.string(), ##__VA_ARGS__)
-#define ST_LOGD(x, ...) ALOGD("[%s] "x, mName.string(), ##__VA_ARGS__)
-#define ST_LOGI(x, ...) ALOGI("[%s] "x, mName.string(), ##__VA_ARGS__)
-#define ST_LOGW(x, ...) ALOGW("[%s] "x, mName.string(), ##__VA_ARGS__)
-#define ST_LOGE(x, ...) ALOGE("[%s] "x, mName.string(), ##__VA_ARGS__)
+#define ST_LOGV(x, ...) LOGV("[%s] "x, mName.string(), ##__VA_ARGS__)
+#define ST_LOGD(x, ...) LOGD("[%s] "x, mName.string(), ##__VA_ARGS__)
+#define ST_LOGI(x, ...) LOGI("[%s] "x, mName.string(), ##__VA_ARGS__)
+#define ST_LOGW(x, ...) LOGW("[%s] "x, mName.string(), ##__VA_ARGS__)
+#define ST_LOGE(x, ...) LOGE("[%s] "x, mName.string(), ##__VA_ARGS__)
 
 namespace android {
 
@@ -350,7 +350,7 @@ status_t SurfaceTexture::dequeueBuffer(int *outBuf, uint32_t w, uint32_t h,
                 }
 
                 // if buffer is FREE it CANNOT be current
-                ALOGW_IF((state == BufferSlot::FREE) && (mCurrentTexture==i),
+                LOGW_IF((state == BufferSlot::FREE) && (mCurrentTexture==i),
                         "dequeueBuffer: buffer %d is both FREE and current!",
                         i);
 
@@ -491,9 +491,9 @@ status_t SurfaceTexture::dequeueBuffer(int *outBuf, uint32_t w, uint32_t h,
         // synchronizing access to it.  It's too late at this point to abort the
         // dequeue operation.
         if (result == EGL_FALSE) {
-            ALOGE("dequeueBuffer: error waiting for fence: %#x", eglGetError());
+            LOGE("dequeueBuffer: error waiting for fence: %#x", eglGetError());
         } else if (result == EGL_TIMEOUT_EXPIRED_KHR) {
-            ALOGE("dequeueBuffer: timeout waiting for fence");
+            LOGE("dequeueBuffer: timeout waiting for fence");
         }
         eglDestroySyncKHR(dpy, fence);
     }
@@ -802,7 +802,7 @@ status_t SurfaceTexture::updateTexImage() {
                 EGLSyncKHR fence = eglCreateSyncKHR(dpy, EGL_SYNC_FENCE_KHR,
                         NULL);
                 if (fence == EGL_NO_SYNC_KHR) {
-                    ALOGE("updateTexImage: error creating fence: %#x",
+                    LOGE("updateTexImage: error creating fence: %#x",
                             eglGetError());
                     return -EINVAL;
                 }
@@ -990,7 +990,7 @@ void SurfaceTexture::freeBufferLocked(int i) {
 }
 
 void SurfaceTexture::freeAllBuffersLocked() {
-    ALOGW_IF(!mQueue.isEmpty(),
+    LOGW_IF(!mQueue.isEmpty(),
             "freeAllBuffersLocked called but mQueue is not empty");
     mCurrentTexture = INVALID_BUFFER_SLOT;
     for (int i = 0; i < NUM_BUFFER_SLOTS; i++) {
@@ -999,7 +999,7 @@ void SurfaceTexture::freeAllBuffersLocked() {
 }
 
 void SurfaceTexture::freeAllBuffersExceptHeadLocked() {
-    ALOGW_IF(!mQueue.isEmpty(),
+    LOGW_IF(!mQueue.isEmpty(),
             "freeAllBuffersExceptCurrentLocked called but mQueue is not empty");
     int head = -1;
     if (!mQueue.empty()) {

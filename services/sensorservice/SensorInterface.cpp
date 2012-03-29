@@ -34,7 +34,7 @@ HardwareSensor::HardwareSensor(const sensor_t& sensor)
     : mSensorDevice(SensorDevice::getInstance()),
       mSensor(&sensor)
 {
-    ALOGI("%s", sensor.name);
+    LOGI("%s", sensor.name);
 }
 
 HardwareSensor::~HardwareSensor() {

@@ -92,7 +92,7 @@ status_t AudioPlayer::start(bool sourceAlreadyStarted) {
 
     mFirstBufferResult = mSource->read(&mFirstBuffer, &options);
     if (mFirstBufferResult == INFO_FORMAT_CHANGED) {
-        ALOGV("INFO_FORMAT_CHANGED!!!");
+        LOGV("INFO_FORMAT_CHANGED!!!");
 
         CHECK(mFirstBuffer == NULL);
         mFirstBufferResult = OK;
@@ -223,7 +223,7 @@ void AudioPlayer::reset() {
     }
 
     if (mInputBuffer != NULL) {
-        ALOGV("AudioPlayer releasing input buffer.");
+        LOGV("AudioPlayer releasing input buffer.");
 
         mInputBuffer->release();
         mInputBuffer = NULL;
@@ -310,7 +310,7 @@ uint32_t AudioPlayer::getNumFramesPendingPlayout() const {
 
 size_t AudioPlayer::fillBuffer(void *data, size_t size) {
     if (mNumFramesPlayed == 0) {
-        ALOGV("AudioCallback");
+        LOGV("AudioCallback");
     }
 
     if (mReachedEOS) {
@@ -390,12 +390,12 @@ size_t AudioPlayer::fillBuffer(void *data, size_t size) {
                     int64_t timeToCompletionUs =
                         (1000000ll * numFramesPendingPlayout) / mSampleRate;
 
-                    ALOGV("total number of frames played: %lld (%lld us)",
+                    LOGV("total number of frames played: %lld (%lld us)",
                             (mNumFramesPlayed + numAdditionalFrames),
                             1000000ll * (mNumFramesPlayed + numAdditionalFrames)
                                 / mSampleRate);
 
-                    ALOGV("%d frames left to play, %lld us (%.2f secs)",
+                    LOGV("%d frames left to play, %lld us (%.2f secs)",
                          numFramesPendingPlayout,
                          timeToCompletionUs, timeToCompletionUs / 1E6);
 
@@ -421,7 +421,7 @@ size_t AudioPlayer::fillBuffer(void *data, size_t size) {
                 ((mNumFramesPlayed + size_done / mFrameSize) * 1000000)
                     / mSampleRate;
 
-            ALOGV("buffer->size() = %d, "
+            LOGV("buffer->size() = %d, "
                  "mPositionTimeMediaUs=%.2f mPositionTimeRealUs=%.2f",
                  mInputBuffer->range_length(),
                  mPositionTimeMediaUs / 1E6, mPositionTimeRealUs / 1E6);

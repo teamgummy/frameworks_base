@@ -43,7 +43,7 @@ void doTest() {
     int texSize = ((stateClock >> 1) & 0x1) + 1;
 
     if (testNum >= gFragmentTestCount) {
-       ALOGI("done\n");
+       LOGI("done\n");
        if (fOut) {
            fclose(fOut);
            fOut = NULL;
@@ -52,7 +52,7 @@ void doTest() {
        return;
     }
 
-    // ALOGI("doTest %d %d %d\n", texCount, extraMath, testSubState);
+    // LOGI("doTest %d %d %d\n", texCount, extraMath, testSubState);
 
 //        for (uint32_t num = 0; num < gFragmentTestCount; num++) {
     doSingleTest(testNum, texSize);
@@ -74,17 +74,17 @@ JNIEXPORT void JNICALL Java_com_android_glperf_GLPerfLib_init(JNIEnv * env, jobj
             genTextures();
             const char* fileName = "/sdcard/glperf.csv";
             if (fOut != NULL) {
-                 ALOGI("Closing partially written output.n");
+                 LOGI("Closing partially written output.n");
                  fclose(fOut);
                  fOut = NULL;
             }
-            ALOGI("Writing to: %s\n",fileName);
+            LOGI("Writing to: %s\n",fileName);
             fOut = fopen(fileName, "w");
             if (fOut == NULL) {
-                ALOGE("Could not open: %s\n", fileName);
+                LOGE("Could not open: %s\n", fileName);
             }
 
-            ALOGI("\nvarColor, texCount, modulate, extraMath, texSize, blend, Mpps, DC60\n");
+            LOGI("\nvarColor, texCount, modulate, extraMath, texSize, blend, Mpps, DC60\n");
             if (fOut) fprintf(fOut,"varColor, texCount, modulate, extraMath, texSize, blend, Mpps, DC60\r\n");
     }
 }

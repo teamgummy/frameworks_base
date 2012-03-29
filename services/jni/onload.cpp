@@ -43,10 +43,10 @@ extern "C" jint JNI_OnLoad(JavaVM* vm, void* reserved)
     jint result = -1;
 
     if (vm->GetEnv((void**) &env, JNI_VERSION_1_4) != JNI_OK) {
-        ALOGE("GetEnv failed!");
+        LOGE("GetEnv failed!");
         return result;
     }
-    ALOG_ASSERT(env, "Could not retrieve the env!");
+    LOG_ASSERT(env, "Could not retrieve the env!");
 
     register_android_server_PowerManagerService(env);
     register_android_server_InputApplicationHandle(env);

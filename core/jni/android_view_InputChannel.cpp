@@ -101,7 +101,7 @@ void android_view_InputChannel_setDisposeCallback(JNIEnv* env, jobject inputChan
     NativeInputChannel* nativeInputChannel =
             android_view_InputChannel_getNativeInputChannel(env, inputChannelObj);
     if (nativeInputChannel == NULL) {
-        ALOGW("Cannot set dispose callback because input channel object has not been initialized.");
+        LOGW("Cannot set dispose callback because input channel object has not been initialized.");
     } else {
         nativeInputChannel->setDisposeCallback(callback, data);
     }
@@ -161,7 +161,7 @@ static void android_view_InputChannel_nativeDispose(JNIEnv* env, jobject obj, jb
             android_view_InputChannel_getNativeInputChannel(env, obj);
     if (nativeInputChannel) {
         if (finalized) {
-            ALOGW("Input channel object '%s' was finalized without being disposed!",
+            LOGW("Input channel object '%s' was finalized without being disposed!",
                     nativeInputChannel->getInputChannel()->getName().string());
         }
 
@@ -202,17 +202,17 @@ static void android_view_InputChannel_nativeReadFromParcel(JNIEnv* env, jobject 
             int32_t parcelAshmemFd = parcel->readFileDescriptor();
             int32_t ashmemFd = dup(parcelAshmemFd);
             if (ashmemFd < 0) {
-                ALOGE("Error %d dup ashmem fd %d.", errno, parcelAshmemFd);
+                LOGE("Error %d dup ashmem fd %d.", errno, parcelAshmemFd);
             }
             int32_t parcelReceivePipeFd = parcel->readFileDescriptor();
             int32_t receivePipeFd = dup(parcelReceivePipeFd);
             if (receivePipeFd < 0) {
-                ALOGE("Error %d dup receive pipe fd %d.", errno, parcelReceivePipeFd);
+                LOGE("Error %d dup receive pipe fd %d.", errno, parcelReceivePipeFd);
             }
             int32_t parcelSendPipeFd = parcel->readFileDescriptor();
             int32_t sendPipeFd = dup(parcelSendPipeFd);
             if (sendPipeFd < 0) {
-                ALOGE("Error %d dup send pipe fd %d.", errno, parcelSendPipeFd);
+                LOGE("Error %d dup send pipe fd %d.", errno, parcelSendPipeFd);
             }
             if (ashmemFd < 0 || receivePipeFd < 0 || sendPipeFd < 0) {
                 if (ashmemFd >= 0) ::close(ashmemFd);

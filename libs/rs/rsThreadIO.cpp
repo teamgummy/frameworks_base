@@ -40,22 +40,22 @@ void ThreadIO::init(bool useSocket) {
 }
 
 void ThreadIO::shutdown() {
-    //ALOGE("shutdown 1");
+    //LOGE("shutdown 1");
     mToCore.shutdown();
-    //ALOGE("shutdown 2");
+    //LOGE("shutdown 2");
 }
 
 void ThreadIO::coreFlush() {
-    //ALOGE("coreFlush 1");
+    //LOGE("coreFlush 1");
     if (mUsingSocket) {
     } else {
         mToCore.flush();
     }
-    //ALOGE("coreFlush 2");
+    //LOGE("coreFlush 2");
 }
 
 void * ThreadIO::coreHeader(uint32_t cmdID, size_t dataLen) {
-    //ALOGE("coreHeader %i %i", cmdID, dataLen);
+    //LOGE("coreHeader %i %i", cmdID, dataLen);
     if (mUsingSocket) {
         CoreCmdHeader hdr;
         hdr.bytes = dataLen;
@@ -67,40 +67,40 @@ void * ThreadIO::coreHeader(uint32_t cmdID, size_t dataLen) {
         mCoreDataPtr = (uint8_t *)mToCore.reserve(dataLen);
         mCoreDataBasePtr = mCoreDataPtr;
     }
-    //ALOGE("coreHeader ret %p", mCoreDataPtr);
+    //LOGE("coreHeader ret %p", mCoreDataPtr);
     return mCoreDataPtr;
 }
 
 void ThreadIO::coreData(const void *data, size_t dataLen) {
-    //ALOGE("coreData %p %i", data, dataLen);
+    //LOGE("coreData %p %i", data, dataLen);
     mToCoreSocket.writeAsync(data, dataLen);
-    //ALOGE("coreData ret %p", mCoreDataPtr);
+    //LOGE("coreData ret %p", mCoreDataPtr);
 }
 
 void ThreadIO::coreCommit() {
-    //ALOGE("coreCommit %p %p %i", mCoreDataPtr, mCoreDataBasePtr, mCoreCommandSize);
+    //LOGE("coreCommit %p %p %i", mCoreDataPtr, mCoreDataBasePtr, mCoreCommandSize);
     if (mUsingSocket) {
     } else {
         rsAssert((size_t)(mCoreDataPtr - mCoreDataBasePtr) <= mCoreCommandSize);
         mToCore.commit(mCoreCommandID, mCoreCommandSize);
     }
-    //ALOGE("coreCommit ret");
+    //LOGE("coreCommit ret");
 }
 
 void ThreadIO::coreCommitSync() {
-    //ALOGE("coreCommitSync %p %p %i", mCoreDataPtr, mCoreDataBasePtr, mCoreCommandSize);
+    //LOGE("coreCommitSync %p %p %i", mCoreDataPtr, mCoreDataBasePtr, mCoreCommandSize);
     if (mUsingSocket) {
     } else {
         rsAssert((size_t)(mCoreDataPtr - mCoreDataBasePtr) <= mCoreCommandSize);
         mToCore.commitSync(mCoreCommandID, mCoreCommandSize);
     }
-    //ALOGE("coreCommitSync ret");
+    //LOGE("coreCommitSync ret");
 }
 
 void ThreadIO::clientShutdown() {
-    //ALOGE("coreShutdown 1");
+    //LOGE("coreShutdown 1");
     mToClient.shutdown();
-    //ALOGE("coreShutdown 2");
+    //LOGE("coreShutdown 2");
 }
 
 void ThreadIO::coreSetReturn(const void *data, size_t dataLen) {
@@ -145,11 +145,11 @@ bool ThreadIO::playCoreCommands(Context *con, bool waitForCommand, uint64_t time
             con->timerSet(Context::RS_TIMER_INTERNAL);
         }
         waitForCommand = false;
-        //ALOGV("playCoreCommands 3 %i %i", cmdID, cmdSize);
+        //LOGV("playCoreCommands 3 %i %i", cmdID, cmdSize);
 
         if (cmdID >= (sizeof(gPlaybackFuncs) / sizeof(void *))) {
             rsAssert(cmdID < (sizeof(gPlaybackFuncs) / sizeof(void *)));
-            ALOGE("playCoreCommands error con %p, cmd %i", con, cmdID);
+            LOGE("playCoreCommands error con %p, cmd %i", con, cmdID);
             mToCore.printDebugData();
         }
         gPlaybackFuncs[cmdID](con, data, cmdSize << 2);
@@ -193,8 +193,8 @@ RsMessageToClientType ThreadIO::getClientPayload(void *data, size_t *receiveLen,
         uint32_t bytesData = 0;
         uint32_t commandID = 0;
         const uint32_t *d = (const uint32_t *)mToClient.get(&commandID, &bytesData);
-        //ALOGE("getMessageToClient 3    %i  %i", commandID, bytesData);
-        //ALOGE("getMessageToClient  %i %i", commandID, *subID);
+        //LOGE("getMessageToClient 3    %i  %i", commandID, bytesData);
+        //LOGE("getMessageToClient  %i %i", commandID, *subID);
         if (bufferLen >= receiveLen[0]) {
             memcpy(data, d+1, receiveLen[0]);
             mToClient.next();
@@ -224,14 +224,14 @@ bool ThreadIO::sendToClient(RsMessageToClientType cmdID, uint32_t usrID, const v
             }
         }
 
-        //ALOGE("sendMessageToClient 2");
+        //LOGE("sendMessageToClient 2");
         uint32_t *p = (uint32_t *)mToClient.reserve(dataLen + sizeof(usrID));
         p[0] = usrID;
         if (dataLen > 0) {
             memcpy(p+1, data, dataLen);
         }
         mToClient.commit(cmdID, dataLen + sizeof(usrID));
-        //ALOGE("sendMessageToClient 3");
+        //LOGE("sendMessageToClient 3");
         return true;
     }
     return false;

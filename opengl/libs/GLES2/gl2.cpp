@@ -83,7 +83,7 @@ using namespace android;
         _c->_api(__VA_ARGS__); \
         GLenum status = GL_NO_ERROR; \
         while ((status = glGetError()) != GL_NO_ERROR) { \
-            ALOGD("[" #_api "] 0x%x", status); \
+            LOGD("[" #_api "] 0x%x", status); \
         }
 
 #else

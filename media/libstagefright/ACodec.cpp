@@ -342,7 +342,7 @@ void ACodec::initiateSetup(const sp<AMessage> &msg) {
 }
 
 void ACodec::signalFlush() {
-    ALOGV("[%s] signalFlush", mComponentName.c_str());
+    LOGV("[%s] signalFlush", mComponentName.c_str());
     (new AMessage(kWhatFlush, id()))->post();
 }
 
@@ -375,7 +375,7 @@ status_t ACodec::allocateBuffersOnPort(OMX_U32 portIndex) {
         return err;
     }
 
-    ALOGV("[%s] Allocating %lu buffers of size %lu on %s port",
+    LOGV("[%s] Allocating %lu buffers of size %lu on %s port",
             mComponentName.c_str(),
             def.nBufferCountActual, def.nBufferSize,
             portIndex == kPortIndexInput ? "input" : "output");
@@ -394,7 +394,7 @@ status_t ACodec::allocateBuffersOnPort(OMX_U32 portIndex) {
             if (portIndex == kPortIndexInput && i == 0) {
                 // Only log this warning once per allocation round.
 
-                ALOGW("OMX.TI.DUCATI1.VIDEO.DECODER requires the use of "
+                LOGW("OMX.TI.DUCATI1.VIDEO.DECODER requires the use of "
                      "OMX_AllocateBuffer instead of the preferred "
                      "OMX_UseBuffer. Vendor must fix this.");
             }
@@ -445,7 +445,7 @@ status_t ACodec::allocateOutputBuffersFromNativeWindow() {
             def.format.video.eColorFormat);
 
     if (err != 0) {
-        ALOGE("native_window_set_buffers_geometry failed: %s (%d)",
+        LOGE("native_window_set_buffers_geometry failed: %s (%d)",
                 strerror(-err), -err);
         return err;
     }
@@ -454,7 +454,7 @@ status_t ACodec::allocateOutputBuffersFromNativeWindow() {
     OMX_U32 usage = 0;
     err = mOMX->getGraphicBufferUsage(mNode, kPortIndexOutput, &usage);
     if (err != 0) {
-        ALOGW("querying usage flags from OMX IL component failed: %d", err);
+        LOGW("querying usage flags from OMX IL component failed: %d", err);
         // XXX: Currently this error is logged, but not fatal.
         usage = 0;
     }
@@ -464,7 +464,7 @@ status_t ACodec::allocateOutputBuffersFromNativeWindow() {
             usage | GRALLOC_USAGE_HW_TEXTURE | GRALLOC_USAGE_EXTERNAL_DISP);
 
     if (err != 0) {
-        ALOGE("native_window_set_usage failed: %s (%d)", strerror(-err), -err);
+        LOGE("native_window_set_usage failed: %s (%d)", strerror(-err), -err);
         return err;
     }
 
@@ -474,7 +474,7 @@ status_t ACodec::allocateOutputBuffersFromNativeWindow() {
             &minUndequeuedBufs);
 
     if (err != 0) {
-        ALOGE("NATIVE_WINDOW_MIN_UNDEQUEUED_BUFFERS query failed: %s (%d)",
+        LOGE("NATIVE_WINDOW_MIN_UNDEQUEUED_BUFFERS query failed: %s (%d)",
                 strerror(-err), -err);
         return err;
     }
@@ -489,7 +489,7 @@ status_t ACodec::allocateOutputBuffersFromNativeWindow() {
                 mNode, OMX_IndexParamPortDefinition, &def, sizeof(def));
 
         if (err != OK) {
-            ALOGE("[%s] setting nBufferCountActual to %lu failed: %d",
+            LOGE("[%s] setting nBufferCountActual to %lu failed: %d",
                     mComponentName.c_str(), newBufferCount, err);
             return err;
         }
@@ -499,12 +499,12 @@ status_t ACodec::allocateOutputBuffersFromNativeWindow() {
             mNativeWindow.get(), def.nBufferCountActual);
 
     if (err != 0) {
-        ALOGE("native_window_set_buffer_count failed: %s (%d)", strerror(-err),
+        LOGE("native_window_set_buffer_count failed: %s (%d)", strerror(-err),
                 -err);
         return err;
     }
 
-    ALOGV("[%s] Allocating %lu buffers from a native window of size %lu on "
+    LOGV("[%s] Allocating %lu buffers from a native window of size %lu on "
          "output port",
          mComponentName.c_str(), def.nBufferCountActual, def.nBufferSize);
 
@@ -513,7 +513,7 @@ status_t ACodec::allocateOutputBuffersFromNativeWindow() {
         ANativeWindowBuffer *buf;
         err = mNativeWindow->dequeueBuffer(mNativeWindow.get(), &buf);
         if (err != 0) {
-            ALOGE("dequeueBuffer failed: %s (%d)", strerror(-err), -err);
+            LOGE("dequeueBuffer failed: %s (%d)", strerror(-err), -err);
             break;
         }
 
@@ -528,14 +528,14 @@ status_t ACodec::allocateOutputBuffersFromNativeWindow() {
         err = mOMX->useGraphicBuffer(mNode, kPortIndexOutput, graphicBuffer,
                 &bufferId);
         if (err != 0) {
-            ALOGE("registering GraphicBuffer %lu with OMX IL component failed: "
+            LOGE("registering GraphicBuffer %lu with OMX IL component failed: "
                  "%d", i, err);
             break;
         }
 
         mBuffers[kPortIndexOutput].editItemAt(i).mBufferID = bufferId;
 
-        ALOGV("[%s] Registered graphic buffer with ID %p (pointer = %p)",
+        LOGV("[%s] Registered graphic buffer with ID %p (pointer = %p)",
              mComponentName.c_str(),
              bufferId, graphicBuffer.get());
     }
@@ -565,7 +565,7 @@ status_t ACodec::allocateOutputBuffersFromNativeWindow() {
 status_t ACodec::cancelBufferToNativeWindow(BufferInfo *info) {
     CHECK_EQ((int)info->mStatus, (int)BufferInfo::OWNED_BY_US);
 
-    ALOGV("[%s] Calling cancelBuffer on buffer %p",
+    LOGV("[%s] Calling cancelBuffer on buffer %p",
          mComponentName.c_str(), info->mBufferID);
 
     int err = mNativeWindow->cancelBuffer(
@@ -581,7 +581,7 @@ status_t ACodec::cancelBufferToNativeWindow(BufferInfo *info) {
 ACodec::BufferInfo *ACodec::dequeueBufferFromNativeWindow() {
     ANativeWindowBuffer *buf;
     if (mNativeWindow->dequeueBuffer(mNativeWindow.get(), &buf) != 0) {
-        ALOGE("dequeueBuffer failed.");
+        LOGE("dequeueBuffer failed.");
         return NULL;
     }
 
@@ -734,7 +734,7 @@ void ACodec::setComponentRole(
                 &roleParams, sizeof(roleParams));
 
         if (err != OK) {
-            ALOGW("[%s] Failed to set standard component role '%s'.",
+            LOGW("[%s] Failed to set standard component role '%s'.",
                  mComponentName.c_str(), role);
         }
     }
@@ -1114,7 +1114,7 @@ bool ACodec::allYourBuffersAreBelongToUs(
 
         if (info->mStatus != BufferInfo::OWNED_BY_US
                 && info->mStatus != BufferInfo::OWNED_BY_NATIVE_WINDOW) {
-            ALOGV("[%s] Buffer %p on port %ld still has status %d",
+            LOGV("[%s] Buffer %p on port %ld still has status %d",
                     mComponentName.c_str(),
                     info->mBufferID, portIndex, info->mStatus);
             return false;
@@ -1361,13 +1361,13 @@ bool ACodec::BaseState::onOMXMessage(const sp<AMessage> &msg) {
 bool ACodec::BaseState::onOMXEvent(
         OMX_EVENTTYPE event, OMX_U32 data1, OMX_U32 data2) {
     if (event != OMX_EventError) {
-        ALOGV("[%s] EVENT(%d, 0x%08lx, 0x%08lx)",
+        LOGV("[%s] EVENT(%d, 0x%08lx, 0x%08lx)",
              mCodec->mComponentName.c_str(), event, data1, data2);
 
         return false;
     }
 
-    ALOGE("[%s] ERROR(0x%08lx)", mCodec->mComponentName.c_str(), data1);
+    LOGE("[%s] ERROR(0x%08lx)", mCodec->mComponentName.c_str(), data1);
 
     mCodec->signalError((OMX_ERRORTYPE)data1);
 
@@ -1375,7 +1375,7 @@ bool ACodec::BaseState::onOMXEvent(
 }
 
 bool ACodec::BaseState::onOMXEmptyBufferDone(IOMX::buffer_id bufferID) {
-    ALOGV("[%s] onOMXEmptyBufferDone %p",
+    LOGV("[%s] onOMXEmptyBufferDone %p",
          mCodec->mComponentName.c_str(), bufferID);
 
     BufferInfo *info =
@@ -1438,7 +1438,7 @@ void ACodec::BaseState::onInputBufferFilled(const sp<AMessage> &msg) {
     if (!msg->findObject("buffer", &obj)) {
         CHECK(msg->findInt32("err", &err));
 
-        ALOGV("[%s] saw error %d instead of an input buffer",
+        LOGV("[%s] saw error %d instead of an input buffer",
              mCodec->mComponentName.c_str(), err);
 
         obj.clear();
@@ -1482,7 +1482,7 @@ void ACodec::BaseState::onInputBufferFilled(const sp<AMessage> &msg) {
 
                 if (buffer != info->mData) {
                     if (0 && !(flags & OMX_BUFFERFLAG_CODECCONFIG)) {
-                        ALOGV("[%s] Needs to copy input data.",
+                        LOGV("[%s] Needs to copy input data.",
                              mCodec->mComponentName.c_str());
                     }
 
@@ -1491,10 +1491,10 @@ void ACodec::BaseState::onInputBufferFilled(const sp<AMessage> &msg) {
                 }
 
                 if (flags & OMX_BUFFERFLAG_CODECCONFIG) {
-                    ALOGV("[%s] calling emptyBuffer %p w/ codec specific data",
+                    LOGV("[%s] calling emptyBuffer %p w/ codec specific data",
                          mCodec->mComponentName.c_str(), bufferID);
                 } else {
-                    ALOGV("[%s] calling emptyBuffer %p w/ time %lld us",
+                    LOGV("[%s] calling emptyBuffer %p w/ time %lld us",
                          mCodec->mComponentName.c_str(), bufferID, timeUs);
                 }
 
@@ -1512,15 +1512,15 @@ void ACodec::BaseState::onInputBufferFilled(const sp<AMessage> &msg) {
                 getMoreInputDataIfPossible();
             } else if (!mCodec->mPortEOS[kPortIndexInput]) {
                 if (err != ERROR_END_OF_STREAM) {
-                    ALOGV("[%s] Signalling EOS on the input port "
+                    LOGV("[%s] Signalling EOS on the input port "
                          "due to error %d",
                          mCodec->mComponentName.c_str(), err);
                 } else {
-                    ALOGV("[%s] Signalling EOS on the input port",
+                    LOGV("[%s] Signalling EOS on the input port",
                          mCodec->mComponentName.c_str());
                 }
 
-                ALOGV("[%s] calling emptyBuffer %p signalling EOS",
+                LOGV("[%s] calling emptyBuffer %p signalling EOS",
                      mCodec->mComponentName.c_str(), bufferID);
 
                 CHECK_EQ(mCodec->mOMX->emptyBuffer(
@@ -1582,7 +1582,7 @@ bool ACodec::BaseState::onOMXFillBufferDone(
         int64_t timeUs,
         void *platformPrivate,
         void *dataPtr) {
-    ALOGV("[%s] onOMXFillBufferDone %p time %lld us",
+    LOGV("[%s] onOMXFillBufferDone %p time %lld us",
          mCodec->mComponentName.c_str(), bufferID, timeUs);
 
     ssize_t index;
@@ -1603,7 +1603,7 @@ bool ACodec::BaseState::onOMXFillBufferDone(
         {
             if (rangeLength == 0) {
                 if (!(flags & OMX_BUFFERFLAG_EOS)) {
-                    ALOGV("[%s] calling fillBuffer %p",
+                    LOGV("[%s] calling fillBuffer %p",
                          mCodec->mComponentName.c_str(), info->mBufferID);
 
                     CHECK_EQ(mCodec->mOMX->fillBuffer(
@@ -1717,7 +1717,7 @@ void ACodec::BaseState::onOutputBufferDrained(const sp<AMessage> &msg) {
                 }
 
                 if (info != NULL) {
-                    ALOGV("[%s] calling fillBuffer %p",
+                    LOGV("[%s] calling fillBuffer %p",
                          mCodec->mComponentName.c_str(), info->mBufferID);
 
                     CHECK_EQ(mCodec->mOMX->fillBuffer(mCodec->mNode, info->mBufferID),
@@ -1826,7 +1826,7 @@ void ACodec::UninitializedState::onSetup(
     }
 
     if (node == NULL) {
-        ALOGE("Unable to instantiate a decoder for type '%s'.", mime.c_str());
+        LOGE("Unable to instantiate a decoder for type '%s'.", mime.c_str());
 
         mCodec->signalError(OMX_ErrorComponentNotFound);
         return;
@@ -1870,11 +1870,11 @@ ACodec::LoadedToIdleState::LoadedToIdleState(ACodec *codec)
 }
 
 void ACodec::LoadedToIdleState::stateEntered() {
-    ALOGV("[%s] Now Loaded->Idle", mCodec->mComponentName.c_str());
+    LOGV("[%s] Now Loaded->Idle", mCodec->mComponentName.c_str());
 
     status_t err;
     if ((err = allocateBuffers()) != OK) {
-        ALOGE("Failed to allocate buffers after transitioning to IDLE state "
+        LOGE("Failed to allocate buffers after transitioning to IDLE state "
              "(error 0x%08x)",
              err);
 
@@ -1934,7 +1934,7 @@ ACodec::IdleToExecutingState::IdleToExecutingState(ACodec *codec)
 }
 
 void ACodec::IdleToExecutingState::stateEntered() {
-    ALOGV("[%s] Now Idle->Executing", mCodec->mComponentName.c_str());
+    LOGV("[%s] Now Idle->Executing", mCodec->mComponentName.c_str());
 }
 
 bool ACodec::IdleToExecutingState::onMessageReceived(const sp<AMessage> &msg) {
@@ -2001,7 +2001,7 @@ void ACodec::ExecutingState::submitOutputBuffers() {
             CHECK_EQ((int)info->mStatus, (int)BufferInfo::OWNED_BY_US);
         }
 
-        ALOGV("[%s] calling fillBuffer %p",
+        LOGV("[%s] calling fillBuffer %p",
              mCodec->mComponentName.c_str(), info->mBufferID);
 
         CHECK_EQ(mCodec->mOMX->fillBuffer(mCodec->mNode, info->mBufferID),
@@ -2013,7 +2013,7 @@ void ACodec::ExecutingState::submitOutputBuffers() {
 
 void ACodec::ExecutingState::resume() {
     if (mActive) {
-        ALOGV("[%s] We're already active, no need to resume.",
+        LOGV("[%s] We're already active, no need to resume.",
              mCodec->mComponentName.c_str());
 
         return;
@@ -2031,7 +2031,7 @@ void ACodec::ExecutingState::resume() {
 }
 
 void ACodec::ExecutingState::stateEntered() {
-    ALOGV("[%s] Now Executing", mCodec->mComponentName.c_str());
+    LOGV("[%s] Now Executing", mCodec->mComponentName.c_str());
 
     mCodec->processDeferredMessages();
 }
@@ -2056,7 +2056,7 @@ bool ACodec::ExecutingState::onMessageReceived(const sp<AMessage> &msg) {
 
         case kWhatFlush:
         {
-            ALOGV("[%s] ExecutingState flushing now "
+            LOGV("[%s] ExecutingState flushing now "
                  "(codec owns %d/%d input, %d/%d output).",
                     mCodec->mComponentName.c_str(),
                     mCodec->countBuffersOwnedByComponent(kPortIndexInput),
@@ -2111,7 +2111,7 @@ bool ACodec::ExecutingState::onOMXEvent(
             } else if (data2 == OMX_IndexConfigCommonOutputCrop) {
                 mCodec->mSentFormat = false;
             } else {
-                ALOGV("[%s] OMX_EventPortSettingsChanged 0x%08lx",
+                LOGV("[%s] OMX_EventPortSettingsChanged 0x%08lx",
                      mCodec->mComponentName.c_str(), data2);
             }
 
@@ -2156,7 +2156,7 @@ bool ACodec::OutputPortSettingsChangedState::onMessageReceived(
         case kWhatResume:
         {
             if (msg->what() == kWhatResume) {
-                ALOGV("[%s] Deferring resume", mCodec->mComponentName.c_str());
+                LOGV("[%s] Deferring resume", mCodec->mComponentName.c_str());
             }
 
             mCodec->deferMessage(msg);
@@ -2173,7 +2173,7 @@ bool ACodec::OutputPortSettingsChangedState::onMessageReceived(
 }
 
 void ACodec::OutputPortSettingsChangedState::stateEntered() {
-    ALOGV("[%s] Now handling output port settings change",
+    LOGV("[%s] Now handling output port settings change",
          mCodec->mComponentName.c_str());
 }
 
@@ -2185,7 +2185,7 @@ bool ACodec::OutputPortSettingsChangedState::onOMXEvent(
             if (data1 == (OMX_U32)OMX_CommandPortDisable) {
                 CHECK_EQ(data2, (OMX_U32)kPortIndexOutput);
 
-                ALOGV("[%s] Output port now disabled.",
+                LOGV("[%s] Output port now disabled.",
                         mCodec->mComponentName.c_str());
 
                 CHECK(mCodec->mBuffers[kPortIndexOutput].isEmpty());
@@ -2198,7 +2198,7 @@ bool ACodec::OutputPortSettingsChangedState::onOMXEvent(
                 status_t err;
                 if ((err = mCodec->allocateBuffersOnPort(
                                 kPortIndexOutput)) != OK) {
-                    ALOGE("Failed to allocate output port buffers after "
+                    LOGE("Failed to allocate output port buffers after "
                          "port reconfiguration (error 0x%08x)",
                          err);
 
@@ -2217,7 +2217,7 @@ bool ACodec::OutputPortSettingsChangedState::onOMXEvent(
 
                 mCodec->mSentFormat = false;
 
-                ALOGV("[%s] Output port now reenabled.",
+                LOGV("[%s] Output port now reenabled.",
                         mCodec->mComponentName.c_str());
 
                 if (mCodec->mExecutingState->active()) {
@@ -2272,7 +2272,7 @@ bool ACodec::ExecutingToIdleState::onMessageReceived(const sp<AMessage> &msg) {
 }
 
 void ACodec::ExecutingToIdleState::stateEntered() {
-    ALOGV("[%s] Now Executing->Idle", mCodec->mComponentName.c_str());
+    LOGV("[%s] Now Executing->Idle", mCodec->mComponentName.c_str());
 
     mCodec->mSentFormat = false;
 }
@@ -2364,7 +2364,7 @@ bool ACodec::IdleToLoadedState::onMessageReceived(const sp<AMessage> &msg) {
 }
 
 void ACodec::IdleToLoadedState::stateEntered() {
-    ALOGV("[%s] Now Idle->Loaded", mCodec->mComponentName.c_str());
+    LOGV("[%s] Now Idle->Loaded", mCodec->mComponentName.c_str());
 }
 
 bool ACodec::IdleToLoadedState::onOMXEvent(
@@ -2375,7 +2375,7 @@ bool ACodec::IdleToLoadedState::onOMXEvent(
             CHECK_EQ(data1, (OMX_U32)OMX_CommandStateSet);
             CHECK_EQ(data2, (OMX_U32)OMX_StateLoaded);
 
-            ALOGV("[%s] Now Loaded", mCodec->mComponentName.c_str());
+            LOGV("[%s] Now Loaded", mCodec->mComponentName.c_str());
 
             CHECK_EQ(mCodec->mOMX->freeNode(mCodec->mNode), (status_t)OK);
 
@@ -2405,7 +2405,7 @@ ACodec::FlushingState::FlushingState(ACodec *codec)
 }
 
 void ACodec::FlushingState::stateEntered() {
-    ALOGV("[%s] Now Flushing", mCodec->mComponentName.c_str());
+    LOGV("[%s] Now Flushing", mCodec->mComponentName.c_str());
 
     mFlushComplete[kPortIndexInput] = mFlushComplete[kPortIndexOutput] = false;
 }
@@ -2437,7 +2437,7 @@ bool ACodec::FlushingState::onMessageReceived(const sp<AMessage> &msg) {
 
 bool ACodec::FlushingState::onOMXEvent(
         OMX_EVENTTYPE event, OMX_U32 data1, OMX_U32 data2) {
-    ALOGV("[%s] FlushingState onOMXEvent(%d,%ld)",
+    LOGV("[%s] FlushingState onOMXEvent(%d,%ld)",
             mCodec->mComponentName.c_str(), event, data1);
 
     switch (event) {
@@ -2473,7 +2473,7 @@ bool ACodec::FlushingState::onOMXEvent(
             msg->setInt32("data1", data1);
             msg->setInt32("data2", data2);
 
-            ALOGV("[%s] Deferring OMX_EventPortSettingsChanged",
+            LOGV("[%s] Deferring OMX_EventPortSettingsChanged",
                  mCodec->mComponentName.c_str());
 
             mCodec->deferMessage(msg);

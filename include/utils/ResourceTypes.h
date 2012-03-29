@@ -1277,7 +1277,7 @@ struct ResTable_config
                     myDelta += requested->screenHeightDp - screenHeightDp;
                     otherDelta += requested->screenHeightDp - o.screenHeightDp;
                 }
-                //ALOGI("Comparing this %dx%d to other %dx%d in %dx%d: myDelta=%d otherDelta=%d",
+                //LOGI("Comparing this %dx%d to other %dx%d in %dx%d: myDelta=%d otherDelta=%d",
                 //    screenWidthDp, screenHeightDp, o.screenWidthDp, o.screenHeightDp,
                 //    requested->screenWidthDp, requested->screenHeightDp, myDelta, otherDelta);
                 return (myDelta <= otherDelta);
@@ -1506,11 +1506,11 @@ struct ResTable_config
         }
         if (screenSizeDp != 0) {
             if (screenWidthDp != 0 && screenWidthDp > settings.screenWidthDp) {
-                //ALOGI("Filtering out width %d in requested %d", screenWidthDp, settings.screenWidthDp);
+                //LOGI("Filtering out width %d in requested %d", screenWidthDp, settings.screenWidthDp);
                 return false;
             }
             if (screenHeightDp != 0 && screenHeightDp > settings.screenHeightDp) {
-                //ALOGI("Filtering out height %d in requested %d", screenHeightDp, settings.screenHeightDp);
+                //LOGI("Filtering out height %d in requested %d", screenHeightDp, settings.screenHeightDp);
                 return false;
             }
         }
@@ -1530,9 +1530,9 @@ struct ResTable_config
                 // For compatibility, we count a request for KEYSHIDDEN_NO as also
                 // matching the more recent KEYSHIDDEN_SOFT.  Basically
                 // KEYSHIDDEN_NO means there is some kind of keyboard available.
-                //ALOGI("Matching keysHidden: have=%d, config=%d\n", keysHidden, setKeysHidden);
+                //LOGI("Matching keysHidden: have=%d, config=%d\n", keysHidden, setKeysHidden);
                 if (keysHidden != KEYSHIDDEN_NO || setKeysHidden != KEYSHIDDEN_SOFT) {
-                    //ALOGI("No match!");
+                    //LOGI("No match!");
                     return false;
                 }
             }

@@ -58,7 +58,7 @@ MidiFile::MidiFile() :
     mStreamType(AUDIO_STREAM_MUSIC), mLoop(false), mExit(false),
     mPaused(false), mRender(false), mTid(-1)
 {
-    ALOGV("constructor");
+    LOGV("constructor");
 
     mFileLocator.path = NULL;
     mFileLocator.fd = -1;
@@ -69,13 +69,13 @@ MidiFile::MidiFile() :
     if (pLibConfig == NULL)
         pLibConfig = EAS_Config();
     if ((pLibConfig == NULL) || (LIB_VERSION != pLibConfig->libVersion)) {
-        ALOGE("EAS library/header mismatch");
+        LOGE("EAS library/header mismatch");
         goto Failed;
     }
 
     // initialize EAS library
     if (EAS_Init(&mEasData) != EAS_SUCCESS) {
-        ALOGE("EAS_Init failed");
+        LOGE("EAS_Init failed");
         goto Failed;
     }
 
@@ -88,12 +88,12 @@ MidiFile::MidiFile() :
         Mutex::Autolock l(mMutex);
         createThreadEtc(renderThread, this, "midithread", ANDROID_PRIORITY_AUDIO);
         mCondition.wait(mMutex);
-        ALOGV("thread started");
+        LOGV("thread started");
     }
 
     // indicate success
     if (mTid > 0) {
-        ALOGV(" render thread(%d) started", mTid);
+        LOGV(" render thread(%d) started", mTid);
         mState = EAS_STATE_READY;
     }
 
@@ -108,13 +108,13 @@ status_t MidiFile::initCheck()
 }
 
 MidiFile::~MidiFile() {
-    ALOGV("MidiFile destructor");
+    LOGV("MidiFile destructor");
     release();
 }
 
 status_t MidiFile::setDataSource(
         const char* path, const KeyedVector<String8, String8> *) {
-    ALOGV("MidiFile::setDataSource url=%s", path);
+    LOGV("MidiFile::setDataSource url=%s", path);
     Mutex::Autolock lock(mMutex);
 
     // file still open?
@@ -133,7 +133,7 @@ status_t MidiFile::setDataSource(
     }
 
     if (result != EAS_SUCCESS) {
-        ALOGE("EAS_OpenFile failed: [%d]", (int)result);
+        LOGE("EAS_OpenFile failed: [%d]", (int)result);
         mState = EAS_STATE_ERROR;
         return ERROR_OPEN_FAILED;
     }
@@ -145,7 +145,7 @@ status_t MidiFile::setDataSource(
 
 status_t MidiFile::setDataSource(int fd, int64_t offset, int64_t length)
 {
-    ALOGV("MidiFile::setDataSource fd=%d", fd);
+    LOGV("MidiFile::setDataSource fd=%d", fd);
     Mutex::Autolock lock(mMutex);
 
     // file still open?
@@ -161,7 +161,7 @@ status_t MidiFile::setDataSource(int fd, int64_t offset, int64_t length)
     updateState();
 
     if (result != EAS_SUCCESS) {
-        ALOGE("EAS_OpenFile failed: [%d]", (int)result);
+        LOGE("EAS_OpenFile failed: [%d]", (int)result);
         mState = EAS_STATE_ERROR;
         return ERROR_OPEN_FAILED;
     }
@@ -173,14 +173,14 @@ status_t MidiFile::setDataSource(int fd, int64_t offset, int64_t length)
 
 status_t MidiFile::prepare()
 {
-    ALOGV("MidiFile::prepare");
+    LOGV("MidiFile::prepare");
     Mutex::Autolock lock(mMutex);
     if (!mEasHandle) {
         return ERROR_NOT_OPEN;
     }
     EAS_RESULT result;
     if ((result = EAS_Prepare(mEasData, mEasHandle)) != EAS_SUCCESS) {
-        ALOGE("EAS_Prepare failed: [%ld]", result);
+        LOGE("EAS_Prepare failed: [%ld]", result);
         return ERROR_EAS_FAILURE;
     }
     updateState();
@@ -189,7 +189,7 @@ status_t MidiFile::prepare()
 
 status_t MidiFile::prepareAsync()
 {
-    ALOGV("MidiFile::prepareAsync");
+    LOGV("MidiFile::prepareAsync");
     status_t ret = prepare();
 
     // don't hold lock during callback
@@ -203,7 +203,7 @@ status_t MidiFile::prepareAsync()
 
 status_t MidiFile::start()
 {
-    ALOGV("MidiFile::start");
+    LOGV("MidiFile::start");
     Mutex::Autolock lock(mMutex);
     if (!mEasHandle) {
         return ERROR_NOT_OPEN;
@@ -221,14 +221,14 @@ status_t MidiFile::start()
     mRender = true;
 
     // wake up render thread
-    ALOGV("  wakeup render thread");
+    LOGV("  wakeup render thread");
     mCondition.signal();
     return NO_ERROR;
 }
 
 status_t MidiFile::stop()
 {
-    ALOGV("MidiFile::stop");
+    LOGV("MidiFile::stop");
     Mutex::Autolock lock(mMutex);
     if (!mEasHandle) {
         return ERROR_NOT_OPEN;
@@ -236,7 +236,7 @@ status_t MidiFile::stop()
     if (!mPaused && (mState != EAS_STATE_STOPPED)) {
         EAS_RESULT result = EAS_Pause(mEasData, mEasHandle);
         if (result != EAS_SUCCESS) {
-            ALOGE("EAS_Pause returned error %ld", result);
+            LOGE("EAS_Pause returned error %ld", result);
             return ERROR_EAS_FAILURE;
         }
     }
@@ -246,7 +246,7 @@ status_t MidiFile::stop()
 
 status_t MidiFile::seekTo(int position)
 {
-    ALOGV("MidiFile::seekTo %d", position);
+    LOGV("MidiFile::seekTo %d", position);
     // hold lock during EAS calls
     {
         Mutex::Autolock lock(mMutex);
@@ -257,7 +257,7 @@ status_t MidiFile::seekTo(int position)
         if ((result = EAS_Locate(mEasData, mEasHandle, position, false))
                 != EAS_SUCCESS)
         {
-            ALOGE("EAS_Locate returned %ld", result);
+            LOGE("EAS_Locate returned %ld", result);
             return ERROR_EAS_FAILURE;
         }
         EAS_GetLocation(mEasData, mEasHandle, &mPlayTime);
@@ -268,7 +268,7 @@ status_t MidiFile::seekTo(int position)
 
 status_t MidiFile::pause()
 {
-    ALOGV("MidiFile::pause");
+    LOGV("MidiFile::pause");
     Mutex::Autolock lock(mMutex);
     if (!mEasHandle) {
         return ERROR_NOT_OPEN;
@@ -283,20 +283,20 @@ status_t MidiFile::pause()
 
 bool MidiFile::isPlaying()
 {
-    ALOGV("MidiFile::isPlaying, mState=%d", int(mState));
+    LOGV("MidiFile::isPlaying, mState=%d", int(mState));
     if (!mEasHandle || mPaused) return false;
     return (mState == EAS_STATE_PLAY);
 }
 
 status_t MidiFile::getCurrentPosition(int* position)
 {
-    ALOGV("MidiFile::getCurrentPosition");
+    LOGV("MidiFile::getCurrentPosition");
     if (!mEasHandle) {
-        ALOGE("getCurrentPosition(): file not open");
+        LOGE("getCurrentPosition(): file not open");
         return ERROR_NOT_OPEN;
     }
     if (mPlayTime < 0) {
-        ALOGE("getCurrentPosition(): mPlayTime = %ld", mPlayTime);
+        LOGE("getCurrentPosition(): mPlayTime = %ld", mPlayTime);
         return ERROR_EAS_FAILURE;
     }
     *position = mPlayTime;
@@ -306,7 +306,7 @@ status_t MidiFile::getCurrentPosition(int* position)
 status_t MidiFile::getDuration(int* duration)
 {
 
-    ALOGV("MidiFile::getDuration");
+    LOGV("MidiFile::getDuration");
     {
         Mutex::Autolock lock(mMutex);
         if (!mEasHandle) return ERROR_NOT_OPEN;
@@ -349,7 +349,7 @@ status_t MidiFile::getDuration(int* duration)
 
 status_t MidiFile::release()
 {
-    ALOGV("MidiFile::release");
+    LOGV("MidiFile::release");
     Mutex::Autolock l(mMutex);
     reset_nosync();
 
@@ -372,7 +372,7 @@ status_t MidiFile::release()
 
 status_t MidiFile::reset()
 {
-    ALOGV("MidiFile::reset");
+    LOGV("MidiFile::reset");
     Mutex::Autolock lock(mMutex);
     return reset_nosync();
 }
@@ -380,7 +380,7 @@ status_t MidiFile::reset()
 // call only with mutex held
 status_t MidiFile::reset_nosync()
 {
-    ALOGV("MidiFile::reset_nosync");
+    LOGV("MidiFile::reset_nosync");
     // close file
     if (mEasHandle) {
         EAS_CloseFile(mEasData, mEasHandle);
@@ -407,7 +407,7 @@ status_t MidiFile::reset_nosync()
 
 status_t MidiFile::setLooping(int loop)
 {
-    ALOGV("MidiFile::setLooping");
+    LOGV("MidiFile::setLooping");
     Mutex::Autolock lock(mMutex);
     if (!mEasHandle) {
         return ERROR_NOT_OPEN;
@@ -421,7 +421,7 @@ status_t MidiFile::setLooping(int loop)
 
 status_t MidiFile::createOutputTrack() {
     if (mAudioSink->open(pLibConfig->sampleRate, pLibConfig->numChannels, AUDIO_FORMAT_PCM_16_BIT, 2) != NO_ERROR) {
-        ALOGE("mAudioSink open failed");
+        LOGE("mAudioSink open failed");
         return ERROR_OPEN_FAILED;
     }
     return NO_ERROR;
@@ -438,12 +438,12 @@ int MidiFile::render() {
     int temp;
     bool audioStarted = false;
 
-    ALOGV("MidiFile::render");
+    LOGV("MidiFile::render");
 
     // allocate render buffer
     mAudioBuffer = new EAS_PCM[pLibConfig->mixBufferSize * pLibConfig->numChannels * NUM_BUFFERS];
     if (!mAudioBuffer) {
-        ALOGE("mAudioBuffer allocate failed");
+        LOGE("mAudioBuffer allocate failed");
         goto threadExit;
     }
 
@@ -451,7 +451,7 @@ int MidiFile::render() {
     {
         Mutex::Autolock l(mMutex);
         mTid = gettid();
-        ALOGV("render thread(%d) signal", mTid);
+        LOGV("render thread(%d) signal", mTid);
         mCondition.signal();
     }
 
@@ -461,9 +461,9 @@ int MidiFile::render() {
         // nothing to render, wait for client thread to wake us up
         while (!mRender && !mExit)
         {
-            ALOGV("MidiFile::render - signal wait");
+            LOGV("MidiFile::render - signal wait");
             mCondition.wait(mMutex);
-            ALOGV("MidiFile::render - signal rx'd");
+            LOGV("MidiFile::render - signal rx'd");
         }
         if (mExit) {
             mMutex.unlock();
@@ -471,41 +471,41 @@ int MidiFile::render() {
         }
 
         // render midi data into the input buffer
-        //ALOGV("MidiFile::render - rendering audio");
+        //LOGV("MidiFile::render - rendering audio");
         int num_output = 0;
         EAS_PCM* p = mAudioBuffer;
         for (int i = 0; i < NUM_BUFFERS; i++) {
             result = EAS_Render(mEasData, p, pLibConfig->mixBufferSize, &count);
             if (result != EAS_SUCCESS) {
-                ALOGE("EAS_Render returned %ld", result);
+                LOGE("EAS_Render returned %ld", result);
             }
             p += count * pLibConfig->numChannels;
             num_output += count * pLibConfig->numChannels * sizeof(EAS_PCM);
         }
 
         // update playback state and position
-        // ALOGV("MidiFile::render - updating state");
+        // LOGV("MidiFile::render - updating state");
         EAS_GetLocation(mEasData, mEasHandle, &mPlayTime);
         EAS_State(mEasData, mEasHandle, &mState);
         mMutex.unlock();
 
         // create audio output track if necessary
         if (!mAudioSink->ready()) {
-            ALOGV("MidiFile::render - create output track");
+            LOGV("MidiFile::render - create output track");
             if (createOutputTrack() != NO_ERROR)
                 goto threadExit;
         }
 
         // Write data to the audio hardware
-        // ALOGV("MidiFile::render - writing to audio output");
+        // LOGV("MidiFile::render - writing to audio output");
         if ((temp = mAudioSink->write(mAudioBuffer, num_output)) < 0) {
-            ALOGE("Error in writing:%d",temp);
+            LOGE("Error in writing:%d",temp);
             return temp;
         }
 
         // start audio output if necessary
         if (!audioStarted) {
-            //ALOGV("MidiFile::render - starting audio");
+            //LOGV("MidiFile::render - starting audio");
             mAudioSink->start();
             audioStarted = true;
         }
@@ -517,18 +517,18 @@ int MidiFile::render() {
             switch(mState) {
             case EAS_STATE_STOPPED:
             {
-                ALOGV("MidiFile::render - stopped");
+                LOGV("MidiFile::render - stopped");
                 sendEvent(MEDIA_PLAYBACK_COMPLETE);
                 break;
             }
             case EAS_STATE_ERROR:
             {
-                ALOGE("MidiFile::render - error");
+                LOGE("MidiFile::render - error");
                 sendEvent(MEDIA_ERROR, MEDIA_ERROR_UNKNOWN);
                 break;
             }
             case EAS_STATE_PAUSED:
-                ALOGV("MidiFile::render - paused");
+                LOGV("MidiFile::render - paused");
                 break;
             default:
                 break;

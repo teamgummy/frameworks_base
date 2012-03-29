@@ -100,7 +100,7 @@ unsigned GetBytesPerPixel(const GLenum format, const GLenum type)
     case GL_UNSIGNED_BYTE:
         break;
     default:
-        ALOGE("GetBytesPerPixel: unknown type %x", type);
+        LOGE("GetBytesPerPixel: unknown type %x", type);
     }
 
     switch (format) {
@@ -115,7 +115,7 @@ unsigned GetBytesPerPixel(const GLenum format, const GLenum type)
     case 0x80E1:   // GL_BGRA_EXT
         return 4;
     default:
-        ALOGE("GetBytesPerPixel: unknown format %x", format);
+        LOGE("GetBytesPerPixel: unknown format %x", format);
     }
 
     return 1; // in doubt...
@@ -242,7 +242,7 @@ unsigned int DbgContext::GetBufferSize()
 void DbgContext::glUseProgram(GLuint program)
 {
     while (GLenum error = hooks->gl.glGetError())
-        ALOGD("DbgContext::glUseProgram(%u): before glGetError() = 0x%.4X",
+        LOGD("DbgContext::glUseProgram(%u): before glGetError() = 0x%.4X",
              program, error);
     this->program = program;
     maxAttrib = 0;
@@ -286,7 +286,7 @@ void DbgContext::glUseProgram(GLuint program)
     }
     delete name;
     while (GLenum error = hooks->gl.glGetError())
-        ALOGD("DbgContext::glUseProgram(%u): after glGetError() = 0x%.4X",
+        LOGD("DbgContext::glUseProgram(%u): after glGetError() = 0x%.4X",
              program, error);
 }
 

@@ -33,7 +33,7 @@ public class AdditionalTextOutput {
      * StringBuilders will be printed in the order the corresponding types appear here.
      */
     private enum OutputType {
-        JS_DIALOG,
+        JS_DILOG,
         EXCEEDED_DB_QUOTA_MESSAGE,
         CONSOLE_MESSAGE;
     }
@@ -81,7 +81,7 @@ public class AdditionalTextOutput {
     }
 
     public void appendJsAlert(String message) {
-        StringBuilder output = getStringBuilderForType(OutputType.JS_DIALOG);
+        StringBuilder output = getStringBuilderForType(OutputType.JS_DILOG);
 
         output.append("ALERT: ");
         output.append(message);
@@ -89,7 +89,7 @@ public class AdditionalTextOutput {
     }
 
     public void appendJsConfirm(String message) {
-        StringBuilder output = getStringBuilderForType(OutputType.JS_DIALOG);
+        StringBuilder output = getStringBuilderForType(OutputType.JS_DILOG);
 
         output.append("CONFIRM: ");
         output.append(message);
@@ -97,7 +97,7 @@ public class AdditionalTextOutput {
     }
 
     public void appendJsPrompt(String message, String defaultValue) {
-        StringBuilder output = getStringBuilderForType(OutputType.JS_DIALOG);
+        StringBuilder output = getStringBuilderForType(OutputType.JS_DILOG);
 
         output.append("PROMPT: ");
         output.append(message);

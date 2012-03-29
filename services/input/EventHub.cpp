@@ -246,7 +246,7 @@ status_t EventHub::getAbsoluteAxisInfo(int32_t deviceId, int axis,
         if (device && test_bit(axis, device->absBitmask)) {
             struct input_absinfo info;
             if(ioctl(device->fd, EVIOCGABS(axis), &info)) {
-                ALOGW("Error reading absolute controller %d for device %s fd %d, errno=%d",
+                LOGW("Error reading absolute controller %d for device %s fd %d, errno=%d",
                      axis, device->identifier.name.string(), device->fd, errno);
                 return -errno;
             }
@@ -355,7 +355,7 @@ status_t EventHub::getAbsoluteAxisValue(int32_t deviceId, int32_t axis, int32_t*
         if (device && test_bit(axis, device->absBitmask)) {
             struct input_absinfo info;
             if(ioctl(device->fd, EVIOCGABS(axis), &info)) {
-                ALOGW("Error reading absolute controller %d for device %s fd %d, errno=%d",
+                LOGW("Error reading absolute controller %d for device %s fd %d, errno=%d",
                      axis, device->identifier.name.string(), device->fd, errno);
                 return -errno;
             }
@@ -535,7 +535,7 @@ EventHub::Device* EventHub::getDeviceByPathLocked(const char* devicePath) const 
 }
 
 size_t EventHub::getEvents(int timeoutMillis, RawEvent* buffer, size_t bufferSize) {
-    ALOG_ASSERT(bufferSize >= 1);
+    LOG_ASSERT(bufferSize >= 1);
 
     AutoMutex _l(mLock);
 
@@ -551,7 +551,7 @@ size_t EventHub::getEvents(int timeoutMillis, RawEvent* buffer, size_t bufferSiz
         if (mNeedToReopenDevices) {
             mNeedToReopenDevices = false;
 
-            ALOGI("Reopening all input devices due to a configuration change.");
+            LOGI("Reopening all input devices due to a configuration change.");
 
             closeAllDevicesLocked();
             mNeedToScanDevices = true;
@@ -561,7 +561,7 @@ size_t EventHub::getEvents(int timeoutMillis, RawEvent* buffer, size_t bufferSiz
         // Report any devices that had last been added/removed.
         while (mClosingDevices) {
             Device* device = mClosingDevices;
-            ALOGV("Reporting device closed: id=%d, name=%s\n",
+            LOGV("Reporting device closed: id=%d, name=%s\n",
                  device->id, device->path.string());
             mClosingDevices = device->next;
             event->when = now;
@@ -583,7 +583,7 @@ size_t EventHub::getEvents(int timeoutMillis, RawEvent* buffer, size_t bufferSiz
 
         while (mOpeningDevices != NULL) {
             Device* device = mOpeningDevices;
-            ALOGV("Reporting device opened: id=%d, name=%s\n",
+            LOGV("Reporting device opened: id=%d, name=%s\n",
                  device->id, device->path.string());
             mOpeningDevices = device->next;
             event->when = now;
@@ -614,14 +614,14 @@ size_t EventHub::getEvents(int timeoutMillis, RawEvent* buffer, size_t bufferSiz
                 if (eventItem.events & EPOLLIN) {
                     mPendingINotify = true;
                 } else {
-                    ALOGW("Received unexpected epoll event 0x%08x for INotify.", eventItem.events);
+                    LOGW("Received unexpected epoll event 0x%08x for INotify.", eventItem.events);
                 }
                 continue;
             }
 
             if (eventItem.data.u32 == EPOLL_ID_WAKE) {
                 if (eventItem.events & EPOLLIN) {
-                    ALOGV("awoken after wake()");
+                    LOGV("awoken after wake()");
                     awoken = true;
                     char buffer[16];
                     ssize_t nRead;
@@ -629,7 +629,7 @@ size_t EventHub::getEvents(int timeoutMillis, RawEvent* buffer, size_t bufferSiz
                         nRead = read(mWakeReadPipeFd, buffer, sizeof(buffer));
                     } while ((nRead == -1 && errno == EINTR) || nRead == sizeof(buffer));
                 } else {
-                    ALOGW("Received unexpected epoll event 0x%08x for wake read pipe.",
+                    LOGW("Received unexpected epoll event 0x%08x for wake read pipe.",
                             eventItem.events);
                 }
                 continue;
@@ -637,7 +637,7 @@ size_t EventHub::getEvents(int timeoutMillis, RawEvent* buffer, size_t bufferSiz
 
             ssize_t deviceIndex = mDevices.indexOfKey(eventItem.data.u32);
             if (deviceIndex < 0) {
-                ALOGW("Received unexpected epoll event 0x%08x for unknown device id %d.",
+                LOGW("Received unexpected epoll event 0x%08x for unknown device id %d.",
                         eventItem.events, eventItem.data.u32);
                 continue;
             }
@@ -648,23 +648,23 @@ size_t EventHub::getEvents(int timeoutMillis, RawEvent* buffer, size_t bufferSiz
                         sizeof(struct input_event) * capacity);
                 if (readSize == 0 || (readSize < 0 && errno == ENODEV)) {
                     // Device was removed before INotify noticed.
-                    ALOGW("could not get event, removed? (fd: %d size: %d bufferSize: %d capacity: %d errno: %d)\n",
+                    LOGW("could not get event, removed? (fd: %d size: %d bufferSize: %d capacity: %d errno: %d)\n",
                          device->fd, readSize, bufferSize, capacity, errno);
                     deviceChanged = true;
                     closeDeviceLocked(device);
                 } else if (readSize < 0) {
                     if (errno != EAGAIN && errno != EINTR) {
-                        ALOGW("could not get event (errno=%d)", errno);
+                        LOGW("could not get event (errno=%d)", errno);
                     }
                 } else if ((readSize % sizeof(struct input_event)) != 0) {
-                    ALOGE("could not get event (wrong size: %d)", readSize);
+                    LOGE("could not get event (wrong size: %d)", readSize);
                 } else {
                     int32_t deviceId = device->id == mBuiltInKeyboardId ? 0 : device->id;
 
                     size_t count = size_t(readSize) / sizeof(struct input_event);
                     for (size_t i = 0; i < count; i++) {
                         const struct input_event& iev = readBuffer[i];
-                        ALOGV("%s got: t0=%d, t1=%d, type=%d, code=%d, value=%d",
+                        LOGV("%s got: t0=%d, t1=%d, type=%d, code=%d, value=%d",
                                 device->path.string(),
                                 (int) iev.time.tv_sec, (int) iev.time.tv_usec,
                                 iev.type, iev.code, iev.value);
@@ -683,7 +683,7 @@ size_t EventHub::getEvents(int timeoutMillis, RawEvent* buffer, size_t bufferSiz
                         // system call that also queries ktime_get_ts().
                         event->when = nsecs_t(iev.time.tv_sec) * 1000000000LL
                                 + nsecs_t(iev.time.tv_usec) * 1000LL;
-                        ALOGV("event time %lld, now %lld", event->when, now);
+                        LOGV("event time %lld, now %lld", event->when, now);
 #else
                         event->when = now;
 #endif
@@ -696,7 +696,7 @@ size_t EventHub::getEvents(int timeoutMillis, RawEvent* buffer, size_t bufferSiz
                         if (iev.type == EV_KEY && device->keyMap.haveKeyLayout()) {
                             status_t err = device->keyMap.keyLayoutMap->mapKey(iev.code,
                                         &event->keyCode, &event->flags);
-                            ALOGV("iev.code=%d keyCode=%d flags=0x%08x err=%d\n",
+                            LOGV("iev.code=%d keyCode=%d flags=0x%08x err=%d\n",
                                     iev.code, event->keyCode, event->flags, err);
                         }
                         event += 1;
@@ -710,7 +710,7 @@ size_t EventHub::getEvents(int timeoutMillis, RawEvent* buffer, size_t bufferSiz
                     }
                 }
             } else {
-                ALOGW("Received unexpected epoll event 0x%08x for device %s.",
+                LOGW("Received unexpected epoll event 0x%08x for device %s.",
                         eventItem.events, device->identifier.name.string());
             }
         }
@@ -768,7 +768,7 @@ size_t EventHub::getEvents(int timeoutMillis, RawEvent* buffer, size_t bufferSiz
             // Sleep after errors to avoid locking up the system.
             // Hopefully the error is transient.
             if (errno != EINTR) {
-                ALOGW("poll failed (errno=%d)\n", errno);
+                LOGW("poll failed (errno=%d)\n", errno);
                 usleep(100000);
             }
         } else {
@@ -795,7 +795,7 @@ size_t EventHub::getEvents(int timeoutMillis, RawEvent* buffer, size_t bufferSiz
 }
 
 void EventHub::wake() {
-    ALOGV("wake() called");
+    LOGV("wake() called");
 
     ssize_t nWrite;
     do {
@@ -803,14 +803,14 @@ void EventHub::wake() {
     } while (nWrite == -1 && errno == EINTR);
 
     if (nWrite != 1 && errno != EAGAIN) {
-        ALOGW("Could not write wake signal, errno=%d", errno);
+        LOGW("Could not write wake signal, errno=%d", errno);
     }
 }
 
 void EventHub::scanDevicesLocked() {
     status_t res = scanDirLocked(DEVICE_PATH);
     if(res < 0) {
-        ALOGE("scan dir failed for %s\n", DEVICE_PATH);
+        LOGE("scan dir failed for %s\n", DEVICE_PATH);
     }
 }
 
@@ -843,11 +843,11 @@ static const int32_t GAMEPAD_KEYCODES[] = {
 status_t EventHub::openDeviceLocked(const char *devicePath) {
     char buffer[80];
 
-    ALOGV("Opening device: %s", devicePath);
+    LOGV("Opening device: %s", devicePath);
 
     int fd = open(devicePath, O_RDWR);
     if(fd < 0) {
-        ALOGE("could not open %s, %s\n", devicePath, strerror(errno));
+        LOGE("could not open %s, %s\n", devicePath, strerror(errno));
         return -1;
     }
 
@@ -865,7 +865,7 @@ status_t EventHub::openDeviceLocked(const char *devicePath) {
     for (size_t i = 0; i < mExcludedDevices.size(); i++) {
         const String8& item = mExcludedDevices.itemAt(i);
         if (identifier.name == item) {
-            ALOGI("ignoring event id %s driver %s\n", devicePath, item.string());
+            LOGI("ignoring event id %s driver %s\n", devicePath, item.string());
             close(fd);
             return -1;
         }
@@ -874,7 +874,7 @@ status_t EventHub::openDeviceLocked(const char *devicePath) {
     // Get device driver version.
     int driverVersion;
     if(ioctl(fd, EVIOCGVERSION, &driverVersion)) {
-        ALOGE("could not get driver version for %s, %s\n", devicePath, strerror(errno));
+        LOGE("could not get driver version for %s, %s\n", devicePath, strerror(errno));
         close(fd);
         return -1;
     }
@@ -882,7 +882,7 @@ status_t EventHub::openDeviceLocked(const char *devicePath) {
     // Get device identifier.
     struct input_id inputId;
     if(ioctl(fd, EVIOCGID, &inputId)) {
-        ALOGE("could not get device input id for %s, %s\n", devicePath, strerror(errno));
+        LOGE("could not get device input id for %s, %s\n", devicePath, strerror(errno));
         close(fd);
         return -1;
     }
@@ -909,7 +909,7 @@ status_t EventHub::openDeviceLocked(const char *devicePath) {
 
     // Make file descriptor non-blocking for use with poll().
     if (fcntl(fd, F_SETFL, O_NONBLOCK)) {
-        ALOGE("Error %d making device file descriptor non-blocking.", errno);
+        LOGE("Error %d making device file descriptor non-blocking.", errno);
         close(fd);
         return -1;
     }
@@ -919,16 +919,16 @@ status_t EventHub::openDeviceLocked(const char *devicePath) {
     Device* device = new Device(fd, deviceId, String8(devicePath), identifier);
 
 #if 0
-    ALOGI("add device %d: %s\n", deviceId, devicePath);
-    ALOGI("  bus:       %04x\n"
+    LOGI("add device %d: %s\n", deviceId, devicePath);
+    LOGI("  bus:       %04x\n"
          "  vendor     %04x\n"
          "  product    %04x\n"
          "  version    %04x\n",
         identifier.bus, identifier.vendor, identifier.product, identifier.version);
-    ALOGI("  name:      \"%s\"\n", identifier.name.string());
-    ALOGI("  location:  \"%s\"\n", identifier.location.string());
-    ALOGI("  unique id: \"%s\"\n", identifier.uniqueId.string());
-    ALOGI("  driver:    v%d.%d.%d\n",
+    LOGI("  name:      \"%s\"\n", identifier.name.string());
+    LOGI("  location:  \"%s\"\n", identifier.location.string());
+    LOGI("  unique id: \"%s\"\n", identifier.uniqueId.string());
+    LOGI("  driver:    v%d.%d.%d\n",
         driverVersion >> 16, (driverVersion >> 8) & 0xff, driverVersion & 0xff);
 #endif
 
@@ -1055,7 +1055,7 @@ status_t EventHub::openDeviceLocked(const char *devicePath) {
 
     // If the device isn't recognized as something we handle, don't monitor it.
     if (device->classes == 0) {
-        ALOGV("Dropping device: id=%d, path='%s', name='%s'",
+        LOGV("Dropping device: id=%d, path='%s', name='%s'",
                 deviceId, devicePath, device->identifier.name.string());
         delete device;
         return -1;
@@ -1072,12 +1072,12 @@ status_t EventHub::openDeviceLocked(const char *devicePath) {
     eventItem.events = EPOLLIN;
     eventItem.data.u32 = deviceId;
     if (epoll_ctl(mEpollFd, EPOLL_CTL_ADD, fd, &eventItem)) {
-        ALOGE("Could not add device fd to epoll instance.  errno=%d", errno);
+        LOGE("Could not add device fd to epoll instance.  errno=%d", errno);
         delete device;
         return -1;
     }
 
-    ALOGI("New device: id=%d, fd=%d, path='%s', name='%s', classes=0x%x, "
+    LOGI("New device: id=%d, fd=%d, path='%s', name='%s', classes=0x%x, "
             "configuration='%s', keyLayout='%s', keyCharacterMap='%s', builtinKeyboard=%s",
          deviceId, fd, devicePath, device->identifier.name.string(),
          device->classes,
@@ -1097,13 +1097,13 @@ void EventHub::loadConfigurationLocked(Device* device) {
     device->configurationFile = getInputDeviceConfigurationFilePathByDeviceIdentifier(
             device->identifier, INPUT_DEVICE_CONFIGURATION_FILE_TYPE_CONFIGURATION);
     if (device->configurationFile.isEmpty()) {
-        ALOGD("No input device configuration file found for device '%s'.",
+        LOGD("No input device configuration file found for device '%s'.",
                 device->identifier.name.string());
     } else {
         status_t status = PropertyMap::load(device->configurationFile,
                 &device->configuration);
         if (status) {
-            ALOGE("Error loading input device configuration file for device '%s'.  "
+            LOGE("Error loading input device configuration file for device '%s'.  "
                     "Using default configuration.",
                     device->identifier.name.string());
         }
@@ -1159,7 +1159,7 @@ status_t EventHub::closeDeviceByPathLocked(const char *devicePath) {
         closeDeviceLocked(device);
         return 0;
     }
-    ALOGV("Remove device: %s not found, device may already have been removed.", devicePath);
+    LOGV("Remove device: %s not found, device may already have been removed.", devicePath);
     return -1;
 }
 
@@ -1170,18 +1170,18 @@ void EventHub::closeAllDevicesLocked() {
 }
 
 void EventHub::closeDeviceLocked(Device* device) {
-    ALOGI("Removed device: path=%s name=%s id=%d fd=%d classes=0x%x\n",
+    LOGI("Removed device: path=%s name=%s id=%d fd=%d classes=0x%x\n",
          device->path.string(), device->identifier.name.string(), device->id,
          device->fd, device->classes);
 
     if (device->id == mBuiltInKeyboardId) {
-        ALOGW("built-in keyboard device %s (id=%d) is closing! the apps will not like this",
+        LOGW("built-in keyboard device %s (id=%d) is closing! the apps will not like this",
                 device->path.string(), mBuiltInKeyboardId);
         mBuiltInKeyboardId = -1;
     }
 
     if (epoll_ctl(mEpollFd, EPOLL_CTL_DEL, device->fd, NULL)) {
-        ALOGW("Could not remove device fd from epoll instance.  errno=%d", errno);
+        LOGW("Could not remove device fd from epoll instance.  errno=%d", errno);
     }
 
     mDevices.removeItem(device->id);
@@ -1202,7 +1202,7 @@ void EventHub::closeDeviceLocked(Device* device) {
         // Unlink the device from the opening devices list then delete it.
         // We don't need to tell the client that the device was closed because
         // it does not even know it was opened in the first place.
-        ALOGI("Device %s was immediately closed after opening.", device->path.string());
+        LOGI("Device %s was immediately closed after opening.", device->path.string());
         if (pred) {
             pred->next = device->next;
         } else {
@@ -1226,12 +1226,12 @@ status_t EventHub::readNotifyLocked() {
     int event_pos = 0;
     struct inotify_event *event;
 
-    ALOGV("EventHub::readNotify nfd: %d\n", mINotifyFd);
+    LOGV("EventHub::readNotify nfd: %d\n", mINotifyFd);
     res = read(mINotifyFd, event_buf, sizeof(event_buf));
     if(res < (int)sizeof(*event)) {
         if(errno == EINTR)
             return 0;
-        ALOGW("could not get event, %s\n", strerror(errno));
+        LOGW("could not get event, %s\n", strerror(errno));
         return -1;
     }
     //printf("got %d bytes of event information\n", res);
@@ -1248,7 +1248,7 @@ status_t EventHub::readNotifyLocked() {
             if(event->mask & IN_CREATE) {
                 openDeviceLocked(devname);
             } else {
-                ALOGI("Removing device '%s' due to inotify event\n", devname);
+                LOGI("Removing device '%s' due to inotify event\n", devname);
                 closeDeviceByPathLocked(devname);
             }
         }
@@ -1284,7 +1284,7 @@ status_t EventHub::scanDirLocked(const char *dirname)
 }
 
 void EventHub::requestReopenDevices() {
-    ALOGV("requestReopenDevices() called");
+    LOGV("requestReopenDevices() called");
 
     AutoMutex _l(mLock);
     mNeedToReopenDevices = true;

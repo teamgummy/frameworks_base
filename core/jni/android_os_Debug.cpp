@@ -184,7 +184,7 @@ static void read_mapinfo(FILE *fp, stats_t* stats)
             }
         }
 
-        //ALOGI("native=%d dalvik=%d sqlite=%d: %s\n", isNativeHeap, isDalvikHeap,
+        //LOGI("native=%d dalvik=%d sqlite=%d: %s\n", isNativeHeap, isDalvikHeap,
         //    isSqliteHeap, line);
             
         while (true) {
@@ -517,22 +517,22 @@ static void android_os_Debug_dumpNativeHeap(JNIEnv* env, jobject clazz,
     /* dup() the descriptor so we don't close the original with fclose() */
     int fd = dup(origFd);
     if (fd < 0) {
-        ALOGW("dup(%d) failed: %s\n", origFd, strerror(errno));
+        LOGW("dup(%d) failed: %s\n", origFd, strerror(errno));
         jniThrowRuntimeException(env, "dup() failed");
         return;
     }
 
     FILE* fp = fdopen(fd, "w");
     if (fp == NULL) {
-        ALOGW("fdopen(%d) failed: %s\n", fd, strerror(errno));
+        LOGW("fdopen(%d) failed: %s\n", fd, strerror(errno));
         close(fd);
         jniThrowRuntimeException(env, "fdopen() failed");
         return;
     }
 
-    ALOGD("Native heap dump starting...\n");
+    LOGD("Native heap dump starting...\n");
     dumpNativeHeap(fp);
-    ALOGD("Native heap dump complete.\n");
+    LOGD("Native heap dump complete.\n");
 
     fclose(fp);
 }

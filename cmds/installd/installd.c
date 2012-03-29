@@ -157,11 +157,11 @@ static int readx(int s, void *_buf, int count)
         r = read(s, buf + n, count - n);
         if (r < 0) {
             if (errno == EINTR) continue;
-            ALOGE("read error: %s\n", strerror(errno));
+            LOGE("read error: %s\n", strerror(errno));
             return -1;
         }
         if (r == 0) {
-            ALOGE("eof\n");
+            LOGE("eof\n");
             return -1; /* EOF */
         }
         n += r;
@@ -178,7 +178,7 @@ static int writex(int s, const void *_buf, int count)
         r = write(s, buf + n, count - n);
         if (r < 0) {
             if (errno == EINTR) continue;
-            ALOGE("write error: %s\n", strerror(errno));
+            LOGE("write error: %s\n", strerror(errno));
             return -1;
         }
         n += r;
@@ -200,7 +200,7 @@ static int execute(int s, char cmd[BUFFER_MAX])
     unsigned short count;
     int ret = -1;
 
-//    ALOGI("execute('%s')\n", cmd);
+//    LOGI("execute('%s')\n", cmd);
 
         /* default reply is "" */
     reply[0] = 0;
@@ -213,7 +213,7 @@ static int execute(int s, char cmd[BUFFER_MAX])
             n++;
             arg[n] = cmd;
             if (n == TOKEN_MAX) {
-                ALOGE("too many arguments\n");
+                LOGE("too many arguments\n");
                 goto done;
             }
         }
@@ -223,7 +223,7 @@ static int execute(int s, char cmd[BUFFER_MAX])
     for (i = 0; i < sizeof(cmds) / sizeof(cmds[0]); i++) {
         if (!strcmp(cmds[i].name,arg[0])) {
             if (n != cmds[i].numargs) {
-                ALOGE("%s requires %d arguments (%d given)\n",
+                LOGE("%s requires %d arguments (%d given)\n",
                      cmds[i].name, cmds[i].numargs, n);
             } else {
                 ret = cmds[i].func(arg + 1, reply);
@@ -231,7 +231,7 @@ static int execute(int s, char cmd[BUFFER_MAX])
             goto done;
         }
     }
-    ALOGE("unsupported command '%s'\n", arg[0]);
+    LOGE("unsupported command '%s'\n", arg[0]);
 
 done:
     if (reply[0]) {
@@ -242,7 +242,7 @@ done:
     if (n > BUFFER_MAX) n = BUFFER_MAX;
     count = n;
 
-//    ALOGI("reply: '%s'\n", cmd);
+//    LOGI("reply: '%s'\n", cmd);
     if (writex(s, &count, sizeof(count))) return -1;
     if (writex(s, cmd, count)) return -1;
     return 0;
@@ -290,7 +290,7 @@ int initialize_globals() {
 
     android_system_dirs.dirs = calloc(android_system_dirs.count, sizeof(dir_rec_t));
     if (android_system_dirs.dirs == NULL) {
-        ALOGE("Couldn't allocate array for dirs; aborting\n");
+        LOGE("Couldn't allocate array for dirs; aborting\n");
         return -1;
     }
 
@@ -351,22 +351,22 @@ int main(const int argc, const char *argv[]) {
     int lsocket, s, count;
 
     if (initialize_globals() < 0) {
-        ALOGE("Could not initialize globals; exiting.\n");
+        LOGE("Could not initialize globals; exiting.\n");
         exit(1);
     }
 
     if (initialize_directories() < 0) {
-        ALOGE("Could not create directories; exiting.\n");
+        LOGE("Could not create directories; exiting.\n");
         exit(1);
     }
 
     lsocket = android_get_control_socket(SOCKET_PATH);
     if (lsocket < 0) {
-        ALOGE("Failed to get socket from environment: %s\n", strerror(errno));
+        LOGE("Failed to get socket from environment: %s\n", strerror(errno));
         exit(1);
     }
     if (listen(lsocket, 5)) {
-        ALOGE("Listen on socket failed: %s\n", strerror(errno));
+        LOGE("Listen on socket failed: %s\n", strerror(errno));
         exit(1);
     }
     fcntl(lsocket, F_SETFD, FD_CLOEXEC);
@@ -375,30 +375,30 @@ int main(const int argc, const char *argv[]) {
         alen = sizeof(addr);
         s = accept(lsocket, &addr, &alen);
         if (s < 0) {
-            ALOGE("Accept failed: %s\n", strerror(errno));
+            LOGE("Accept failed: %s\n", strerror(errno));
             continue;
         }
         fcntl(s, F_SETFD, FD_CLOEXEC);
 
-        ALOGI("new connection\n");
+        LOGI("new connection\n");
         for (;;) {
             unsigned short count;
             if (readx(s, &count, sizeof(count))) {
-                ALOGE("failed to read size\n");
+                LOGE("failed to read size\n");
                 break;
             }
             if ((count < 1) || (count >= BUFFER_MAX)) {
-                ALOGE("invalid size %d\n", count);
+                LOGE("invalid size %d\n", count);
                 break;
             }
             if (readx(s, buf, count)) {
-                ALOGE("failed to read command\n");
+                LOGE("failed to read command\n");
                 break;
             }
             buf[count] = 0;
             if (execute(s, buf)) break;
         }
-        ALOGI("closing connection\n");
+        LOGI("closing connection\n");
         close(s);
     }
 

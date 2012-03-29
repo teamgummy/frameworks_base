@@ -76,7 +76,7 @@ template <typename T> inline T max(T a, T b) { return a>b ? a : b; }
 
 status_t SensorFusion::activate(void* ident, bool enabled) {
 
-    ALOGD_IF(DEBUG_CONNECTIONS,
+    LOGD_IF(DEBUG_CONNECTIONS,
             "SensorFusion::activate(ident=%p, enabled=%d)",
             ident, enabled);
 

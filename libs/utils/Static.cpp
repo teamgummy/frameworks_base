@@ -84,7 +84,7 @@ static LogTextOutput gLogTextOutput;
 static FdTextOutput gStdoutTextOutput(STDOUT_FILENO);
 static FdTextOutput gStderrTextOutput(STDERR_FILENO);
 
-TextOutput& LOG(gLogTextOutput);
+TextOutput& alog(gLogTextOutput);
 TextOutput& aout(gStdoutTextOutput);
 TextOutput& aerr(gStderrTextOutput);
 

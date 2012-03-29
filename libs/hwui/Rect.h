@@ -169,7 +169,7 @@ public:
     }
 
     void dump() const {
-        ALOGD("Rect[l=%f t=%f r=%f b=%f]", left, top, right, bottom);
+        LOGD("Rect[l=%f t=%f r=%f b=%f]", left, top, right, bottom);
     }
 
 }; // class Rect

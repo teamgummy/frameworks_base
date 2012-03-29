@@ -69,7 +69,7 @@ public class CharacterPickerDialog extends Dialog
 
         WindowManager.LayoutParams params = getWindow().getAttributes();
         params.token = mView.getApplicationWindowToken();
-        params.type = params.TYPE_APPLICATION_ATTACHED_DIALOG;
+        params.type = params.TYPE_APPLICATION_ATTACHED_DILOG;
         params.flags = params.flags | Window.FEATURE_NO_TITLE;
 
         setContentView(R.layout.character_picker);

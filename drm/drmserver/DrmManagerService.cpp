@@ -52,7 +52,7 @@ static bool isProtectedCallAllowed() {
 }
 
 void DrmManagerService::instantiate() {
-    ALOGV("instantiate");
+    LOGV("instantiate");
     defaultServiceManager()->addService(String16("drm.drmManager"), new DrmManagerService());
 
     if (0 >= trustedUids.size()) {
@@ -67,13 +67,13 @@ void DrmManagerService::instantiate() {
 
 DrmManagerService::DrmManagerService() :
         mDrmManager(NULL) {
-    ALOGV("created");
+    LOGV("created");
     mDrmManager = new DrmManager();
     mDrmManager->loadPlugIns();
 }
 
 DrmManagerService::~DrmManagerService() {
-    ALOGV("Destroyed");
+    LOGV("Destroyed");
     mDrmManager->unloadPlugIns();
     delete mDrmManager; mDrmManager = NULL;
 }
@@ -96,120 +96,120 @@ void DrmManagerService::removeClient(int uniqueId) {
 
 status_t DrmManagerService::setDrmServiceListener(
             int uniqueId, const sp<IDrmServiceListener>& drmServiceListener) {
-    ALOGV("Entering setDrmServiceListener");
+    LOGV("Entering setDrmServiceListener");
     mDrmManager->setDrmServiceListener(uniqueId, drmServiceListener);
     return DRM_NO_ERROR;
 }
 
 status_t DrmManagerService::installDrmEngine(int uniqueId, const String8& drmEngineFile) {
-    ALOGV("Entering installDrmEngine");
+    LOGV("Entering installDrmEngine");
     return mDrmManager->installDrmEngine(uniqueId, drmEngineFile);
 }
 
 DrmConstraints* DrmManagerService::getConstraints(
             int uniqueId, const String8* path, const int action) {
-    ALOGV("Entering getConstraints from content");
+    LOGV("Entering getConstraints from content");
     return mDrmManager->getConstraints(uniqueId, path, action);
 }
 
 DrmMetadata* DrmManagerService::getMetadata(int uniqueId, const String8* path) {
-    ALOGV("Entering getMetadata from content");
+    LOGV("Entering getMetadata from content");
     return mDrmManager->getMetadata(uniqueId, path);
 }
 
 bool DrmManagerService::canHandle(int uniqueId, const String8& path, const String8& mimeType) {
-    ALOGV("Entering canHandle");
+    LOGV("Entering canHandle");
     return mDrmManager->canHandle(uniqueId, path, mimeType);
 }
 
 DrmInfoStatus* DrmManagerService::processDrmInfo(int uniqueId, const DrmInfo* drmInfo) {
-    ALOGV("Entering processDrmInfo");
+    LOGV("Entering processDrmInfo");
     return mDrmManager->processDrmInfo(uniqueId, drmInfo);
 }
 
 DrmInfo* DrmManagerService::acquireDrmInfo(int uniqueId, const DrmInfoRequest* drmInfoRequest) {
-    ALOGV("Entering acquireDrmInfo");
+    LOGV("Entering acquireDrmInfo");
     return mDrmManager->acquireDrmInfo(uniqueId, drmInfoRequest);
 }
 
 status_t DrmManagerService::saveRights(
             int uniqueId, const DrmRights& drmRights,
             const String8& rightsPath, const String8& contentPath) {
-    ALOGV("Entering saveRights");
+    LOGV("Entering saveRights");
     return mDrmManager->saveRights(uniqueId, drmRights, rightsPath, contentPath);
 }
 
 String8 DrmManagerService::getOriginalMimeType(int uniqueId, const String8& path) {
-    ALOGV("Entering getOriginalMimeType");
+    LOGV("Entering getOriginalMimeType");
     return mDrmManager->getOriginalMimeType(uniqueId, path);
 }
 
 int DrmManagerService::getDrmObjectType(
            int uniqueId, const String8& path, const String8& mimeType) {
-    ALOGV("Entering getDrmObjectType");
+    LOGV("Entering getDrmObjectType");
     return mDrmManager->getDrmObjectType(uniqueId, path, mimeType);
 }
 
 int DrmManagerService::checkRightsStatus(
             int uniqueId, const String8& path, int action) {
-    ALOGV("Entering checkRightsStatus");
+    LOGV("Entering checkRightsStatus");
     return mDrmManager->checkRightsStatus(uniqueId, path, action);
 }
 
 status_t DrmManagerService::consumeRights(
             int uniqueId, DecryptHandle* decryptHandle, int action, bool reserve) {
-    ALOGV("Entering consumeRights");
+    LOGV("Entering consumeRights");
     return mDrmManager->consumeRights(uniqueId, decryptHandle, action, reserve);
 }
 
 status_t DrmManagerService::setPlaybackStatus(
             int uniqueId, DecryptHandle* decryptHandle, int playbackStatus, int64_t position) {
-    ALOGV("Entering setPlaybackStatus");
+    LOGV("Entering setPlaybackStatus");
     return mDrmManager->setPlaybackStatus(uniqueId, decryptHandle, playbackStatus, position);
 }
 
 bool DrmManagerService::validateAction(
             int uniqueId, const String8& path,
             int action, const ActionDescription& description) {
-    ALOGV("Entering validateAction");
+    LOGV("Entering validateAction");
     return mDrmManager->validateAction(uniqueId, path, action, description);
 }
 
 status_t DrmManagerService::removeRights(int uniqueId, const String8& path) {
-    ALOGV("Entering removeRights");
+    LOGV("Entering removeRights");
     return mDrmManager->removeRights(uniqueId, path);
 }
 
 status_t DrmManagerService::removeAllRights(int uniqueId) {
-    ALOGV("Entering removeAllRights");
+    LOGV("Entering removeAllRights");
     return mDrmManager->removeAllRights(uniqueId);
 }
 
 int DrmManagerService::openConvertSession(int uniqueId, const String8& mimeType) {
-    ALOGV("Entering openConvertSession");
+    LOGV("Entering openConvertSession");
     return mDrmManager->openConvertSession(uniqueId, mimeType);
 }
 
 DrmConvertedStatus* DrmManagerService::convertData(
             int uniqueId, int convertId, const DrmBuffer* inputData) {
-    ALOGV("Entering convertData");
+    LOGV("Entering convertData");
     return mDrmManager->convertData(uniqueId, convertId, inputData);
 }
 
 DrmConvertedStatus* DrmManagerService::closeConvertSession(int uniqueId, int convertId) {
-    ALOGV("Entering closeConvertSession");
+    LOGV("Entering closeConvertSession");
     return mDrmManager->closeConvertSession(uniqueId, convertId);
 }
 
 status_t DrmManagerService::getAllSupportInfo(
             int uniqueId, int* length, DrmSupportInfo** drmSupportInfoArray) {
-    ALOGV("Entering getAllSupportInfo");
+    LOGV("Entering getAllSupportInfo");
     return mDrmManager->getAllSupportInfo(uniqueId, length, drmSupportInfoArray);
 }
 
 DecryptHandle* DrmManagerService::openDecryptSession(
             int uniqueId, int fd, off64_t offset, off64_t length) {
-    ALOGV("Entering DrmManagerService::openDecryptSession");
+    LOGV("Entering DrmManagerService::openDecryptSession");
     if (isProtectedCallAllowed()) {
         return mDrmManager->openDecryptSession(uniqueId, fd, offset, length);
     }
@@ -219,7 +219,7 @@ DecryptHandle* DrmManagerService::openDecryptSession(
 
 DecryptHandle* DrmManagerService::openDecryptSession(
             int uniqueId, const char* uri) {
-    ALOGV("Entering DrmManagerService::openDecryptSession with uri");
+    LOGV("Entering DrmManagerService::openDecryptSession with uri");
     if (isProtectedCallAllowed()) {
         return mDrmManager->openDecryptSession(uniqueId, uri);
     }
@@ -228,32 +228,32 @@ DecryptHandle* DrmManagerService::openDecryptSession(
 }
 
 status_t DrmManagerService::closeDecryptSession(int uniqueId, DecryptHandle* decryptHandle) {
-    ALOGV("Entering closeDecryptSession");
+    LOGV("Entering closeDecryptSession");
     return mDrmManager->closeDecryptSession(uniqueId, decryptHandle);
 }
 
 status_t DrmManagerService::initializeDecryptUnit(int uniqueId, DecryptHandle* decryptHandle,
             int decryptUnitId, const DrmBuffer* headerInfo) {
-    ALOGV("Entering initializeDecryptUnit");
+    LOGV("Entering initializeDecryptUnit");
     return mDrmManager->initializeDecryptUnit(uniqueId,decryptHandle, decryptUnitId, headerInfo);
 }
 
 status_t DrmManagerService::decrypt(
             int uniqueId, DecryptHandle* decryptHandle, int decryptUnitId,
             const DrmBuffer* encBuffer, DrmBuffer** decBuffer, DrmBuffer* IV) {
-    ALOGV("Entering decrypt");
+    LOGV("Entering decrypt");
     return mDrmManager->decrypt(uniqueId, decryptHandle, decryptUnitId, encBuffer, decBuffer, IV);
 }
 
 status_t DrmManagerService::finalizeDecryptUnit(
             int uniqueId, DecryptHandle* decryptHandle, int decryptUnitId) {
-    ALOGV("Entering finalizeDecryptUnit");
+    LOGV("Entering finalizeDecryptUnit");
     return mDrmManager->finalizeDecryptUnit(uniqueId, decryptHandle, decryptUnitId);
 }
 
 ssize_t DrmManagerService::pread(int uniqueId, DecryptHandle* decryptHandle,
             void* buffer, ssize_t numBytes, off64_t offset) {
-    ALOGV("Entering pread");
+    LOGV("Entering pread");
     return mDrmManager->pread(uniqueId, decryptHandle, buffer, numBytes, offset);
 }
 

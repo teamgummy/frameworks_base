@@ -68,14 +68,14 @@ public class LifecycleTest extends ActivityTestsBase {
     //@LargeTest
     public void testDialog() throws Exception {
         mIntent = mTopIntent;
-        runLaunchpad(LaunchpadActivity.LIFECYCLE_DIALOG);
+        runLaunchpad(LaunchpadActivity.LIFECYCLE_DILOG);
     }
 
     //Suppressing until 1285425 is fixed.
     @Suppress
     public void testTabDialog() throws Exception {
         mIntent = mTabIntent;
-        runLaunchpad(LaunchpadActivity.LIFECYCLE_DIALOG);
+        runLaunchpad(LaunchpadActivity.LIFECYCLE_DILOG);
     }
 
     @MediumTest

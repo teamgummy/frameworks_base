@@ -46,12 +46,12 @@ void FBOCache::deinit(Context *rsc) {
 
 void FBOCache::bindColorTarget(Context *rsc, Allocation *a, uint32_t slot) {
     if (slot >= mHal.state.colorTargetsCount) {
-        ALOGE("Invalid render target index");
+        LOGE("Invalid render target index");
         return;
     }
     if (a != NULL) {
         if (!a->getIsTexture()) {
-            ALOGE("Invalid Color Target");
+            LOGE("Invalid Color Target");
             return;
         }
     }
@@ -63,7 +63,7 @@ void FBOCache::bindColorTarget(Context *rsc, Allocation *a, uint32_t slot) {
 void FBOCache::bindDepthTarget(Context *rsc, Allocation *a) {
     if (a != NULL) {
         if (!a->getIsRenderTarget()) {
-            ALOGE("Invalid Depth Target");
+            LOGE("Invalid Depth Target");
             return;
         }
     }

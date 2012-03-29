@@ -228,10 +228,10 @@ static const char * gKindStrings[] = {
 
 void Component::dumpLOGV(const char *prefix) const {
     if (mType >= RS_TYPE_ELEMENT) {
-        ALOGV("%s   Component: %s, %s, vectorSize=%i, bits=%i",
+        LOGV("%s   Component: %s, %s, vectorSize=%i, bits=%i",
              prefix, gTypeObjStrings[mType - RS_TYPE_ELEMENT], gKindStrings[mKind], mVectorSize, mBits);
     } else {
-        ALOGV("%s   Component: %s, %s, vectorSize=%i, bits=%i",
+        LOGV("%s   Component: %s, %s, vectorSize=%i, bits=%i",
              prefix, gTypeBasicStrings[mType], gKindStrings[mKind], mVectorSize, mBits);
     }
 }

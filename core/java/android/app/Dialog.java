@@ -380,8 +380,8 @@ public class Dialog implements DialogInterface, Window.Callback,
         if (mActionBar != null) mActionBar.setShowHideAnimationEnabled(false);
     }
 
-    private static final String DIALOG_SHOWING_TAG = "android:dialogShowing";
-    private static final String DIALOG_HIERARCHY_TAG = "android:dialogHierarchy";
+    private static final String DILOG_SHOWING_TAG = "android:dialogShowing";
+    private static final String DILOG_HIERARCHY_TAG = "android:dialogHierarchy";
 
     /**
      * Saves the state of the dialog into a bundle.
@@ -393,9 +393,9 @@ public class Dialog implements DialogInterface, Window.Callback,
      */
     public Bundle onSaveInstanceState() {
         Bundle bundle = new Bundle();
-        bundle.putBoolean(DIALOG_SHOWING_TAG, mShowing);
+        bundle.putBoolean(DILOG_SHOWING_TAG, mShowing);
         if (mCreated) {
-            bundle.putBundle(DIALOG_HIERARCHY_TAG, mWindow.saveHierarchyState());
+            bundle.putBundle(DILOG_HIERARCHY_TAG, mWindow.saveHierarchyState());
         }
         return bundle;
     }
@@ -411,14 +411,14 @@ public class Dialog implements DialogInterface, Window.Callback,
      *     {@link #onSaveInstanceState()}.
      */
     public void onRestoreInstanceState(Bundle savedInstanceState) {
-        final Bundle dialogHierarchyState = savedInstanceState.getBundle(DIALOG_HIERARCHY_TAG);
+        final Bundle dialogHierarchyState = savedInstanceState.getBundle(DILOG_HIERARCHY_TAG);
         if (dialogHierarchyState == null) {
             // dialog has never been shown, or onCreated, nothing to restore.
             return;
         }
         dispatchOnCreate(savedInstanceState);
         mWindow.restoreHierarchyState(dialogHierarchyState);
-        if (savedInstanceState.getBoolean(DIALOG_SHOWING_TAG)) {
+        if (savedInstanceState.getBoolean(DILOG_SHOWING_TAG)) {
             show();
         }
     }

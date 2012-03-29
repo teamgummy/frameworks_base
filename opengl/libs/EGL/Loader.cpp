@@ -131,7 +131,7 @@ Loader::Loader()
 
     /* Special case for GLES emulation */
     if (checkGlesEmulationStatus() == 0) {
-        ALOGD("Emulator without GPU support detected. Fallback to software renderer.");
+        LOGD("Emulator without GPU support detected. Fallback to software renderer.");
         gConfig.add( entry_t(0, 0, "android") );
         return;
     }
@@ -140,14 +140,14 @@ Loader::Loader()
     FILE* cfg = fopen("/system/lib/egl/egl.cfg", "r");
     if (cfg == NULL) {
         // default config
-        ALOGD("egl.cfg not found, using default config");
+        LOGD("egl.cfg not found, using default config");
         gConfig.add( entry_t(0, 0, "android") );
     } else {
         while (fgets(line, 256, cfg)) {
             int dpy;
             int impl;
             if (sscanf(line, "%u %u %s", &dpy, &impl, tag) == 3) {
-                //ALOGD(">>> %u %u %s", dpy, impl, tag);
+                //LOGD(">>> %u %u %s", dpy, impl, tag);
                 gConfig.add( entry_t(dpy, impl, tag) );
             }
         }
@@ -238,7 +238,7 @@ void Loader::init_api(void* dso,
                 strncpy(scrap, name, index);
                 scrap[index] = 0;
                 f = (__eglMustCastToProperFunctionPointerType)dlsym(dso, scrap);
-                //ALOGD_IF(f, "found <%s> instead", scrap);
+                //LOGD_IF(f, "found <%s> instead", scrap);
             }
         }
         if (f == NULL) {
@@ -247,11 +247,11 @@ void Loader::init_api(void* dso,
             if (index>0 && strcmp(name+index, "OES")) {
                 snprintf(scrap, SIZE, "%sOES", name);
                 f = (__eglMustCastToProperFunctionPointerType)dlsym(dso, scrap);
-                //ALOGD_IF(f, "found <%s> instead", scrap);
+                //LOGD_IF(f, "found <%s> instead", scrap);
             }
         }
         if (f == NULL) {
-            //ALOGD("%s", name);
+            //LOGD("%s", name);
             f = (__eglMustCastToProperFunctionPointerType)gl_unimplemented;
         }
         *curr++ = f;
@@ -278,16 +278,16 @@ void *Loader::load_driver(const char* kind, const char *tag,
     void* dso = dlopen(driver_absolute_path, RTLD_NOW | RTLD_LOCAL);
     if (dso == 0) {
         const char* err = dlerror();
-        ALOGE("load_driver(%s): %s", driver_absolute_path, err?err:"unknown");
+        LOGE("load_driver(%s): %s", driver_absolute_path, err?err:"unknown");
         return 0;
     }
 
-    ALOGD("loaded %s", driver_absolute_path);
+    LOGD("loaded %s", driver_absolute_path);
 
     if (mask & EGL) {
         getProcAddress = (getProcAddressType)dlsym(dso, "eglGetProcAddress");
 
-        ALOGE_IF(!getProcAddress, 
+        LOGE_IF(!getProcAddress, 
                 "can't find eglGetProcAddress() in %s", driver_absolute_path);
 
         egl_t* egl = &cnx->egl;

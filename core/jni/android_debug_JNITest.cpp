@@ -39,20 +39,20 @@ static jint android_debug_JNITest_part1(JNIEnv* env, jobject object,
     jint arrayVal;
     int result = -2;
 
-    ALOGI("JNI test: in part1, intArg=%d, doubleArg=%.3f\n", intArg, doubleArg);
+    LOGI("JNI test: in part1, intArg=%d, doubleArg=%.3f\n", intArg, doubleArg);
 
     /* find "int part2(double doubleArg, int fromArray, String stringArg)" */
     clazz = env->GetObjectClass(object);
     part2id = env->GetMethodID(clazz,
                 "part2", "(DILjava/lang/String;)I");
     if (part2id == NULL) {
-        ALOGE("JNI test: unable to find part2\n");
+        LOGE("JNI test: unable to find part2\n");
         return -1;
     }
 
     /* get the length of the array */
     arrayLen = env->GetArrayLength(arrayArg);
-    ALOGI("  array size is %d\n", arrayLen);
+    LOGI("  array size is %d\n", arrayLen);
 
     /*
      * Get the last element in the array.
@@ -60,7 +60,7 @@ static jint android_debug_JNITest_part1(JNIEnv* env, jobject object,
      * to multiple elements.
      */
     arrayVal = (int) env->GetObjectArrayElement(arrayArg, arrayLen-1);
-    ALOGI("  array val is %d\n", arrayVal);
+    LOGI("  array val is %d\n", arrayVal);
 
     /* call this->part2 */
     result = env->CallIntMethod(object, part2id,
@@ -79,11 +79,11 @@ static jint android_debug_JNITest_part3(JNIEnv* env, jclass clazz,
     const char* utfChars;
     jboolean isCopy;
 
-    ALOGI("JNI test: in part3\n");
+    LOGI("JNI test: in part3\n");
 
     utfChars = env->GetStringUTFChars(stringArg, &isCopy);
 
-    ALOGI("  String is '%s', isCopy=%d\n", (const char*) utfChars, isCopy);
+    LOGI("  String is '%s', isCopy=%d\n", (const char*) utfChars, isCopy);
 
     env->ReleaseStringUTFChars(stringArg, utfChars);
 

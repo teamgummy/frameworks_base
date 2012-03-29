@@ -67,7 +67,7 @@ static void android_os_fileobserver_observe(JNIEnv* env, jobject object, jint fd
             if (errno == EINTR)
                 continue;
 
-            ALOGE("***** ERROR! android_os_fileobserver_observe() got a short event!");
+            LOGE("***** ERROR! android_os_fileobserver_observe() got a short event!");
             return;
         }
         
@@ -148,14 +148,14 @@ int register_android_os_FileObserver(JNIEnv* env)
 
     if (clazz == NULL)
 	{
-        ALOGE("Can't find android/os/FileObserver$ObserverThread");
+        LOGE("Can't find android/os/FileObserver$ObserverThread");
         return -1;
     }
 
     method_onEvent = env->GetMethodID(clazz, "onEvent", "(IILjava/lang/String;)V");
     if (method_onEvent == NULL)
     {
-        ALOGE("Can't find FileObserver.onEvent(int, int, String)");
+        LOGE("Can't find FileObserver.onEvent(int, int, String)");
         return -1;
     }
 

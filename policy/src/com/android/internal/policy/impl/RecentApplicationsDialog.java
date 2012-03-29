@@ -53,7 +53,7 @@ public class RecentApplicationsDialog extends Dialog implements OnClickListener 
 
     final TextView[] mIcons = new TextView[NUM_BUTTONS];
     View mNoAppsText;
-    IntentFilter mBroadcastIntentFilter = new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
+    IntentFilter mBroadcastIntentFilter = new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DILOGS);
 
     class RecentTag {
         ActivityManager.RecentTaskInfo info;
@@ -94,7 +94,7 @@ public class RecentApplicationsDialog extends Dialog implements OnClickListener 
 
         Window window = getWindow();
         window.requestFeature(Window.FEATURE_NO_TITLE);
-        window.setType(WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG);
+        window.setType(WindowManager.LayoutParams.TYPE_SYSTEM_DILOG);
         window.setFlags(WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM,
                 WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
         window.setTitle("Recents");
@@ -328,7 +328,7 @@ public class RecentApplicationsDialog extends Dialog implements OnClickListener 
     }
 
     /**
-     * This is the listener for the ACTION_CLOSE_SYSTEM_DIALOGS intent.  It's an indication that
+     * This is the listener for the ACTION_CLOSE_SYSTEM_DILOGS intent.  It's an indication that
      * we should close ourselves immediately, in order to allow a higher-priority UI to take over
      * (e.g. phone call received).
      */
@@ -336,9 +336,9 @@ public class RecentApplicationsDialog extends Dialog implements OnClickListener 
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (Intent.ACTION_CLOSE_SYSTEM_DIALOGS.equals(action)) {
-                String reason = intent.getStringExtra(PhoneWindowManager.SYSTEM_DIALOG_REASON_KEY);
-                if (! PhoneWindowManager.SYSTEM_DIALOG_REASON_RECENT_APPS.equals(reason)) {
+            if (Intent.ACTION_CLOSE_SYSTEM_DILOGS.equals(action)) {
+                String reason = intent.getStringExtra(PhoneWindowManager.SYSTEM_DILOG_REASON_KEY);
+                if (! PhoneWindowManager.SYSTEM_DILOG_REASON_RECENT_APPS.equals(reason)) {
                     dismiss();
                 }
             }

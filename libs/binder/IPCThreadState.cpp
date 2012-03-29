@@ -56,12 +56,12 @@
 
 #else
 
-#define IF_LOG_TRANSACTIONS() IF_ALOG(LOG_VERBOSE, "transact")
-#define IF_LOG_COMMANDS() IF_ALOG(LOG_VERBOSE, "ipc")
-#define LOG_REMOTEREFS(...) ALOG(LOG_DEBUG, "remoterefs", __VA_ARGS__)
-#define IF_LOG_REMOTEREFS() IF_ALOG(LOG_DEBUG, "remoterefs")
-#define LOG_THREADPOOL(...) ALOG(LOG_DEBUG, "threadpool", __VA_ARGS__)
-#define LOG_ONEWAY(...) ALOG(LOG_DEBUG, "ipc", __VA_ARGS__)
+#define IF_LOG_TRANSACTIONS() IF_LOG(LOG_VERBOSE, "transact")
+#define IF_LOG_COMMANDS() IF_LOG(LOG_VERBOSE, "ipc")
+#define LOG_REMOTEREFS(...) LOG(LOG_DEBUG, "remoterefs", __VA_ARGS__)
+#define IF_LOG_REMOTEREFS() IF_LOG(LOG_DEBUG, "remoterefs")
+#define LOG_THREADPOOL(...) LOG(LOG_DEBUG, "threadpool", __VA_ARGS__)
+#define LOG_ONEWAY(...) LOG(LOG_DEBUG, "ipc", __VA_ARGS__)
 
 #endif
 
@@ -493,7 +493,7 @@ void IPCThreadState::joinThreadPool(bool isMain)
 
 void IPCThreadState::stopProcess(bool immediate)
 {
-    //ALOGI("**** STOPPING PROCESS");
+    //LOGI("**** STOPPING PROCESS");
     flushCommands();
     int fd = mProcess->mDriverFD;
     mProcess->mDriverFD = -1;
@@ -530,9 +530,9 @@ status_t IPCThreadState::transact(int32_t handle,
     if ((flags & TF_ONE_WAY) == 0) {
         #if 0
         if (code == 4) { // relayout
-            ALOGI(">>>>>> CALLING transaction 4");
+            LOGI(">>>>>> CALLING transaction 4");
         } else {
-            ALOGI(">>>>>> CALLING transaction %d", code);
+            LOGI(">>>>>> CALLING transaction %d", code);
         }
         #endif
         if (reply) {
@@ -543,9 +543,9 @@ status_t IPCThreadState::transact(int32_t handle,
         }
         #if 0
         if (code == 4) { // relayout
-            ALOGI("<<<<<< RETURNING transaction 4");
+            LOGI("<<<<<< RETURNING transaction 4");
         } else {
-            ALOGI("<<<<<< RETURNING transaction %d", code);
+            LOGI("<<<<<< RETURNING transaction %d", code);
         }
         #endif
         
@@ -692,7 +692,7 @@ status_t IPCThreadState::waitForResponse(Parcel *reply, status_t *acquireResult)
         
         case BR_ACQUIRE_RESULT:
             {
-                ALOG_ASSERT(acquireResult != NULL, "Unexpected brACQUIRE_RESULT");
+                LOG_ASSERT(acquireResult != NULL, "Unexpected brACQUIRE_RESULT");
                 const int32_t result = mIn.readInt32();
                 if (!acquireResult) continue;
                 *acquireResult = result ? NO_ERROR : INVALID_OPERATION;
@@ -703,7 +703,7 @@ status_t IPCThreadState::waitForResponse(Parcel *reply, status_t *acquireResult)
             {
                 binder_transaction_data tr;
                 err = mIn.read(&tr, sizeof(tr));
-                ALOG_ASSERT(err == NO_ERROR, "Not enough command data for brREPLY");
+                LOG_ASSERT(err == NO_ERROR, "Not enough command data for brREPLY");
                 if (err != NO_ERROR) goto finish;
 
                 if (reply) {
@@ -752,7 +752,7 @@ finish:
 
 status_t IPCThreadState::talkWithDriver(bool doReceive)
 {
-    ALOG_ASSERT(mProcess->mDriverFD >= 0, "Binder driver is not opened");
+    LOG_ASSERT(mProcess->mDriverFD >= 0, "Binder driver is not opened");
     
     binder_write_read bwr;
     
@@ -905,7 +905,7 @@ status_t IPCThreadState::executeCommand(int32_t cmd)
     case BR_ACQUIRE:
         refs = (RefBase::weakref_type*)mIn.readInt32();
         obj = (BBinder*)mIn.readInt32();
-        ALOG_ASSERT(refs->refBase() == obj,
+        LOG_ASSERT(refs->refBase() == obj,
                    "BR_ACQUIRE: object %p does not match cookie %p (expected %p)",
                    refs, obj, refs->refBase());
         obj->incStrong(mProcess.get());
@@ -921,7 +921,7 @@ status_t IPCThreadState::executeCommand(int32_t cmd)
     case BR_RELEASE:
         refs = (RefBase::weakref_type*)mIn.readInt32();
         obj = (BBinder*)mIn.readInt32();
-        ALOG_ASSERT(refs->refBase() == obj,
+        LOG_ASSERT(refs->refBase() == obj,
                    "BR_RELEASE: object %p does not match cookie %p (expected %p)",
                    refs, obj, refs->refBase());
         IF_LOG_REMOTEREFS() {
@@ -946,7 +946,7 @@ status_t IPCThreadState::executeCommand(int32_t cmd)
         // NOTE: This assertion is not valid, because the object may no
         // longer exist (thus the (BBinder*)cast above resulting in a different
         // memory address).
-        //ALOG_ASSERT(refs->refBase() == obj,
+        //LOG_ASSERT(refs->refBase() == obj,
         //           "BR_DECREFS: object %p does not match cookie %p (expected %p)",
         //           refs, obj, refs->refBase());
         mPendingWeakDerefs.push(refs);
@@ -958,7 +958,7 @@ status_t IPCThreadState::executeCommand(int32_t cmd)
          
         {
             const bool success = refs->attemptIncStrong(mProcess.get());
-            ALOG_ASSERT(success && refs->refBase() == obj,
+            LOG_ASSERT(success && refs->refBase() == obj,
                        "BR_ATTEMPT_ACQUIRE: object %p does not match cookie %p (expected %p)",
                        refs, obj, refs->refBase());
             
@@ -971,7 +971,7 @@ status_t IPCThreadState::executeCommand(int32_t cmd)
         {
             binder_transaction_data tr;
             result = mIn.read(&tr, sizeof(tr));
-            ALOG_ASSERT(result == NO_ERROR,
+            LOG_ASSERT(result == NO_ERROR,
                 "Not enough command data for brTRANSACTION");
             if (result != NO_ERROR) break;
             
@@ -1009,7 +1009,7 @@ status_t IPCThreadState::executeCommand(int32_t cmd)
                 }
             }
 
-            //ALOGI(">>>> TRANSACT from pid %d uid %d\n", mCallingPid, mCallingUid);
+            //LOGI(">>>> TRANSACT from pid %d uid %d\n", mCallingPid, mCallingUid);
             
             Parcel reply;
             IF_LOG_TRANSACTIONS() {
@@ -1033,7 +1033,7 @@ status_t IPCThreadState::executeCommand(int32_t cmd)
                 if (error < NO_ERROR) reply.setError(error);
             }
             
-            //ALOGI("<<<< TRANSACT from pid %d restore pid %d uid %d\n",
+            //LOGI("<<<< TRANSACT from pid %d restore pid %d uid %d\n",
             //     mCallingPid, origPid, origUid);
             
             if ((tr.flags & TF_ONE_WAY) == 0) {
@@ -1110,11 +1110,11 @@ void IPCThreadState::freeBuffer(Parcel* parcel, const uint8_t* data, size_t data
                                 const size_t* objects, size_t objectsSize,
                                 void* cookie)
 {
-    //ALOGI("Freeing parcel %p", &parcel);
+    //LOGI("Freeing parcel %p", &parcel);
     IF_LOG_COMMANDS() {
         alog << "Writing BC_FREE_BUFFER for " << data << endl;
     }
-    ALOG_ASSERT(data != NULL, "Called with NULL data");
+    LOG_ASSERT(data != NULL, "Called with NULL data");
     if (parcel != NULL) parcel->closeFileDescriptors();
     IPCThreadState* state = self();
     state->mOut.writeInt32(BC_FREE_BUFFER);

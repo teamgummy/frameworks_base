@@ -87,13 +87,13 @@ public:
     bool initialize() {
         sp<IServiceManager> sm = defaultServiceManager();
         if (sm == NULL) {
-            ALOGE("Couldn't get default ServiceManager\n");
+            LOGE("Couldn't get default ServiceManager\n");
             return false;
         }
 
         mMountService = interface_cast<IMountService>(sm->getService(String16("mount")));
         if (mMountService == NULL) {
-            ALOGE("Couldn't get connection to MountService\n");
+            LOGE("Couldn't get connection to MountService\n");
             return false;
         }
 
@@ -121,7 +121,7 @@ public:
             target->cb(filename, state, target->data);
             delete target;
         } else {
-            ALOGI("Didn't find the callback handler for: %s\n", filename);
+            LOGI("Didn't find the callback handler for: %s\n", filename);
         }
     }
 

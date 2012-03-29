@@ -68,7 +68,7 @@ void FileA3D::parseHeader(IStream *headerStream) {
     for (uint32_t i = 0; i < numIndexEntries; i ++) {
         A3DIndexEntry *entry = new A3DIndexEntry();
         headerStream->loadString(&entry->mObjectName);
-        //ALOGV("Header data, entry name = %s", entry->mObjectName.string());
+        //LOGV("Header data, entry name = %s", entry->mObjectName.string());
         entry->mType = (RsA3DClassID)headerStream->loadU32();
         if (mUse64BitOffsets){
             entry->mOffset = headerStream->loadOffset();
@@ -145,7 +145,7 @@ bool FileA3D::load(FILE *f) {
     char magicString[12];
     size_t len;
 
-    ALOGV("file open 1");
+    LOGV("file open 1");
     len = fread(magicString, 1, 12, f);
     if ((len != 12) ||
         memcmp(magicString, "Android3D_ff", 12)) {
@@ -181,7 +181,7 @@ bool FileA3D::load(FILE *f) {
         return false;
     }
 
-    ALOGV("file open size = %lli", mDataSize);
+    LOGV("file open size = %lli", mDataSize);
 
     // We should know enough to read the file in at this point.
     mAlloc = malloc(mDataSize);
@@ -196,7 +196,7 @@ bool FileA3D::load(FILE *f) {
 
     mReadStream = new IStream(mData, mUse64BitOffsets);
 
-    ALOGV("Header is read an stream initialized");
+    LOGV("Header is read an stream initialized");
     return true;
 }
 
@@ -278,17 +278,17 @@ ObjectBase *FileA3D::initializeFromEntry(size_t index) {
 
 bool FileA3D::writeFile(const char *filename) {
     if (!mWriteStream) {
-        ALOGE("No objects to write\n");
+        LOGE("No objects to write\n");
         return false;
     }
     if (mWriteStream->getPos() == 0) {
-        ALOGE("No objects to write\n");
+        LOGE("No objects to write\n");
         return false;
     }
 
     FILE *writeHandle = fopen(filename, "wb");
     if (!writeHandle) {
-        ALOGE("Couldn't open the file for writing\n");
+        LOGE("Couldn't open the file for writing\n");
         return false;
     }
 
@@ -335,7 +335,7 @@ bool FileA3D::writeFile(const char *filename) {
     int status = fclose(writeHandle);
 
     if (status != 0) {
-        ALOGE("Couldn't close file\n");
+        LOGE("Couldn't close file\n");
         return false;
     }
 
@@ -364,12 +364,12 @@ void FileA3D::appendToFile(ObjectBase *obj) {
 RsObjectBase rsaFileA3DGetEntryByIndex(RsContext con, uint32_t index, RsFile file) {
     FileA3D *fa3d = static_cast<FileA3D *>(file);
     if (!fa3d) {
-        ALOGE("Can't load entry. No valid file");
+        LOGE("Can't load entry. No valid file");
         return NULL;
     }
 
     ObjectBase *obj = fa3d->initializeFromEntry(index);
-    //ALOGV("Returning object with name %s", obj->getName());
+    //LOGV("Returning object with name %s", obj->getName());
 
     return obj;
 }
@@ -389,13 +389,13 @@ void rsaFileA3DGetIndexEntries(RsContext con, RsFileIndexEntry *fileEntries, uin
     FileA3D *fa3d = static_cast<FileA3D *>(file);
 
     if (!fa3d) {
-        ALOGE("Can't load index entries. No valid file");
+        LOGE("Can't load index entries. No valid file");
         return;
     }
 
     uint32_t numFileEntries = fa3d->getNumIndexEntries();
     if (numFileEntries != numEntries || numEntries == 0 || fileEntries == NULL) {
-        ALOGE("Can't load index entries. Invalid number requested");
+        LOGE("Can't load index entries. Invalid number requested");
         return;
     }
 
@@ -408,7 +408,7 @@ void rsaFileA3DGetIndexEntries(RsContext con, RsFileIndexEntry *fileEntries, uin
 
 RsFile rsaFileA3DCreateFromMemory(RsContext con, const void *data, uint32_t len) {
     if (data == NULL) {
-        ALOGE("File load failed. Asset stream is NULL");
+        LOGE("File load failed. Asset stream is NULL");
         return NULL;
     }
 
@@ -432,7 +432,7 @@ RsFile rsaFileA3DCreateFromAsset(RsContext con, void *_asset) {
 
 RsFile rsaFileA3DCreateFromFile(RsContext con, const char *path) {
     if (path == NULL) {
-        ALOGE("File load failed. Path is NULL");
+        LOGE("File load failed. Path is NULL");
         return NULL;
     }
 
@@ -446,7 +446,7 @@ RsFile rsaFileA3DCreateFromFile(RsContext con, const char *path) {
         fa3d->load(f);
         fclose(f);
     } else {
-        ALOGE("Could not open file %s", path);
+        LOGE("Could not open file %s", path);
     }
 
     return fa3d;

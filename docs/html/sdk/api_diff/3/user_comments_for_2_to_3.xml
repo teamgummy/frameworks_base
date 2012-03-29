@@ -5638,7 +5638,7 @@
   </text>
 </comment>
 <comment>
-  <identifier id="android.view.WindowManager.LayoutParams.TYPE_APPLICATION_ATTACHED_DIALOG"/>
+  <identifier id="android.view.WindowManager.LayoutParams.TYPE_APPLICATION_ATTACHED_DILOG"/>
   <text>
     InsertCommentsHere
   </text>
@@ -5650,7 +5650,7 @@
   </text>
 </comment>
 <comment>
-  <identifier id="android.view.WindowManager.LayoutParams.TYPE_INPUT_METHOD_DIALOG"/>
+  <identifier id="android.view.WindowManager.LayoutParams.TYPE_INPUT_METHOD_DILOG"/>
   <text>
     InsertCommentsHere
   </text>

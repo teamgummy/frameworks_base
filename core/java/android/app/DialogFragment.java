@@ -166,11 +166,11 @@ public class DialogFragment extends Fragment
      */
     public static final int STYLE_NO_INPUT = 3;
 
-    private static final String SAVED_DIALOG_STATE_TAG = "android:savedDialogState";
+    private static final String SAVED_DILOG_STATE_TAG = "android:savedDialogState";
     private static final String SAVED_STYLE = "android:style";
     private static final String SAVED_THEME = "android:theme";
     private static final String SAVED_CANCELABLE = "android:cancelable";
-    private static final String SAVED_SHOWS_DIALOG = "android:showsDialog";
+    private static final String SAVED_SHOWS_DILOG = "android:showsDialog";
     private static final String SAVED_BACK_STACK_ID = "android:backStackId";
 
     int mStyle = STYLE_NORMAL;
@@ -382,7 +382,7 @@ public class DialogFragment extends Fragment
             mStyle = savedInstanceState.getInt(SAVED_STYLE, STYLE_NORMAL);
             mTheme = savedInstanceState.getInt(SAVED_THEME, 0);
             mCancelable = savedInstanceState.getBoolean(SAVED_CANCELABLE, true);
-            mShowsDialog = savedInstanceState.getBoolean(SAVED_SHOWS_DIALOG, mShowsDialog);
+            mShowsDialog = savedInstanceState.getBoolean(SAVED_SHOWS_DILOG, mShowsDialog);
             mBackStackId = savedInstanceState.getInt(SAVED_BACK_STACK_ID, -1);
         }
         
@@ -475,7 +475,7 @@ public class DialogFragment extends Fragment
                     "You can not set Dialog's OnCancelListener or OnDismissListener");
         }
         if (savedInstanceState != null) {
-            Bundle dialogState = savedInstanceState.getBundle(SAVED_DIALOG_STATE_TAG);
+            Bundle dialogState = savedInstanceState.getBundle(SAVED_DILOG_STATE_TAG);
             if (dialogState != null) {
                 mDialog.onRestoreInstanceState(dialogState);
             }
@@ -497,7 +497,7 @@ public class DialogFragment extends Fragment
         if (mDialog != null) {
             Bundle dialogState = mDialog.onSaveInstanceState();
             if (dialogState != null) {
-                outState.putBundle(SAVED_DIALOG_STATE_TAG, dialogState);
+                outState.putBundle(SAVED_DILOG_STATE_TAG, dialogState);
             }
         }
         if (mStyle != STYLE_NORMAL) {
@@ -510,7 +510,7 @@ public class DialogFragment extends Fragment
             outState.putBoolean(SAVED_CANCELABLE, mCancelable);
         }
         if (!mShowsDialog) {
-            outState.putBoolean(SAVED_SHOWS_DIALOG, mShowsDialog);
+            outState.putBoolean(SAVED_SHOWS_DILOG, mShowsDialog);
         }
         if (mBackStackId != -1) {
             outState.putInt(SAVED_BACK_STACK_ID, mBackStackId);

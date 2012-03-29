@@ -135,7 +135,7 @@ size_t PageCache::releaseFromStart(size_t maxBytes) {
 }
 
 void PageCache::copy(size_t from, void *data, size_t size) {
-    ALOGV("copy from %d size %d", from, size);
+    LOGV("copy from %d size %d", from, size);
 
     if (size == 0) {
         return;
@@ -277,7 +277,7 @@ void NuCachedSource2::onMessageReceived(const sp<AMessage> &msg) {
 }
 
 void NuCachedSource2::fetchInternal() {
-    ALOGV("fetchInternal");
+    LOGV("fetchInternal");
 
     bool reconnect = false;
 
@@ -302,7 +302,7 @@ void NuCachedSource2::fetchInternal() {
             mNumRetriesLeft = 0;
             return;
         } else if (err != OK) {
-            ALOGI("The attempt to reconnect failed, %d retries remaining",
+            LOGI("The attempt to reconnect failed, %d retries remaining",
                  mNumRetriesLeft);
 
             return;
@@ -317,11 +317,11 @@ void NuCachedSource2::fetchInternal() {
     Mutex::Autolock autoLock(mLock);
 
     if (n < 0) {
-        ALOGE("source returned error %ld, %d retries left", n, mNumRetriesLeft);
+        LOGE("source returned error %ld, %d retries left", n, mNumRetriesLeft);
         mFinalStatus = n;
         mCache->releasePage(page);
     } else if (n == 0) {
-        ALOGI("ERROR_END_OF_STREAM");
+        LOGI("ERROR_END_OF_STREAM");
 
         mNumRetriesLeft = 0;
         mFinalStatus = ERROR_END_OF_STREAM;
@@ -329,7 +329,7 @@ void NuCachedSource2::fetchInternal() {
         mCache->releasePage(page);
     } else {
         if (mFinalStatus != OK) {
-            ALOGI("retrying a previously failed read succeeded.");
+            LOGI("retrying a previously failed read succeeded.");
         }
         mNumRetriesLeft = kMaxNumRetries;
         mFinalStatus = OK;
@@ -340,10 +340,10 @@ void NuCachedSource2::fetchInternal() {
 }
 
 void NuCachedSource2::onFetch() {
-    ALOGV("onFetch");
+    LOGV("onFetch");
 
     if (mFinalStatus != OK && mNumRetriesLeft == 0) {
-        ALOGV("EOS reached, done prefetching for now");
+        LOGV("EOS reached, done prefetching for now");
         mFetching = false;
     }
 
@@ -355,7 +355,7 @@ void NuCachedSource2::onFetch() {
 
     if (mFetching || keepAlive) {
         if (keepAlive) {
-            ALOGI("Keep alive");
+            LOGI("Keep alive");
         }
 
         fetchInternal();
@@ -363,12 +363,12 @@ void NuCachedSource2::onFetch() {
         mLastFetchTimeUs = ALooper::GetNowUs();
 
         if (mFetching && mCache->totalSize() >= mHighwaterThresholdBytes) {
-            ALOGI("Cache full, done prefetching for now");
+            LOGI("Cache full, done prefetching for now");
             mFetching = false;
 
             if (mDisconnectAtHighwatermark
                     && (mSource->flags() & DataSource::kIsHTTPBasedSource)) {
-                ALOGV("Disconnecting at high watermark");
+                LOGV("Disconnecting at high watermark");
                 static_cast<HTTPBase *>(mSource.get())->disconnect();
             }
         }
@@ -393,7 +393,7 @@ void NuCachedSource2::onFetch() {
 }
 
 void NuCachedSource2::onRead(const sp<AMessage> &msg) {
-    ALOGV("onRead");
+    LOGV("onRead");
 
     int64_t offset;
     CHECK(msg->findInt64("offset", &offset));
@@ -448,14 +448,14 @@ void NuCachedSource2::restartPrefetcherIfNecessary_l(
     size_t actualBytes = mCache->releaseFromStart(maxBytes);
     mCacheOffset += actualBytes;
 
-    ALOGI("restarting prefetcher, totalSize = %d", mCache->totalSize());
+    LOGI("restarting prefetcher, totalSize = %d", mCache->totalSize());
     mFetching = true;
 }
 
 ssize_t NuCachedSource2::readAt(off64_t offset, void *data, size_t size) {
     Mutex::Autolock autoSerializer(mSerializer);
 
-    ALOGV("readAt offset %lld, size %d", offset, size);
+    LOGV("readAt offset %lld, size %d", offset, size);
 
     Mutex::Autolock autoLock(mLock);
 
@@ -523,7 +523,7 @@ size_t NuCachedSource2::approxDataRemaining_l(status_t *finalStatus) {
 ssize_t NuCachedSource2::readInternal(off64_t offset, void *data, size_t size) {
     CHECK_LE(size, (size_t)mHighwaterThresholdBytes);
 
-    ALOGV("readInternal offset %lld size %d", offset, size);
+    LOGV("readInternal offset %lld size %d", offset, size);
 
     Mutex::Autolock autoLock(mLock);
 
@@ -571,7 +571,7 @@ ssize_t NuCachedSource2::readInternal(off64_t offset, void *data, size_t size) {
         return size;
     }
 
-    ALOGV("deferring read");
+    LOGV("deferring read");
 
     return -EAGAIN;
 }
@@ -584,7 +584,7 @@ status_t NuCachedSource2::seekInternal_l(off64_t offset) {
         return OK;
     }
 
-    ALOGI("new range: offset= %lld", offset);
+    LOGI("new range: offset= %lld", offset);
 
     mCacheOffset = offset;
 
@@ -634,7 +634,7 @@ void NuCachedSource2::updateCacheParamsFromString(const char *s) {
 
     if (sscanf(s, "%ld/%ld/%d",
                &lowwaterMarkKb, &highwaterMarkKb, &keepAliveSecs) != 3) {
-        ALOGE("Failed to parse cache parameters from '%s'.", s);
+        LOGE("Failed to parse cache parameters from '%s'.", s);
         return;
     }
 
@@ -651,7 +651,7 @@ void NuCachedSource2::updateCacheParamsFromString(const char *s) {
     }
 
     if (mLowwaterThresholdBytes >= mHighwaterThresholdBytes) {
-        ALOGE("Illegal low/highwater marks specified, reverting to defaults.");
+        LOGE("Illegal low/highwater marks specified, reverting to defaults.");
 
         mLowwaterThresholdBytes = kDefaultLowWaterThreshold;
         mHighwaterThresholdBytes = kDefaultHighWaterThreshold;
@@ -663,7 +663,7 @@ void NuCachedSource2::updateCacheParamsFromString(const char *s) {
         mKeepAliveIntervalUs = kDefaultKeepAliveIntervalUs;
     }
 
-    ALOGV("lowwater = %d bytes, highwater = %d bytes, keepalive = %lld us",
+    LOGV("lowwater = %d bytes, highwater = %d bytes, keepalive = %lld us",
          mLowwaterThresholdBytes,
          mHighwaterThresholdBytes,
          mKeepAliveIntervalUs);
@@ -687,7 +687,7 @@ void NuCachedSource2::RemoveCacheSpecificHeaders(
 
         headers->removeItemsAt(index);
 
-        ALOGV("Using special cache config '%s'", cacheConfig->string());
+        LOGV("Using special cache config '%s'", cacheConfig->string());
     }
 
     if ((index = headers->indexOfKey(
@@ -695,7 +695,7 @@ void NuCachedSource2::RemoveCacheSpecificHeaders(
         *disconnectAtHighwatermark = true;
         headers->removeItemsAt(index);
 
-        ALOGV("Client requested disconnection at highwater mark");
+        LOGV("Client requested disconnection at highwater mark");
     }
 }
 

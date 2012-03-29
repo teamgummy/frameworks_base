@@ -66,12 +66,12 @@ public:
         data.writeInterfaceToken(IMountService::getInterfaceDescriptor());
         data.writeStrongBinder(listener->asBinder());
         if (remote()->transact(TRANSACTION_registerListener, data, &reply) != NO_ERROR) {
-            ALOGD("registerListener could not contact remote\n");
+            LOGD("registerListener could not contact remote\n");
             return;
         }
         int32_t err = reply.readExceptionCode();
         if (err < 0) {
-            ALOGD("registerListener caught exception %d\n", err);
+            LOGD("registerListener caught exception %d\n", err);
             return;
         }
     }
@@ -82,12 +82,12 @@ public:
         data.writeInterfaceToken(IMountService::getInterfaceDescriptor());
         data.writeStrongBinder(listener->asBinder());
         if (remote()->transact(TRANSACTION_unregisterListener, data, &reply) != NO_ERROR) {
-            ALOGD("unregisterListener could not contact remote\n");
+            LOGD("unregisterListener could not contact remote\n");
             return;
         }
         int32_t err = reply.readExceptionCode();
         if (err < 0) {
-            ALOGD("unregisterListener caught exception %d\n", err);
+            LOGD("unregisterListener caught exception %d\n", err);
             return;
         }
     }
@@ -97,12 +97,12 @@ public:
         Parcel data, reply;
         data.writeInterfaceToken(IMountService::getInterfaceDescriptor());
         if (remote()->transact(TRANSACTION_isUsbMassStorageConnected, data, &reply) != NO_ERROR) {
-            ALOGD("isUsbMassStorageConnected could not contact remote\n");
+            LOGD("isUsbMassStorageConnected could not contact remote\n");
             return false;
         }
         int32_t err = reply.readExceptionCode();
         if (err < 0) {
-            ALOGD("isUsbMassStorageConnected caught exception %d\n", err);
+            LOGD("isUsbMassStorageConnected caught exception %d\n", err);
             return false;
         }
         return reply.readInt32() != 0;
@@ -114,12 +114,12 @@ public:
         data.writeInterfaceToken(IMountService::getInterfaceDescriptor());
         data.writeInt32(enable != 0);
         if (remote()->transact(TRANSACTION_setUsbMassStorageEnabled, data, &reply) != NO_ERROR) {
-            ALOGD("setUsbMassStorageEnabled could not contact remote\n");
+            LOGD("setUsbMassStorageEnabled could not contact remote\n");
             return;
         }
         int32_t err = reply.readExceptionCode();
         if (err < 0) {
-            ALOGD("setUsbMassStorageEnabled caught exception %d\n", err);
+            LOGD("setUsbMassStorageEnabled caught exception %d\n", err);
             return;
         }
     }
@@ -129,12 +129,12 @@ public:
         Parcel data, reply;
         data.writeInterfaceToken(IMountService::getInterfaceDescriptor());
         if (remote()->transact(TRANSACTION_isUsbMassStorageEnabled, data, &reply) != NO_ERROR) {
-            ALOGD("isUsbMassStorageEnabled could not contact remote\n");
+            LOGD("isUsbMassStorageEnabled could not contact remote\n");
             return false;
         }
         int32_t err = reply.readExceptionCode();
         if (err < 0) {
-            ALOGD("isUsbMassStorageEnabled caught exception %d\n", err);
+            LOGD("isUsbMassStorageEnabled caught exception %d\n", err);
             return false;
         }
         return reply.readInt32() != 0;
@@ -146,12 +146,12 @@ public:
         data.writeInterfaceToken(IMountService::getInterfaceDescriptor());
         data.writeString16(mountPoint);
         if (remote()->transact(TRANSACTION_mountVolume, data, &reply) != NO_ERROR) {
-            ALOGD("mountVolume could not contact remote\n");
+            LOGD("mountVolume could not contact remote\n");
             return -1;
         }
         int32_t err = reply.readExceptionCode();
         if (err < 0) {
-            ALOGD("mountVolume caught exception %d\n", err);
+            LOGD("mountVolume caught exception %d\n", err);
             return err;
         }
         return reply.readInt32();
@@ -165,12 +165,12 @@ public:
         data.writeInt32(force ? 1 : 0);
         data.writeInt32(removeEncryption ? 1 : 0);
         if (remote()->transact(TRANSACTION_unmountVolume, data, &reply) != NO_ERROR) {
-            ALOGD("unmountVolume could not contact remote\n");
+            LOGD("unmountVolume could not contact remote\n");
             return -1;
         }
         int32_t err = reply.readExceptionCode();
         if (err < 0) {
-            ALOGD("unmountVolume caught exception %d\n", err);
+            LOGD("unmountVolume caught exception %d\n", err);
             return err;
         }
         return reply.readInt32();
@@ -182,12 +182,12 @@ public:
         data.writeInterfaceToken(IMountService::getInterfaceDescriptor());
         data.writeString16(mountPoint);
         if (remote()->transact(TRANSACTION_formatVolume, data, &reply) != NO_ERROR) {
-            ALOGD("formatVolume could not contact remote\n");
+            LOGD("formatVolume could not contact remote\n");
             return -1;
         }
         int32_t err = reply.readExceptionCode();
         if (err < 0) {
-            ALOGD("formatVolume caught exception %d\n", err);
+            LOGD("formatVolume caught exception %d\n", err);
             return err;
         }
         return reply.readInt32();
@@ -199,12 +199,12 @@ public:
         data.writeInterfaceToken(IMountService::getInterfaceDescriptor());
         data.writeString16(mountPoint);
         if (remote()->transact(TRANSACTION_getStorageUsers, data, &reply) != NO_ERROR) {
-            ALOGD("getStorageUsers could not contact remote\n");
+            LOGD("getStorageUsers could not contact remote\n");
             return -1;
         }
         int32_t err = reply.readExceptionCode();
         if (err < 0) {
-            ALOGD("getStorageUsers caught exception %d\n", err);
+            LOGD("getStorageUsers caught exception %d\n", err);
             return err;
         }
         const int32_t numUsers = reply.readInt32();
@@ -221,12 +221,12 @@ public:
         data.writeInterfaceToken(IMountService::getInterfaceDescriptor());
         data.writeString16(mountPoint);
         if (remote()->transact(TRANSACTION_getVolumeState, data, &reply) != NO_ERROR) {
-            ALOGD("getVolumeState could not contact remote\n");
+            LOGD("getVolumeState could not contact remote\n");
             return -1;
         }
         int32_t err = reply.readExceptionCode();
         if (err < 0) {
-            ALOGD("getVolumeState caught exception %d\n", err);
+            LOGD("getVolumeState caught exception %d\n", err);
             return err;
         }
         return reply.readInt32();
@@ -243,12 +243,12 @@ public:
         data.writeString16(key);
         data.writeInt32(ownerUid);
         if (remote()->transact(TRANSACTION_createSecureContainer, data, &reply) != NO_ERROR) {
-            ALOGD("createSecureContainer could not contact remote\n");
+            LOGD("createSecureContainer could not contact remote\n");
             return -1;
         }
         int32_t err = reply.readExceptionCode();
         if (err < 0) {
-            ALOGD("createSecureContainer caught exception %d\n", err);
+            LOGD("createSecureContainer caught exception %d\n", err);
             return err;
         }
         return reply.readInt32();
@@ -260,12 +260,12 @@ public:
         data.writeInterfaceToken(IMountService::getInterfaceDescriptor());
         data.writeString16(id);
         if (remote()->transact(TRANSACTION_finalizeSecureContainer, data, &reply) != NO_ERROR) {
-            ALOGD("finalizeSecureContainer couldn't call remote\n");
+            LOGD("finalizeSecureContainer couldn't call remote\n");
             return -1;
         }
         int32_t err = reply.readExceptionCode();
         if (err < 0) {
-            ALOGD("finalizeSecureContainer caught exception %d\n", err);
+            LOGD("finalizeSecureContainer caught exception %d\n", err);
             return err;
         }
         return reply.readInt32();
@@ -277,12 +277,12 @@ public:
         data.writeInterfaceToken(IMountService::getInterfaceDescriptor());
         data.writeString16(id);
         if (remote()->transact(TRANSACTION_destroySecureContainer, data, &reply) != NO_ERROR) {
-            ALOGD("destroySecureContainer couldn't call remote");
+            LOGD("destroySecureContainer couldn't call remote");
             return -1;
         }
         int32_t err = reply.readExceptionCode();
         if (err < 0) {
-            ALOGD("destroySecureContainer caught exception %d\n", err);
+            LOGD("destroySecureContainer caught exception %d\n", err);
             return err;
         }
         return reply.readInt32();
@@ -296,12 +296,12 @@ public:
         data.writeString16(key);
         data.writeInt32(ownerUid);
         if (remote()->transact(TRANSACTION_mountSecureContainer, data, &reply) != NO_ERROR) {
-            ALOGD("mountSecureContainer couldn't call remote");
+            LOGD("mountSecureContainer couldn't call remote");
             return -1;
         }
         int32_t err = reply.readExceptionCode(); // What to do...
         if (err < 0) {
-            ALOGD("mountSecureContainer caught exception %d\n", err);
+            LOGD("mountSecureContainer caught exception %d\n", err);
             return err;
         }
         return reply.readInt32();
@@ -314,12 +314,12 @@ public:
         data.writeString16(id);
         data.writeInt32(force ? 1 : 0);
         if (remote()->transact(TRANSACTION_getSecureContainerPath, data, &reply) != NO_ERROR) {
-            ALOGD("unmountSecureContainer couldn't call remote");
+            LOGD("unmountSecureContainer couldn't call remote");
             return -1;
         }
         int32_t err = reply.readExceptionCode(); // What to do...
         if (err < 0) {
-            ALOGD("unmountSecureContainer caught exception %d\n", err);
+            LOGD("unmountSecureContainer caught exception %d\n", err);
             return err;
         }
         return reply.readInt32();
@@ -331,12 +331,12 @@ public:
         data.writeInterfaceToken(IMountService::getInterfaceDescriptor());
         data.writeString16(id);
         if (remote()->transact(TRANSACTION_isSecureContainerMounted, data, &reply) != NO_ERROR) {
-            ALOGD("isSecureContainerMounted couldn't call remote");
+            LOGD("isSecureContainerMounted couldn't call remote");
             return false;
         }
         int32_t err = reply.readExceptionCode(); // What to do...
         if (err < 0) {
-            ALOGD("isSecureContainerMounted caught exception %d\n", err);
+            LOGD("isSecureContainerMounted caught exception %d\n", err);
             return false;
         }
         return reply.readInt32() != 0;
@@ -349,12 +349,12 @@ public:
         data.writeString16(oldId);
         data.writeString16(newId);
         if (remote()->transact(TRANSACTION_renameSecureContainer, data, &reply) != NO_ERROR) {
-            ALOGD("renameSecureContainer couldn't call remote");
+            LOGD("renameSecureContainer couldn't call remote");
             return -1;
         }
         int32_t err = reply.readExceptionCode(); // What to do...
         if (err < 0) {
-            ALOGD("renameSecureContainer caught exception %d\n", err);
+            LOGD("renameSecureContainer caught exception %d\n", err);
             return err;
         }
         return reply.readInt32();
@@ -366,12 +366,12 @@ public:
         data.writeInterfaceToken(IMountService::getInterfaceDescriptor());
         data.writeString16(id);
         if (remote()->transact(TRANSACTION_getSecureContainerPath, data, &reply) != NO_ERROR) {
-            ALOGD("getSecureContainerPath couldn't call remote");
+            LOGD("getSecureContainerPath couldn't call remote");
             return false;
         }
         int32_t err = reply.readExceptionCode(); // What to do...
         if (err < 0) {
-            ALOGD("getSecureContainerPath caught exception %d\n", err);
+            LOGD("getSecureContainerPath caught exception %d\n", err);
             return false;
         }
         path = reply.readString16();
@@ -384,12 +384,12 @@ public:
         data.writeInterfaceToken(IMountService::getInterfaceDescriptor());
         data.writeString16(id);
         if (remote()->transact(TRANSACTION_getSecureContainerList, data, &reply) != NO_ERROR) {
-            ALOGD("getSecureContainerList couldn't call remote");
+            LOGD("getSecureContainerList couldn't call remote");
             return -1;
         }
         int32_t err = reply.readExceptionCode();
         if (err < 0) {
-            ALOGD("getSecureContainerList caught exception %d\n", err);
+            LOGD("getSecureContainerList caught exception %d\n", err);
             return err;
         }
         const int32_t numStrings = reply.readInt32();
@@ -406,12 +406,12 @@ public:
         data.writeInterfaceToken(IMountService::getInterfaceDescriptor());
         data.writeStrongBinder(observer->asBinder());
         if (remote()->transact(TRANSACTION_shutdown, data, &reply) != NO_ERROR) {
-            ALOGD("shutdown could not contact remote\n");
+            LOGD("shutdown could not contact remote\n");
             return;
         }
         int32_t err = reply.readExceptionCode();
         if (err < 0) {
-            ALOGD("shutdown caught exception %d\n", err);
+            LOGD("shutdown caught exception %d\n", err);
             return;
         }
         reply.readExceptionCode();
@@ -422,12 +422,12 @@ public:
         Parcel data, reply;
         data.writeInterfaceToken(IMountService::getInterfaceDescriptor());
         if (remote()->transact(TRANSACTION_finishMediaUpdate, data, &reply) != NO_ERROR) {
-            ALOGD("finishMediaUpdate could not contact remote\n");
+            LOGD("finishMediaUpdate could not contact remote\n");
             return;
         }
         int32_t err = reply.readExceptionCode();
         if (err < 0) {
-            ALOGD("finishMediaUpdate caught exception %d\n", err);
+            LOGD("finishMediaUpdate caught exception %d\n", err);
             return;
         }
         reply.readExceptionCode();
@@ -443,12 +443,12 @@ public:
         data.writeStrongBinder(token->asBinder());
         data.writeInt32(nonce);
         if (remote()->transact(TRANSACTION_mountObb, data, &reply) != NO_ERROR) {
-            ALOGD("mountObb could not contact remote\n");
+            LOGD("mountObb could not contact remote\n");
             return;
         }
         int32_t err = reply.readExceptionCode();
         if (err < 0) {
-            ALOGD("mountObb caught exception %d\n", err);
+            LOGD("mountObb caught exception %d\n", err);
             return;
         }
     }
@@ -463,12 +463,12 @@ public:
         data.writeStrongBinder(token->asBinder());
         data.writeInt32(nonce);
         if (remote()->transact(TRANSACTION_unmountObb, data, &reply) != NO_ERROR) {
-            ALOGD("unmountObb could not contact remote\n");
+            LOGD("unmountObb could not contact remote\n");
             return;
         }
         int32_t err = reply.readExceptionCode();
         if (err < 0) {
-            ALOGD("unmountObb caught exception %d\n", err);
+            LOGD("unmountObb caught exception %d\n", err);
             return;
         }
     }
@@ -479,12 +479,12 @@ public:
         data.writeInterfaceToken(IMountService::getInterfaceDescriptor());
         data.writeString16(filename);
         if (remote()->transact(TRANSACTION_isObbMounted, data, &reply) != NO_ERROR) {
-            ALOGD("isObbMounted could not contact remote\n");
+            LOGD("isObbMounted could not contact remote\n");
             return false;
         }
         int32_t err = reply.readExceptionCode();
         if (err < 0) {
-            ALOGD("isObbMounted caught exception %d\n", err);
+            LOGD("isObbMounted caught exception %d\n", err);
             return false;
         }
         return reply.readInt32() != 0;
@@ -496,12 +496,12 @@ public:
         data.writeInterfaceToken(IMountService::getInterfaceDescriptor());
         data.writeString16(filename);
         if (remote()->transact(TRANSACTION_getMountedObbPath, data, &reply) != NO_ERROR) {
-            ALOGD("getMountedObbPath could not contact remote\n");
+            LOGD("getMountedObbPath could not contact remote\n");
             return false;
         }
         int32_t err = reply.readExceptionCode();
         if (err < 0) {
-            ALOGD("getMountedObbPath caught exception %d\n", err);
+            LOGD("getMountedObbPath caught exception %d\n", err);
             return false;
         }
         path = reply.readString16();
@@ -514,12 +514,12 @@ public:
         data.writeInterfaceToken(IMountService::getInterfaceDescriptor());
         data.writeString16(password);
         if (remote()->transact(TRANSACTION_decryptStorage, data, &reply) != NO_ERROR) {
-            ALOGD("decryptStorage could not contact remote\n");
+            LOGD("decryptStorage could not contact remote\n");
             return -1;
         }
         int32_t err = reply.readExceptionCode();
         if (err < 0) {
-            ALOGD("decryptStorage caught exception %d\n", err);
+            LOGD("decryptStorage caught exception %d\n", err);
             return err;
         }
         return reply.readInt32();
@@ -531,12 +531,12 @@ public:
         data.writeInterfaceToken(IMountService::getInterfaceDescriptor());
         data.writeString16(password);
         if (remote()->transact(TRANSACTION_encryptStorage, data, &reply) != NO_ERROR) {
-            ALOGD("encryptStorage could not contact remote\n");
+            LOGD("encryptStorage could not contact remote\n");
             return -1;
         }
         int32_t err = reply.readExceptionCode();
         if (err < 0) {
-            ALOGD("encryptStorage caught exception %d\n", err);
+            LOGD("encryptStorage caught exception %d\n", err);
             return err;
         }
         return reply.readInt32();

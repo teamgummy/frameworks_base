@@ -148,7 +148,7 @@ public class ActivityInfo extends ComponentInfo
      * Set from the
      * {@link android.R.attr#finishOnCloseSystemDialogs} attribute.
      */
-    public static final int FLAG_FINISH_ON_CLOSE_SYSTEM_DIALOGS = 0x0100;
+    public static final int FLAG_FINISH_ON_CLOSE_SYSTEM_DILOGS = 0x0100;
     /**
      * Value for {@link #flags}: true when the application's rendering should
      * be hardware accelerated.
@@ -180,7 +180,7 @@ public class ActivityInfo extends ComponentInfo
      * {@link #FLAG_ALWAYS_RETAIN_TASK_STATE},
      * {@link #FLAG_STATE_NOT_NEEDED}, {@link #FLAG_EXCLUDE_FROM_RECENTS},
      * {@link #FLAG_ALLOW_TASK_REPARENTING}, {@link #FLAG_NO_HISTORY},
-     * {@link #FLAG_FINISH_ON_CLOSE_SYSTEM_DIALOGS},
+     * {@link #FLAG_FINISH_ON_CLOSE_SYSTEM_DILOGS},
      * {@link #FLAG_HARDWARE_ACCELERATED}
      */
     public int flags;

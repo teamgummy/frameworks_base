@@ -5409,7 +5409,7 @@ package android.content {
     field public static final java.lang.String ACTION_CALL_BUTTON = "android.intent.action.CALL_BUTTON";
     field public static final java.lang.String ACTION_CAMERA_BUTTON = "android.intent.action.CAMERA_BUTTON";
     field public static final java.lang.String ACTION_CHOOSER = "android.intent.action.CHOOSER";
-    field public static final java.lang.String ACTION_CLOSE_SYSTEM_DIALOGS = "android.intent.action.CLOSE_SYSTEM_DIALOGS";
+    field public static final java.lang.String ACTION_CLOSE_SYSTEM_DILOGS = "android.intent.action.CLOSE_SYSTEM_DILOGS";
     field public static final java.lang.String ACTION_CONFIGURATION_CHANGED = "android.intent.action.CONFIGURATION_CHANGED";
     field public static final java.lang.String ACTION_CREATE_SHORTCUT = "android.intent.action.CREATE_SHORTCUT";
     field public static final java.lang.String ACTION_DATE_CHANGED = "android.intent.action.DATE_CHANGED";
@@ -5927,7 +5927,7 @@ package android.content.pm {
     field public static final int FLAG_ALWAYS_RETAIN_TASK_STATE = 8; // 0x8
     field public static final int FLAG_CLEAR_TASK_ON_LAUNCH = 4; // 0x4
     field public static final int FLAG_EXCLUDE_FROM_RECENTS = 32; // 0x20
-    field public static final int FLAG_FINISH_ON_CLOSE_SYSTEM_DIALOGS = 256; // 0x100
+    field public static final int FLAG_FINISH_ON_CLOSE_SYSTEM_DILOGS = 256; // 0x100
     field public static final int FLAG_FINISH_ON_TASK_LAUNCH = 2; // 0x2
     field public static final int FLAG_HARDWARE_ACCELERATED = 512; // 0x200
     field public static final int FLAG_MULTIPROCESS = 1; // 0x1
@@ -21936,7 +21936,7 @@ package android.view {
     field public static final int MODIFIER_BEHAVIOR_CHORDED = 0; // 0x0
     field public static final int MODIFIER_BEHAVIOR_CHORDED_OR_TOGGLED = 1; // 0x1
     field public static final int NUMERIC = 1; // 0x1
-    field public static final char PICKER_DIALOG_INPUT = 61185; // 0xef01 '\uef01'
+    field public static final char PICKER_DILOG_INPUT = 61185; // 0xef01 '\uef01'
     field public static final int PREDICTIVE = 2; // 0x2
     field public static final int SPECIAL_FUNCTION = 5; // 0x5
     field public static final int VIRTUAL_KEYBOARD = -1; // 0xffffffff
@@ -23910,7 +23910,7 @@ package android.view {
     field public static final int SOFT_INPUT_STATE_VISIBLE = 4; // 0x4
     field public static final int TITLE_CHANGED = 64; // 0x40
     field public static final int TYPE_APPLICATION = 2; // 0x2
-    field public static final int TYPE_APPLICATION_ATTACHED_DIALOG = 1003; // 0x3eb
+    field public static final int TYPE_APPLICATION_ATTACHED_DILOG = 1003; // 0x3eb
     field public static final int TYPE_APPLICATION_MEDIA = 1001; // 0x3e9
     field public static final int TYPE_APPLICATION_PANEL = 1000; // 0x3e8
     field public static final int TYPE_APPLICATION_STARTING = 3; // 0x3
@@ -23918,16 +23918,16 @@ package android.view {
     field public static final int TYPE_BASE_APPLICATION = 1; // 0x1
     field public static final int TYPE_CHANGED = 2; // 0x2
     field public static final int TYPE_INPUT_METHOD = 2011; // 0x7db
-    field public static final int TYPE_INPUT_METHOD_DIALOG = 2012; // 0x7dc
+    field public static final int TYPE_INPUT_METHOD_DILOG = 2012; // 0x7dc
     field public static final int TYPE_KEYGUARD = 2004; // 0x7d4
-    field public static final int TYPE_KEYGUARD_DIALOG = 2009; // 0x7d9
+    field public static final int TYPE_KEYGUARD_DILOG = 2009; // 0x7d9
     field public static final int TYPE_PHONE = 2002; // 0x7d2
     field public static final int TYPE_PRIORITY_PHONE = 2007; // 0x7d7
     field public static final int TYPE_SEARCH_BAR = 2001; // 0x7d1
     field public static final int TYPE_STATUS_BAR = 2000; // 0x7d0
     field public static final int TYPE_STATUS_BAR_PANEL = 2014; // 0x7de
     field public static final int TYPE_SYSTEM_ALERT = 2003; // 0x7d3
-    field public static final int TYPE_SYSTEM_DIALOG = 2008; // 0x7d8
+    field public static final int TYPE_SYSTEM_DILOG = 2008; // 0x7d8
     field public static final int TYPE_SYSTEM_ERROR = 2010; // 0x7da
     field public static final int TYPE_SYSTEM_OVERLAY = 2006; // 0x7d6
     field public static final int TYPE_TOAST = 2005; // 0x7d5
@@ -27092,7 +27092,7 @@ package android.widget {
     method public void setGravity(int);
     method public void setPrompt(java.lang.CharSequence);
     method public void setPromptId(int);
-    field public static final int MODE_DIALOG = 0; // 0x0
+    field public static final int MODE_DILOG = 0; // 0x0
     field public static final int MODE_DROPDOWN = 1; // 0x1
   }
 
@@ -29348,7 +29348,7 @@ package java.lang {
     field public static final java.lang.Character.UnicodeBlock SUPPLEMENTARY_PRIVATE_USE_AREA_B;
     field public static final deprecated java.lang.Character.UnicodeBlock SURROGATES_AREA;
     field public static final java.lang.Character.UnicodeBlock SYRIAC;
-    field public static final java.lang.Character.UnicodeBlock TAGALOG;
+    field public static final java.lang.Character.UnicodeBlock TAGLOG;
     field public static final java.lang.Character.UnicodeBlock TAGBANWA;
     field public static final java.lang.Character.UnicodeBlock TAGS;
     field public static final java.lang.Character.UnicodeBlock TAI_LE;

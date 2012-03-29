@@ -39,7 +39,7 @@ static jlong native_measureDirectory(JNIEnv* env, jobject clazz, jstring directo
 
     int dirfd = open(path, O_DIRECTORY, O_RDONLY);
     if (dirfd < 0) {
-        ALOGI("error opening: %s: %s", path, strerror(errno));
+        LOGI("error opening: %s: %s", path, strerror(errno));
     } else {
         ret = calculate_dir_size(dirfd);
         close(dirfd);

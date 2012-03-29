@@ -78,7 +78,7 @@ bool checkPermission(const String16& permission, pid_t pid, uid_t uid)
             bool res = pc->checkPermission(permission, pid, uid);
             if (res) {
                 if (startTime != 0) {
-                    ALOGI("Check passed after %d seconds for %s from uid=%d pid=%d",
+                    LOGI("Check passed after %d seconds for %s from uid=%d pid=%d",
                             (int)((uptimeMillis()-startTime)/1000),
                             String8(permission).string(), uid, pid);
                 }
@@ -87,7 +87,7 @@ bool checkPermission(const String16& permission, pid_t pid, uid_t uid)
             
             // Is this a permission failure, or did the controller go away?
             if (pc->asBinder()->isBinderAlive()) {
-                ALOGW("Permission failure: %s from uid=%d pid=%d",
+                LOGW("Permission failure: %s from uid=%d pid=%d",
                         String8(permission).string(), uid, pid);
                 return false;
             }
@@ -106,7 +106,7 @@ bool checkPermission(const String16& permission, pid_t pid, uid_t uid)
             // Wait for the permission controller to come back...
             if (startTime == 0) {
                 startTime = uptimeMillis();
-                ALOGI("Waiting to check permission %s from uid=%d pid=%d",
+                LOGI("Waiting to check permission %s from uid=%d pid=%d",
                         String8(permission).string(), uid, pid);
             }
             sleep(1);
@@ -136,7 +136,7 @@ public:
         for (n = 0; n < 5; n++){
             sp<IBinder> svc = checkService(name);
             if (svc != NULL) return svc;
-            ALOGI("Waiting for service %s...\n", String8(name).string());
+            LOGI("Waiting for service %s...\n", String8(name).string());
             sleep(1);
         }
         return NULL;

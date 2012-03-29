@@ -21,7 +21,7 @@ import static android.view.WindowManager.LayoutParams.FLAG_COMPATIBLE_WINDOW;
 import static android.view.WindowManager.LayoutParams.LAST_SUB_WINDOW;
 import static android.view.WindowManager.LayoutParams.TYPE_APPLICATION_STARTING;
 import static android.view.WindowManager.LayoutParams.TYPE_INPUT_METHOD;
-import static android.view.WindowManager.LayoutParams.TYPE_INPUT_METHOD_DIALOG;
+import static android.view.WindowManager.LayoutParams.TYPE_INPUT_METHOD_DILOG;
 import static android.view.WindowManager.LayoutParams.TYPE_WALLPAPER;
 
 import com.android.server.wm.WindowManagerService.H;
@@ -341,9 +341,9 @@ final class WindowState implements WindowManagerPolicy.WindowState {
             if (WindowManagerService.DEBUG_ADD_REMOVE) Slog.v(WindowManagerService.TAG, "Adding " + this + " to " + mAttachedWindow);
             mAttachedWindow.mChildWindows.add(this);
             mLayoutAttached = mAttrs.type !=
-                    WindowManager.LayoutParams.TYPE_APPLICATION_ATTACHED_DIALOG;
+                    WindowManager.LayoutParams.TYPE_APPLICATION_ATTACHED_DILOG;
             mIsImWindow = attachedWindow.mAttrs.type == TYPE_INPUT_METHOD
-                    || attachedWindow.mAttrs.type == TYPE_INPUT_METHOD_DIALOG;
+                    || attachedWindow.mAttrs.type == TYPE_INPUT_METHOD_DILOG;
             mIsWallpaper = attachedWindow.mAttrs.type == TYPE_WALLPAPER;
             mIsFloatingLayer = mIsImWindow || mIsWallpaper;
         } else {
@@ -356,7 +356,7 @@ final class WindowState implements WindowManagerPolicy.WindowState {
             mAttachedWindow = null;
             mLayoutAttached = false;
             mIsImWindow = mAttrs.type == TYPE_INPUT_METHOD
-                    || mAttrs.type == TYPE_INPUT_METHOD_DIALOG;
+                    || mAttrs.type == TYPE_INPUT_METHOD_DILOG;
             mIsWallpaper = mAttrs.type == TYPE_WALLPAPER;
             mIsFloatingLayer = mIsImWindow || mIsWallpaper;
         }

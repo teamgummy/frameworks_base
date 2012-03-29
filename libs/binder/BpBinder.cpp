@@ -24,8 +24,8 @@
 
 #include <stdio.h>
 
-//#undef ALOGV
-//#define ALOGV(...) fprintf(stderr, __VA_ARGS__)
+//#undef LOGV
+//#define LOGV(...) fprintf(stderr, __VA_ARGS__)
 
 namespace android {
 
@@ -50,7 +50,7 @@ void BpBinder::ObjectManager::attach(
     e.func = func;
 
     if (mObjects.indexOfKey(objectID) >= 0) {
-        ALOGE("Trying to attach object ID %p to binder ObjectManager %p with object %p, but object ID already in use",
+        LOGE("Trying to attach object ID %p to binder ObjectManager %p with object %p, but object ID already in use",
                 objectID, this,  object);
         return;
     }
@@ -73,7 +73,7 @@ void BpBinder::ObjectManager::detach(const void* objectID)
 void BpBinder::ObjectManager::kill()
 {
     const size_t N = mObjects.size();
-    ALOGV("Killing %d objects in manager %p", N, this);
+    LOGV("Killing %d objects in manager %p", N, this);
     for (size_t i=0; i<N; i++) {
         const entry_t& e = mObjects.valueAt(i);
         if (e.func != NULL) {
@@ -92,7 +92,7 @@ BpBinder::BpBinder(int32_t handle)
     , mObitsSent(0)
     , mObituaries(NULL)
 {
-    ALOGV("Creating BpBinder %p handle %d\n", this, mHandle);
+    LOGV("Creating BpBinder %p handle %d\n", this, mHandle);
 
     extendObjectLifetime(OBJECT_LIFETIME_WEAK);
     IPCThreadState::self()->incWeakHandle(handle);
@@ -190,7 +190,7 @@ status_t BpBinder::linkToDeath(
                 if (!mObituaries) {
                     return NO_MEMORY;
                 }
-                ALOGV("Requesting death notification: %p handle %d\n", this, mHandle);
+                LOGV("Requesting death notification: %p handle %d\n", this, mHandle);
                 getWeakRefs()->incWeak(this);
                 IPCThreadState* self = IPCThreadState::self();
                 self->requestDeathNotification(mHandle, this);
@@ -226,7 +226,7 @@ status_t BpBinder::unlinkToDeath(
             }
             mObituaries->removeAt(i);
             if (mObituaries->size() == 0) {
-                ALOGV("Clearing death notification: %p handle %d\n", this, mHandle);
+                LOGV("Clearing death notification: %p handle %d\n", this, mHandle);
                 IPCThreadState* self = IPCThreadState::self();
                 self->clearDeathNotification(mHandle, this);
                 self->flushCommands();
@@ -242,7 +242,7 @@ status_t BpBinder::unlinkToDeath(
 
 void BpBinder::sendObituary()
 {
-    ALOGV("Sending obituary for proxy %p handle %d, mObitsSent=%s\n",
+    LOGV("Sending obituary for proxy %p handle %d, mObitsSent=%s\n",
         this, mHandle, mObitsSent ? "true" : "false");
 
     mAlive = 0;
@@ -251,7 +251,7 @@ void BpBinder::sendObituary()
     mLock.lock();
     Vector<Obituary>* obits = mObituaries;
     if(obits != NULL) {
-        ALOGV("Clearing sent death notification: %p handle %d\n", this, mHandle);
+        LOGV("Clearing sent death notification: %p handle %d\n", this, mHandle);
         IPCThreadState* self = IPCThreadState::self();
         self->clearDeathNotification(mHandle, this);
         self->flushCommands();
@@ -260,7 +260,7 @@ void BpBinder::sendObituary()
     mObitsSent = 1;
     mLock.unlock();
 
-    ALOGV("Reporting death of proxy %p for %d recipients\n",
+    LOGV("Reporting death of proxy %p for %d recipients\n",
         this, obits ? obits->size() : 0);
 
     if (obits != NULL) {
@@ -276,7 +276,7 @@ void BpBinder::sendObituary()
 void BpBinder::reportOneDeath(const Obituary& obit)
 {
     sp<DeathRecipient> recipient = obit.recipient.promote();
-    ALOGV("Reporting death to recipient: %p\n", recipient.get());
+    LOGV("Reporting death to recipient: %p\n", recipient.get());
     if (recipient == NULL) return;
 
     recipient->binderDied(this);
@@ -288,7 +288,7 @@ void BpBinder::attachObject(
     object_cleanup_func func)
 {
     AutoMutex _l(mLock);
-    ALOGV("Attaching object %p to binder %p (manager=%p)", object, this, &mObjects);
+    LOGV("Attaching object %p to binder %p (manager=%p)", object, this, &mObjects);
     mObjects.attach(objectID, object, cleanupCookie, func);
 }
 
@@ -311,7 +311,7 @@ BpBinder* BpBinder::remoteBinder()
 
 BpBinder::~BpBinder()
 {
-    ALOGV("Destroying BpBinder %p handle %d\n", this, mHandle);
+    LOGV("Destroying BpBinder %p handle %d\n", this, mHandle);
 
     IPCThreadState* ipc = IPCThreadState::self();
 
@@ -338,15 +338,15 @@ BpBinder::~BpBinder()
 
 void BpBinder::onFirstRef()
 {
-    ALOGV("onFirstRef BpBinder %p handle %d\n", this, mHandle);
+    LOGV("onFirstRef BpBinder %p handle %d\n", this, mHandle);
     IPCThreadState* ipc = IPCThreadState::self();
     if (ipc) ipc->incStrongHandle(mHandle);
 }
 
 void BpBinder::onLastStrongRef(const void* id)
 {
-    ALOGV("onLastStrongRef BpBinder %p handle %d\n", this, mHandle);
-    IF_ALOGV() {
+    LOGV("onLastStrongRef BpBinder %p handle %d\n", this, mHandle);
+    IF_LOGV() {
         printRefs();
     }
     IPCThreadState* ipc = IPCThreadState::self();
@@ -355,7 +355,7 @@ void BpBinder::onLastStrongRef(const void* id)
 
 bool BpBinder::onIncStrongAttempted(uint32_t flags, const void* id)
 {
-    ALOGV("onIncStrongAttempted BpBinder %p handle %d\n", this, mHandle);
+    LOGV("onIncStrongAttempted BpBinder %p handle %d\n", this, mHandle);
     IPCThreadState* ipc = IPCThreadState::self();
     return ipc ? ipc->attemptIncStrongHandle(mHandle) == NO_ERROR : false;
 }

@@ -93,7 +93,7 @@ static jint getBatteryStatus(const char* status)
         case 'U': return gConstants.statusUnknown;          // Unknown
             
         default: {
-            ALOGW("Unknown battery status '%s'", status);
+            LOGW("Unknown battery status '%s'", status);
             return gConstants.statusUnknown;
         }
     }
@@ -111,7 +111,7 @@ static jint getBatteryHealth(const char* status)
             } else if (strcmp(status, "Over voltage") == 0) {
                 return gConstants.healthOverVoltage;
             }
-            ALOGW("Unknown battery health[1] '%s'", status);
+            LOGW("Unknown battery health[1] '%s'", status);
             return gConstants.healthUnknown;
         }
         
@@ -125,7 +125,7 @@ static jint getBatteryHealth(const char* status)
         }
             
         default: {
-            ALOGW("Unknown battery health[2] '%s'", status);
+            LOGW("Unknown battery health[2] '%s'", status);
             return gConstants.healthUnknown;
         }
     }
@@ -137,7 +137,7 @@ static int readFromFile(const char* path, char* buf, size_t size)
         return -1;
     int fd = open(path, O_RDONLY, 0);
     if (fd == -1) {
-        ALOGE("Could not open '%s'", path);
+        LOGE("Could not open '%s'", path);
         return -1;
     }
     
@@ -232,7 +232,7 @@ int register_android_server_BatteryService(JNIEnv* env)
 
     DIR* dir = opendir(POWER_SUPPLY_PATH);
     if (dir == NULL) {
-        ALOGE("Could not open %s\n", POWER_SUPPLY_PATH);
+        LOGE("Could not open %s\n", POWER_SUPPLY_PATH);
         return -1;
     }
     while ((entry = readdir(dir))) {
@@ -304,28 +304,28 @@ int register_android_server_BatteryService(JNIEnv* env)
     closedir(dir);
 
     if (!gPaths.acOnlinePath)
-        ALOGE("acOnlinePath not found");
+        LOGE("acOnlinePath not found");
     if (!gPaths.usbOnlinePath)
-        ALOGE("usbOnlinePath not found");
+        LOGE("usbOnlinePath not found");
     if (!gPaths.batteryStatusPath)
-        ALOGE("batteryStatusPath not found");
+        LOGE("batteryStatusPath not found");
     if (!gPaths.batteryHealthPath)
-        ALOGE("batteryHealthPath not found");
+        LOGE("batteryHealthPath not found");
     if (!gPaths.batteryPresentPath)
-        ALOGE("batteryPresentPath not found");
+        LOGE("batteryPresentPath not found");
     if (!gPaths.batteryCapacityPath)
-        ALOGE("batteryCapacityPath not found");
+        LOGE("batteryCapacityPath not found");
     if (!gPaths.batteryVoltagePath)
-        ALOGE("batteryVoltagePath not found");
+        LOGE("batteryVoltagePath not found");
     if (!gPaths.batteryTemperaturePath)
-        ALOGE("batteryTemperaturePath not found");
+        LOGE("batteryTemperaturePath not found");
     if (!gPaths.batteryTechnologyPath)
-        ALOGE("batteryTechnologyPath not found");
+        LOGE("batteryTechnologyPath not found");
 
     jclass clazz = env->FindClass("com/android/server/BatteryService");
 
     if (clazz == NULL) {
-        ALOGE("Can't find com/android/server/BatteryService");
+        LOGE("Can't find com/android/server/BatteryService");
         return -1;
     }
     
@@ -352,7 +352,7 @@ int register_android_server_BatteryService(JNIEnv* env)
     clazz = env->FindClass("android/os/BatteryManager");
     
     if (clazz == NULL) {
-        ALOGE("Can't find android/os/BatteryManager");
+        LOGE("Can't find android/os/BatteryManager");
         return -1;
     }
     

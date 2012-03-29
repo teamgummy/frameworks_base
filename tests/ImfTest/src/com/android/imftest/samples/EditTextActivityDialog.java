@@ -31,8 +31,8 @@ import android.widget.ScrollView;
 
 public class EditTextActivityDialog extends Activity {
     
-    private static final int SCROLLABLE_DIALOG_ID = 0;
-    private static final int NONSCROLLABLE_DIALOG_ID = 1;
+    private static final int SCROLLABLE_DILOG_ID = 0;
+    private static final int NONSCROLLABLE_DILOG_ID = 1;
     
     private LinearLayout mLayout;
     private ScrollView mScrollView;
@@ -55,7 +55,7 @@ public class EditTextActivityDialog extends Activity {
         mButton1.setText(R.string.open_dialog_scrollable);
         mButton1.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                showDialog(SCROLLABLE_DIALOG_ID);
+                showDialog(SCROLLABLE_DILOG_ID);
             }
         });
         
@@ -63,7 +63,7 @@ public class EditTextActivityDialog extends Activity {
         mButton2.setText(R.string.open_dialog_nonscrollable);
         mButton2.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                showDialog(NONSCROLLABLE_DIALOG_ID);
+                showDialog(NONSCROLLABLE_DILOG_ID);
             }
         });
         
@@ -76,9 +76,9 @@ public class EditTextActivityDialog extends Activity {
     @Override
     protected Dialog onCreateDialog(int id) {
         switch (id) {
-            case SCROLLABLE_DIALOG_ID:
+            case SCROLLABLE_DILOG_ID:
                 return createDialog(true);
-            case NONSCROLLABLE_DIALOG_ID:
+            case NONSCROLLABLE_DILOG_ID:
                 return createDialog(false);
         }
 

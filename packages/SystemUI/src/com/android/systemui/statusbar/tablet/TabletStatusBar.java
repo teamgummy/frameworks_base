@@ -606,7 +606,7 @@ public class TabletStatusBar extends StatusBar implements
 
         // receive broadcasts
         IntentFilter filter = new IntentFilter();
-        filter.addAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
+        filter.addAction(Intent.ACTION_CLOSE_SYSTEM_DILOGS);
         filter.addAction(Intent.ACTION_SCREEN_OFF);
         context.registerReceiver(mBroadcastReceiver, filter);
 
@@ -1165,7 +1165,7 @@ public class TabletStatusBar extends StatusBar implements
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG,
+                WindowManager.LayoutParams.TYPE_SYSTEM_DILOG,
                 WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
                     | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
                     | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM,
@@ -1861,10 +1861,10 @@ public class TabletStatusBar extends StatusBar implements
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (Intent.ACTION_CLOSE_SYSTEM_DIALOGS.equals(action)
+            if (Intent.ACTION_CLOSE_SYSTEM_DILOGS.equals(action)
                 || Intent.ACTION_SCREEN_OFF.equals(action)) {
                 boolean excludeRecents = false;
-                if (Intent.ACTION_CLOSE_SYSTEM_DIALOGS.equals(action)) {
+                if (Intent.ACTION_CLOSE_SYSTEM_DILOGS.equals(action)) {
                     String reason = intent.getStringExtra("reason");
                     if (reason != null) {
                         excludeRecents = reason.equals("recentapps");

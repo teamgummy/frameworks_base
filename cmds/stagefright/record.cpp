@@ -96,7 +96,7 @@ public:
         ++mNumFramesOutput;
 
         // printf("DummySource::read - returning buffer\n");
-        // ALOGI("DummySource::read - returning buffer");
+        // LOGI("DummySource::read - returning buffer");
         return OK;
     }
 

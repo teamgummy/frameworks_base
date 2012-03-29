@@ -32,7 +32,7 @@ int main(int argc, char** argv)
 {
     sp<ProcessState> proc(ProcessState::self());
     sp<IServiceManager> sm = defaultServiceManager();
-    ALOGI("ServiceManager: %p", sm.get());
+    LOGI("ServiceManager: %p", sm.get());
     DrmManagerService::instantiate();
     ProcessState::self()->startThreadPool();
     IPCThreadState::self()->joinThreadPool();

@@ -509,7 +509,7 @@ public abstract class Window {
                         title="Panel";
                     } else if (wp.type == WindowManager.LayoutParams.TYPE_APPLICATION_SUB_PANEL) {
                         title="SubPanel";
-                    } else if (wp.type == WindowManager.LayoutParams.TYPE_APPLICATION_ATTACHED_DIALOG) {
+                    } else if (wp.type == WindowManager.LayoutParams.TYPE_APPLICATION_ATTACHED_DILOG) {
                         title="AtchDlg";
                     } else {
                         title=Integer.toString(wp.type);

@@ -80,7 +80,7 @@ readNextHeader_native(JNIEnv* env, jobject clazz, int r, jobject entity)
         return 0;
     }
     default:
-        ALOGD("Unknown header type: 0x%08x\n", type);
+        LOGD("Unknown header type: 0x%08x\n", type);
         return -1;
     }
 
@@ -133,7 +133,7 @@ static const JNINativeMethod g_methods[] = {
 
 int register_android_backup_BackupDataInput(JNIEnv* env)
 {
-    //ALOGD("register_android_backup_BackupDataInput");
+    //LOGD("register_android_backup_BackupDataInput");
 
     jclass clazz = env->FindClass("android/app/backup/BackupDataInput$EntityHeader");
     LOG_FATAL_IF(clazz == NULL, "Unable to find class android.app.backup.BackupDataInput.EntityHeader");

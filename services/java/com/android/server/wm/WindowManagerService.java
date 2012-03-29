@@ -30,7 +30,7 @@ import static android.view.WindowManager.LayoutParams.LAST_SUB_WINDOW;
 import static android.view.WindowManager.LayoutParams.TYPE_APPLICATION_STARTING;
 import static android.view.WindowManager.LayoutParams.TYPE_BASE_APPLICATION;
 import static android.view.WindowManager.LayoutParams.TYPE_INPUT_METHOD;
-import static android.view.WindowManager.LayoutParams.TYPE_INPUT_METHOD_DIALOG;
+import static android.view.WindowManager.LayoutParams.TYPE_INPUT_METHOD_DILOG;
 import static android.view.WindowManager.LayoutParams.TYPE_WALLPAPER;
 
 import com.android.internal.app.IBatteryStats;
@@ -2134,7 +2134,7 @@ public class WindowManagerService extends IWindowManager.Stub
                 mInputMethodWindow = win;
                 addInputMethodWindowToListLocked(win);
                 imMayMove = false;
-            } else if (attrs.type == TYPE_INPUT_METHOD_DIALOG) {
+            } else if (attrs.type == TYPE_INPUT_METHOD_DILOG) {
                 mInputMethodDialogs.add(win);
                 addWindowToListInOrderLocked(win, true);
                 adjustInputMethodDialogsLocked();
@@ -2324,7 +2324,7 @@ public class WindowManagerService extends IWindowManager.Stub
 
         if (mInputMethodWindow == win) {
             mInputMethodWindow = null;
-        } else if (win.mAttrs.type == TYPE_INPUT_METHOD_DIALOG) {
+        } else if (win.mAttrs.type == TYPE_INPUT_METHOD_DILOG) {
             mInputMethodDialogs.remove(win);
         }
 
@@ -8567,7 +8567,7 @@ public class WindowManagerService extends IWindowManager.Stub
                             buttonBrightness = w.mAttrs.buttonBrightness;
                         }
                         if (canBeSeen
-                                && (attrs.type == WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG
+                                && (attrs.type == WindowManager.LayoutParams.TYPE_SYSTEM_DILOG
                                  || attrs.type == WindowManager.LayoutParams.TYPE_KEYGUARD
                                  || attrs.type == WindowManager.LayoutParams.TYPE_SYSTEM_ERROR)) {
                             syswin = true;

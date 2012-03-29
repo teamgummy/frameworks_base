@@ -61,14 +61,14 @@ public class DirListActivity extends ListActivity {
     /** TODO: This is just a guess - think of a better way to achieve it */
     private static final int MEAN_TITLE_CHAR_SIZE = 13;
 
-    private static final int PROGRESS_DIALOG_DELAY_MS = 200;
+    private static final int PROGRESS_DILOG_DELAY_MS = 200;
 
     /** Code for the dialog, used in showDialog and onCreateDialog */
-    private static final int DIALOG_RUN_ABORT_DIR = 0;
+    private static final int DILOG_RUN_ABORT_DIR = 0;
 
     /** Messages codes */
     private static final int MSG_LOADED_ITEMS = 0;
-    private static final int MSG_SHOW_PROGRESS_DIALOG = 1;
+    private static final int MSG_SHOW_PROGRESS_DILOG = 1;
 
     private static final CharSequence NO_RESPONSE_MESSAGE =
             "No response from host when getting directory contents. Is the host server running?";
@@ -214,7 +214,7 @@ public class DirListActivity extends ListActivity {
                     Bundle arguments = new Bundle(1);
                     arguments.putString("name", item.getName());
                     arguments.putString("relativePath", item.getRelativePath());
-                    showDialog(DIALOG_RUN_ABORT_DIR, arguments);
+                    showDialog(DILOG_RUN_ABORT_DIR, arguments);
                 } else {
                     /** TODO: Maybe show some info about a test? */
                 }
@@ -284,7 +284,7 @@ public class DirListActivity extends ListActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         switch (id) {
-            case DIALOG_RUN_ABORT_DIR:
+            case DILOG_RUN_ABORT_DIR:
                 builder.setTitle(getText(R.string.dialog_run_abort_dir_title_prefix) + " " +
                         args.getString("name"));
                 builder.setMessage(R.string.dialog_run_abort_dir_msg);
@@ -294,7 +294,7 @@ public class DirListActivity extends ListActivity {
                         new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        removeDialog(DIALOG_RUN_ABORT_DIR);
+                        removeDialog(DILOG_RUN_ABORT_DIR);
                         runAllTestsUnder(args.getString("relativePath"));
                     }
                 });
@@ -303,7 +303,7 @@ public class DirListActivity extends ListActivity {
                         new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        removeDialog(DIALOG_RUN_ABORT_DIR);
+                        removeDialog(DILOG_RUN_ABORT_DIR);
                     }
                 });
 
@@ -311,7 +311,7 @@ public class DirListActivity extends ListActivity {
                 dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
                     @Override
                     public void onCancel(DialogInterface dialog) {
-                        removeDialog(DIALOG_RUN_ABORT_DIR);
+                        removeDialog(DILOG_RUN_ABORT_DIR);
                     }
                 });
                 break;
@@ -333,7 +333,7 @@ public class DirListActivity extends ListActivity {
         final Handler delayedDialogHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
-                if (msg.what == MSG_SHOW_PROGRESS_DIALOG) {
+                if (msg.what == MSG_SHOW_PROGRESS_DILOG) {
                     if (sProgressDialog == null) {
                         sProgressDialog = new ProgressDialog(DirListActivity.this);
                         sProgressDialog.setCancelable(false);
@@ -345,8 +345,8 @@ public class DirListActivity extends ListActivity {
                 }
             }
         };
-        Message msgShowDialog = delayedDialogHandler.obtainMessage(MSG_SHOW_PROGRESS_DIALOG);
-        delayedDialogHandler.sendMessageDelayed(msgShowDialog, PROGRESS_DIALOG_DELAY_MS);
+        Message msgShowDialog = delayedDialogHandler.obtainMessage(MSG_SHOW_PROGRESS_DILOG);
+        delayedDialogHandler.sendMessageDelayed(msgShowDialog, PROGRESS_DILOG_DELAY_MS);
 
         /** Delegate loading contents from SD card to a new thread */
         new LoadListItemsThread(mCurrentDirPath, new Handler() {
@@ -354,7 +354,7 @@ public class DirListActivity extends ListActivity {
             public void handleMessage(Message msg) {
                 if (msg.what == MSG_LOADED_ITEMS) {
                     setTitle(shortenTitle(mCurrentDirPath));
-                    delayedDialogHandler.removeMessages(MSG_SHOW_PROGRESS_DIALOG);
+                    delayedDialogHandler.removeMessages(MSG_SHOW_PROGRESS_DILOG);
                     if (sProgressDialog != null) {
                         sProgressDialog.dismiss();
                     }

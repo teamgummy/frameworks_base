@@ -30,7 +30,7 @@ Mutex::~Mutex() {
 bool Mutex::init() {
     int status = pthread_mutex_init(&mMutex, NULL);
     if (status) {
-        ALOGE("Mutex::Mutex init failure");
+        LOGE("Mutex::Mutex init failure");
         return false;
     }
     return true;
@@ -40,7 +40,7 @@ bool Mutex::lock() {
     int status;
     status = pthread_mutex_lock(&mMutex);
     if (status) {
-        ALOGE("Mutex: error %i locking.", status);
+        LOGE("Mutex: error %i locking.", status);
         return false;
     }
     return true;
@@ -50,7 +50,7 @@ bool Mutex::unlock() {
     int status;
     status = pthread_mutex_unlock(&mMutex);
     if (status) {
-        ALOGE("Mutex error %i unlocking.", status);
+        LOGE("Mutex error %i unlocking.", status);
         return false;
     }
     return true;

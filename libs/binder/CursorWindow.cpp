@@ -150,7 +150,7 @@ status_t CursorWindow::setNumColumns(uint32_t numColumns) {
 
     uint32_t cur = mHeader->numColumns;
     if ((cur > 0 || mHeader->numRows > 0) && cur != numColumns) {
-        ALOGE("Trying to go from %d columns to %d", cur, numColumns);
+        LOGE("Trying to go from %d columns to %d", cur, numColumns);
         return INVALID_OPERATION;
     }
     mHeader->numColumns = numColumns;
@@ -209,7 +209,7 @@ uint32_t CursorWindow::alloc(size_t size, bool aligned) {
     uint32_t offset = mHeader->freeOffset + padding;
     uint32_t nextFreeOffset = offset + size;
     if (nextFreeOffset > mSize) {
-        ALOGW("Window is full: requested allocation %d bytes, "
+        LOGW("Window is full: requested allocation %d bytes, "
                 "free space %d bytes, window size %d bytes",
                 size, freeSpace(), mSize);
         return 0;
@@ -255,14 +255,14 @@ CursorWindow::RowSlot* CursorWindow::allocRowSlot() {
 
 CursorWindow::FieldSlot* CursorWindow::getFieldSlot(uint32_t row, uint32_t column) {
     if (row >= mHeader->numRows || column >= mHeader->numColumns) {
-        ALOGE("Failed to read row %d, column %d from a CursorWindow which "
+        LOGE("Failed to read row %d, column %d from a CursorWindow which "
                 "has %d rows, %d columns.",
                 row, column, mHeader->numRows, mHeader->numColumns);
         return NULL;
     }
     RowSlot* rowSlot = getRowSlot(row);
     if (!rowSlot) {
-        ALOGE("Failed to find rowSlot for row %d.", row);
+        LOGE("Failed to find rowSlot for row %d.", row);
         return NULL;
     }
     FieldSlot* fieldDir = static_cast<FieldSlot*>(offsetToPtr(rowSlot->offset));

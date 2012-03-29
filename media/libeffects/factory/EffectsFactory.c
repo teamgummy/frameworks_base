@@ -188,7 +188,7 @@ int EffectQueryNumberEffects(uint32_t *pNumEffects)
     *pNumEffects = gNumEffects;
     gCanQueryEffect = 1;
     pthread_mutex_unlock(&gLibLock);
-    ALOGV("EffectQueryNumberEffects(): %d", *pNumEffects);
+    LOGV("EffectQueryNumberEffects(): %d", *pNumEffects);
     return ret;
 }
 
@@ -230,7 +230,7 @@ int EffectQueryEffect(uint32_t index, effect_descriptor_t *pDescriptor)
 #if (LOG_NDEBUG == 0)
     char str[256];
     dumpEffectDescriptor(pDescriptor, str, 256);
-    ALOGV("EffectQueryEffect() desc:%s", str);
+    LOGV("EffectQueryEffect() desc:%s", str);
 #endif
     pthread_mutex_unlock(&gLibLock);
     return ret;
@@ -271,7 +271,7 @@ int EffectCreate(effect_uuid_t *uuid, int32_t sessionId, int32_t ioId, effect_ha
         return -EINVAL;
     }
 
-    ALOGV("EffectCreate() UUID: %08X-%04X-%04X-%04X-%02X%02X%02X%02X%02X%02X\n",
+    LOGV("EffectCreate() UUID: %08X-%04X-%04X-%04X-%02X%02X%02X%02X%02X%02X\n",
             uuid->timeLow, uuid->timeMid, uuid->timeHiAndVersion,
             uuid->clockSeq, uuid->node[0], uuid->node[1],uuid->node[2],
             uuid->node[3],uuid->node[4],uuid->node[5]);
@@ -279,7 +279,7 @@ int EffectCreate(effect_uuid_t *uuid, int32_t sessionId, int32_t ioId, effect_ha
     ret = init();
 
     if (ret < 0) {
-        ALOGW("EffectCreate() init error: %d", ret);
+        LOGW("EffectCreate() init error: %d", ret);
         return ret;
     }
 
@@ -293,7 +293,7 @@ int EffectCreate(effect_uuid_t *uuid, int32_t sessionId, int32_t ioId, effect_ha
     // create effect in library
     ret = l->desc->create_effect(uuid, sessionId, ioId, &itfe);
     if (ret != 0) {
-        ALOGW("EffectCreate() library %s: could not create fx %s, error %d", l->name, d->name, ret);
+        LOGW("EffectCreate() library %s: could not create fx %s, error %d", l->name, d->name, ret);
         goto exit;
     }
 
@@ -302,10 +302,10 @@ int EffectCreate(effect_uuid_t *uuid, int32_t sessionId, int32_t ioId, effect_ha
     fx->subItfe = itfe;
     if ((*itfe)->process_reverse != NULL) {
         fx->itfe = (struct effect_interface_s *)&gInterfaceWithReverse;
-        ALOGV("EffectCreate() gInterfaceWithReverse");
+        LOGV("EffectCreate() gInterfaceWithReverse");
     }   else {
         fx->itfe = (struct effect_interface_s *)&gInterface;
-        ALOGV("EffectCreate() gInterface");
+        LOGV("EffectCreate() gInterface");
     }
     fx->lib = l;
 
@@ -316,7 +316,7 @@ int EffectCreate(effect_uuid_t *uuid, int32_t sessionId, int32_t ioId, effect_ha
 
     *pHandle = (effect_handle_t)fx;
 
-    ALOGV("EffectCreate() created entry %p with sub itfe %p in library %s", *pHandle, itfe, l->name);
+    LOGV("EffectCreate() created entry %p with sub itfe %p in library %s", *pHandle, itfe, l->name);
 
 exit:
     pthread_mutex_unlock(&gLibLock);
@@ -359,7 +359,7 @@ int EffectRelease(effect_handle_t handle)
 
     // release effect in library
     if (fx->lib == NULL) {
-        ALOGW("EffectRelease() fx %p library already unloaded", handle);
+        LOGW("EffectRelease() fx %p library already unloaded", handle);
     } else {
         pthread_mutex_lock(&fx->lib->lock);
         fx->lib->desc->release_effect(fx->subItfe);
@@ -401,7 +401,7 @@ int init() {
 
     updateNumEffects();
     gInitDone = 1;
-    ALOGV("init() done");
+    LOGV("init() done");
     return 0;
 }
 
@@ -456,24 +456,24 @@ int loadLibrary(cnode *root, const char *name)
 
     hdl = dlopen(node->value, RTLD_NOW);
     if (hdl == NULL) {
-        ALOGW("loadLibrary() failed to open %s", node->value);
+        LOGW("loadLibrary() failed to open %s", node->value);
         goto error;
     }
 
     desc = (audio_effect_library_t *)dlsym(hdl, AUDIO_EFFECT_LIBRARY_INFO_SYM_AS_STR);
     if (desc == NULL) {
-        ALOGW("loadLibrary() could not find symbol %s", AUDIO_EFFECT_LIBRARY_INFO_SYM_AS_STR);
+        LOGW("loadLibrary() could not find symbol %s", AUDIO_EFFECT_LIBRARY_INFO_SYM_AS_STR);
         goto error;
     }
 
     if (AUDIO_EFFECT_LIBRARY_TAG != desc->tag) {
-        ALOGW("getLibrary() bad tag %08x in lib info struct", desc->tag);
+        LOGW("getLibrary() bad tag %08x in lib info struct", desc->tag);
         goto error;
     }
 
     if (EFFECT_API_VERSION_MAJOR(desc->version) !=
             EFFECT_API_VERSION_MAJOR(EFFECT_LIBRARY_API_VERSION)) {
-        ALOGW("loadLibrary() bad lib version %08x", desc->version);
+        LOGW("loadLibrary() bad lib version %08x", desc->version);
         goto error;
     }
 
@@ -492,7 +492,7 @@ int loadLibrary(cnode *root, const char *name)
     e->next = gLibraryList;
     gLibraryList = e;
     pthread_mutex_unlock(&gLibLock);
-    ALOGV("getLibrary() linked library %p for path %s", l, node->value);
+    LOGV("getLibrary() linked library %p for path %s", l, node->value);
 
     return 0;
 
@@ -534,7 +534,7 @@ int loadEffect(cnode *root)
 
     l = getLibrary(node->value);
     if (l == NULL) {
-        ALOGW("loadEffect() could not get library %s", node->value);
+        LOGW("loadEffect() could not get library %s", node->value);
         return -EINVAL;
     }
 
@@ -543,7 +543,7 @@ int loadEffect(cnode *root)
         return -EINVAL;
     }
     if (stringToUuid(node->value, &uuid) != 0) {
-        ALOGW("loadEffect() invalid uuid %s", node->value);
+        LOGW("loadEffect() invalid uuid %s", node->value);
         return -EINVAL;
     }
 
@@ -551,18 +551,18 @@ int loadEffect(cnode *root)
     if (l->desc->get_descriptor(&uuid, d) != 0) {
         char s[40];
         uuidToString(&uuid, s, 40);
-        ALOGW("Error querying effect %s on lib %s", s, l->name);
+        LOGW("Error querying effect %s on lib %s", s, l->name);
         free(d);
         return -EINVAL;
     }
 #if (LOG_NDEBUG==0)
     char s[256];
     dumpEffectDescriptor(d, s, 256);
-    ALOGV("loadEffect() read descriptor %p:%s",d, s);
+    LOGV("loadEffect() read descriptor %p:%s",d, s);
 #endif
     if (EFFECT_API_VERSION_MAJOR(d->apiVersion) !=
             EFFECT_API_VERSION_MAJOR(EFFECT_CONTROL_API_VERSION)) {
-        ALOGW("Bad API version %08x on lib %s", d->apiVersion, l->name);
+        LOGW("Bad API version %08x on lib %s", d->apiVersion, l->name);
         free(d);
         return -EINVAL;
     }
@@ -657,10 +657,10 @@ int findEffect(effect_uuid_t *type,
         e = e->next;
     }
     if (!found) {
-        ALOGV("findEffect() effect not found");
+        LOGV("findEffect() effect not found");
         ret = -ENOENT;
     } else {
-        ALOGV("findEffect() found effect: %s in lib %s", d->name, l->name);
+        LOGV("findEffect() found effect: %s in lib %s", d->name, l->name);
         *lib = l;
         if (desc) {
             *desc = d;

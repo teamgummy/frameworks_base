@@ -31,14 +31,14 @@ static status_t ERROR_ALLOCATE_FAILED = -4;
 
 void MidiMetadataRetriever::clearMetadataValues()
 {
-    ALOGV("clearMetadataValues");
+    LOGV("clearMetadataValues");
     mMetadataValues[0][0] = '\0';
 }
 
 status_t MidiMetadataRetriever::setDataSource(
         const char *url, const KeyedVector<String8, String8> *headers)
 {
-    ALOGV("setDataSource: %s", url? url: "NULL pointer");
+    LOGV("setDataSource: %s", url? url: "NULL pointer");
     Mutex::Autolock lock(mLock);
     clearMetadataValues();
     if (mMidiPlayer == 0) {
@@ -49,7 +49,7 @@ status_t MidiMetadataRetriever::setDataSource(
 
 status_t MidiMetadataRetriever::setDataSource(int fd, int64_t offset, int64_t length)
 {
-    ALOGV("setDataSource: fd(%d), offset(%lld), and length(%lld)", fd, offset, length);
+    LOGV("setDataSource: fd(%d), offset(%lld), and length(%lld)", fd, offset, length);
     Mutex::Autolock lock(mLock);
     clearMetadataValues();
     if (mMidiPlayer == 0) {
@@ -60,10 +60,10 @@ status_t MidiMetadataRetriever::setDataSource(int fd, int64_t offset, int64_t le
 
 const char* MidiMetadataRetriever::extractMetadata(int keyCode)
 {
-    ALOGV("extractMetdata: key(%d)", keyCode);
+    LOGV("extractMetdata: key(%d)", keyCode);
     Mutex::Autolock lock(mLock);
     if (mMidiPlayer == 0 || mMidiPlayer->initCheck() != NO_ERROR) {
-        ALOGE("Midi player is not initialized yet");
+        LOGE("Midi player is not initialized yet");
         return NULL;
     }
     switch (keyCode) {
@@ -72,17 +72,17 @@ const char* MidiMetadataRetriever::extractMetadata(int keyCode)
             if (mMetadataValues[0][0] == '\0') {
                 int duration = -1;
                 if (mMidiPlayer->getDuration(&duration) != NO_ERROR) {
-                    ALOGE("failed to get duration");
+                    LOGE("failed to get duration");
                     return NULL;
                 }
                 snprintf(mMetadataValues[0], MAX_METADATA_STRING_LENGTH, "%d", duration);
             }
 
-            ALOGV("duration: %s ms", mMetadataValues[0]);
+            LOGV("duration: %s ms", mMetadataValues[0]);
             return mMetadataValues[0];
         }
     default:
-        ALOGE("Unsupported key code (%d)", keyCode);
+        LOGE("Unsupported key code (%d)", keyCode);
         return NULL;
     }
     return NULL;

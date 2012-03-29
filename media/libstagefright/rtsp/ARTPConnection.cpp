@@ -294,7 +294,7 @@ void ARTPConnection::onPollStreams() {
             if (err == -ECONNRESET) {
                 // socket failure, this stream is dead, Jim.
 
-                ALOGW("failed to receive RTP/RTCP datagram.");
+                LOGW("failed to receive RTP/RTCP datagram.");
                 it = mStreams.erase(it);
                 continue;
             }
@@ -336,7 +336,7 @@ void ARTPConnection::onPollStreams() {
             }
 
             if (buffer->size() > 0) {
-                ALOGV("Sending RR...");
+                LOGV("Sending RR...");
 
                 ssize_t n;
                 do {
@@ -347,7 +347,7 @@ void ARTPConnection::onPollStreams() {
                 } while (n < 0 && errno == EINTR);
 
                 if (n <= 0) {
-                    ALOGW("failed to send RTCP receiver report (%s).",
+                    LOGW("failed to send RTCP receiver report (%s).",
                          n == 0 ? "connection gone" : strerror(errno));
 
                     it = mStreams.erase(it);
@@ -369,7 +369,7 @@ void ARTPConnection::onPollStreams() {
 }
 
 status_t ARTPConnection::receive(StreamInfo *s, bool receiveRTP) {
-    ALOGV("receiving %s", receiveRTP ? "RTP" : "RTCP");
+    LOGV("receiving %s", receiveRTP ? "RTP" : "RTCP");
 
     CHECK(!s->mIsInjected);
 
@@ -396,7 +396,7 @@ status_t ARTPConnection::receive(StreamInfo *s, bool receiveRTP) {
 
     buffer->setRange(0, nbytes);
 
-    // ALOGI("received %d bytes.", buffer->size());
+    // LOGI("received %d bytes.", buffer->size());
 
     status_t err;
     if (receiveRTP) {
@@ -561,7 +561,7 @@ status_t ARTPConnection::parseRTCP(StreamInfo *s, const sp<ABuffer> &buffer) {
 
             default:
             {
-                ALOGW("Unknown RTCP packet type %u of size %d",
+                LOGW("Unknown RTCP packet type %u of size %d",
                      (unsigned)data[1], headerLength);
                 break;
             }
@@ -606,7 +606,7 @@ status_t ARTPConnection::parseSR(
     uint32_t rtpTime = u32at(&data[16]);
 
 #if 0
-    ALOGI("XXX timeUpdate: ssrc=0x%08x, rtpTime %u == ntpTime %.3f",
+    LOGI("XXX timeUpdate: ssrc=0x%08x, rtpTime %u == ntpTime %.3f",
          id,
          rtpTime,
          (ntpTime >> 32) + (double)(ntpTime & 0xffffffff) / (1ll << 32));

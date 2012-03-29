@@ -2754,29 +2754,29 @@
     <string name="select_character">Insert character</string>
 
     <!-- SMS per-application rate control Dialog --> <skip />
-    <!-- See SMS_DIALOG.  This is shown if the current application's name cannot be figuerd out. -->
+    <!-- See SMS_DILOG.  This is shown if the current application's name cannot be figuerd out. -->
     <string name="sms_control_default_app_name">Unknown application</string>
-    <!-- SMS_DIALOG: An SMS dialog is shown if an application tries to send too many SMSes.  This is the title of that dialog. -->
+    <!-- SMS_DILOG: An SMS dialog is shown if an application tries to send too many SMSes.  This is the title of that dialog. -->
     <string name="sms_control_title">Sending SMS messages</string>
-    <!-- See SMS_DIALOG.  This is the message shown in that dialog. -->
+    <!-- See SMS_DILOG.  This is the message shown in that dialog. -->
     <string name="sms_control_message">A large number of SMS messages are being sent. Select \"OK\" to continue, or \"Cancel\" to stop sending.</string>
-    <!-- See SMS_DIALOG.  This is a button choice to allow sending the SMSes. -->
+    <!-- See SMS_DILOG.  This is a button choice to allow sending the SMSes. -->
     <string name="sms_control_yes">OK</string>
-    <!-- See SMS_DIALOG.  This is a button choice to disallow sending the SMSes.. -->
+    <!-- See SMS_DILOG.  This is a button choice to disallow sending the SMSes.. -->
     <string name="sms_control_no">Cancel</string>
 
     <!-- SIM swap and device reboot Dialog --> <skip />
-    <!-- See SIM_REMOVED_DIALOG.  This is the title of that dialog. -->
+    <!-- See SIM_REMOVED_DILOG.  This is the title of that dialog. -->
     <string name="sim_removed_title">SIM card removed</string>
-    <!-- See SIM_REMOVED_DIALOG.  This is the message of that dialog. -->
+    <!-- See SIM_REMOVED_DILOG.  This is the message of that dialog. -->
     <string name="sim_removed_message">The mobile network will be unavailable until you restart with a valid SIM card inserted.</string>
-    <!-- See SIM_REMOVED_DIALOG.  This is the button of that dialog. -->
+    <!-- See SIM_REMOVED_DILOG.  This is the button of that dialog. -->
     <string name="sim_done_button">Done</string>
-    <!-- See SIM_ADDED_DIALOG.  This is the title of that dialog. -->
+    <!-- See SIM_ADDED_DILOG.  This is the title of that dialog. -->
     <string name="sim_added_title">SIM card added</string>
-    <!-- See SIM_ADDED_DIALOG.  This is the message of that dialog. -->
+    <!-- See SIM_ADDED_DILOG.  This is the message of that dialog. -->
     <string name="sim_added_message">You must restart your device to access the mobile network.</string>
-    <!-- See SIM_ADDED_DIALOG.  This is the button of that dialog. -->
+    <!-- See SIM_ADDED_DILOG.  This is the button of that dialog. -->
     <string name="sim_restart_button">Restart</string>
 
     <!-- Date/Time picker dialogs strings -->
@@ -2804,7 +2804,7 @@
     <!-- This is the title for the activity's window. -->
     <string name="usb_storage_activity_title">USB Mass Storage</string>
 
-    <!-- See USB_STORAGE.  USB_STORAGE_DIALOG:  After the user selects the notification, a dialog is shown asking if he wants to mount.  This is the title. -->
+    <!-- See USB_STORAGE.  USB_STORAGE_DILOG:  After the user selects the notification, a dialog is shown asking if he wants to mount.  This is the title. -->
     <string name="usb_storage_title">USB connected</string>
     <!-- See USB_STORAGE.    This is the message. [CHAR LIMIT=NONE] -->
     <string name="usb_storage_message" product="nosdcard">You have connected to your computer via USB. Touch the button below if you want to copy files between your computer and your Android\u2018s USB storage.</string>
@@ -2812,9 +2812,9 @@
     <string name="usb_storage_message" product="default">You have connected to your computer via USB. Touch the button below if you want to copy files between your computer and your Android\u2018s SD card.</string>
     <!-- See USB_STORAGE.    This is the button text to mount the phone on the computer. -->
     <string name="usb_storage_button_mount">Turn on USB storage</string>
-    <!-- See USB_STORAGE_DIALOG.  If there was an error mounting, this is the text. [CHAR LIMIT=NONE] -->
+    <!-- See USB_STORAGE_DILOG.  If there was an error mounting, this is the text. [CHAR LIMIT=NONE] -->
     <string name="usb_storage_error_message" product="nosdcard">There is a problem using your USB storage for USB mass storage.</string>
-    <!-- See USB_STORAGE_DIALOG.  If there was an error mounting, this is the text. -->
+    <!-- See USB_STORAGE_DILOG.  If there was an error mounting, this is the text. -->
     <string name="usb_storage_error_message" product="default">There is a problem using your SD card for USB mass storage.</string>
     <!-- USB_STORAGE: When the user connects the phone to a computer via USB, we show a notification asking if he wants to share files across.  This is the title -->
     <string name="usb_storage_notification_title">USB connected</string>
@@ -2828,7 +2828,7 @@
 
     <!-- USB storage stop dialog strings -->
     <!-- This is the label for the activity, and should never be visible to the user. -->
-    <!-- See USB_STORAGE_STOP.  USB_STORAGE_STOP_DIALOG:  After the user selects the notification, a dialog is shown asking if he wants to stop usb storage.  This is the title. -->
+    <!-- See USB_STORAGE_STOP.  USB_STORAGE_STOP_DILOG:  After the user selects the notification, a dialog is shown asking if he wants to stop usb storage.  This is the title. -->
     <string name="usb_storage_stop_title">USB storage in use</string>
     <!-- See USB_STORAGE_STOP.    This is the message. [CHAR LIMIT=NONE] -->
     <string name="usb_storage_stop_message" product="nosdcard">Before turning off USB storage, make sure you have unmounted (\u201cejected\u201d) your Android\u2018s USB storage from your computer.</string>
@@ -2836,7 +2836,7 @@
     <string name="usb_storage_stop_message" product="default">Before turning off USB storage, make sure you have unmounted (\u201cejected\u201d) your Android\u2018s SD card from your computer.</string>
     <!-- See USB_STORAGE_STOP.    This is the button text to stop usb storage. -->
     <string name="usb_storage_stop_button_mount">Turn off USB storage</string>
-    <!-- See USB_STORAGE_STOP_DIALOG.  If there was an error stopping, this is the text. -->
+    <!-- See USB_STORAGE_STOP_DILOG.  If there was an error stopping, this is the text. -->
     <string name="usb_storage_stop_error_message">There was a problem turning off USB storage. Check to make sure you have unmounted the USB host, then try again.</string>
 
     <!-- USB_STORAGE_KILL_STORAGE_USERS dialog  -->
@@ -2861,9 +2861,9 @@
 
     <!-- External media format dialog strings -->
     <!-- This is the label for the activity, and should never be visible to the user. -->
-    <!-- See EXTMEDIA_FORMAT.  EXTMEDIA_FORMAT_DIALOG:  After the user selects the notification, a dialog is shown asking if he wants to format the SD card.  This is the title. [CHAR LIMIT=20] -->
+    <!-- See EXTMEDIA_FORMAT.  EXTMEDIA_FORMAT_DILOG:  After the user selects the notification, a dialog is shown asking if he wants to format the SD card.  This is the title. [CHAR LIMIT=20] -->
     <string name="extmedia_format_title" product="nosdcard">Format USB storage</string>
-    <!-- See EXTMEDIA_FORMAT.  EXTMEDIA_FORMAT_DIALOG:  After the user selects the notification, a dialog is shown asking if he wants to format the SD card.  This is the title. -->
+    <!-- See EXTMEDIA_FORMAT.  EXTMEDIA_FORMAT_DILOG:  After the user selects the notification, a dialog is shown asking if he wants to format the SD card.  This is the title. -->
     <string name="extmedia_format_title" product="default">Format SD card</string>
     <!-- See EXTMEDIA_FORMAT.   This is the message. [CHAR LIMIT=NONE] -->
     <string name="extmedia_format_message" product="nosdcard">Format USB storage, erasing all files stored there?  Action cannot be reversed!</string>

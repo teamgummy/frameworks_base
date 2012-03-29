@@ -172,7 +172,7 @@ static void AllocateRenderTarget(const Context *rsc, const Allocation *alloc) {
 
         if (!drv->renderTargetID) {
             // This should generally not happen
-            ALOGE("allocateRenderTarget failed to gen mRenderTargetID");
+            LOGE("allocateRenderTarget failed to gen mRenderTargetID");
             rsc->dumpDebug();
             return;
         }
@@ -195,7 +195,7 @@ static void UploadToBufferObject(const Context *rsc, const Allocation *alloc) {
         RSD_CALL_GL(glGenBuffers, 1, &drv->bufferID);
     }
     if (!drv->bufferID) {
-        ALOGE("Upload to buffer object failed");
+        LOGE("Upload to buffer object failed");
         drv->uploadDeferred = true;
         return;
     }
@@ -256,7 +256,7 @@ void rsdAllocationDestroy(const Context *rsc, Allocation *alloc) {
 
     if (drv->bufferID) {
         // Causes a SW crash....
-        //ALOGV(" mBufferID %i", mBufferID);
+        //LOGV(" mBufferID %i", mBufferID);
         //glDeleteBuffers(1, &mBufferID);
         //mBufferID = 0;
     }
@@ -460,7 +460,7 @@ void rsdAllocationData2D_alloc_script(const android::renderscript::Context *rsc,
         uint8_t *srcPtr = getOffsetPtr(srcAlloc, srcXoff, srcYoff + i, srcLod, srcFace);
         memcpy(dstPtr, srcPtr, w * elementSize);
 
-        //ALOGE("COPIED dstXoff(%u), dstYoff(%u), dstLod(%u), dstFace(%u), w(%u), h(%u), srcXoff(%u), srcYoff(%u), srcLod(%u), srcFace(%u)",
+        //LOGE("COPIED dstXoff(%u), dstYoff(%u), dstLod(%u), dstFace(%u), w(%u), h(%u), srcXoff(%u), srcYoff(%u), srcLod(%u), srcFace(%u)",
         //     dstXoff, dstYoff, dstLod, dstFace, w, h, srcXoff, srcYoff, srcLod, srcFace);
     }
 }

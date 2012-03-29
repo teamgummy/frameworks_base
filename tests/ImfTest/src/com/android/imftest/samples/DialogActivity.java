@@ -28,8 +28,8 @@ import android.app.Dialog;
 
 public class DialogActivity extends Activity {
 
-    private static final int DIALOG_WITHOUT_EDITTEXT = 0;
-    private static final int DIALOG_WITH_EDITTEXT = 1;
+    private static final int DILOG_WITHOUT_EDITTEXT = 0;
+    private static final int DILOG_WITH_EDITTEXT = 1;
 
     private LinearLayout mLayout;
     private LayoutInflater mInflater;
@@ -55,7 +55,7 @@ public class DialogActivity extends Activity {
         {
             public void onClick(View v) 
             {
-                showDialog(DIALOG_WITHOUT_EDITTEXT);
+                showDialog(DILOG_WITHOUT_EDITTEXT);
             }
         });
 
@@ -65,7 +65,7 @@ public class DialogActivity extends Activity {
         {
             public void onClick(View v) 
             {
-                showDialog(DIALOG_WITH_EDITTEXT);
+                showDialog(DILOG_WITH_EDITTEXT);
             }
         });
 
@@ -82,9 +82,9 @@ public class DialogActivity extends Activity {
     {
         switch (id) 
         {
-            case DIALOG_WITHOUT_EDITTEXT:
+            case DILOG_WITHOUT_EDITTEXT:
                 return createDialog(false);
-            case DIALOG_WITH_EDITTEXT:
+            case DILOG_WITH_EDITTEXT:
                 return createDialog(true);
         }
 
@@ -105,7 +105,7 @@ public class DialogActivity extends Activity {
         }
         
         Dialog d = new Dialog(this);
-        d.setTitle("The DIALOG!!!");
+        d.setTitle("The DILOG!!!");
         d.setCancelable(true);
         d.setContentView(layout);
         return d;

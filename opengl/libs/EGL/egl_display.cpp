@@ -184,7 +184,7 @@ EGLBoolean egl_display_t::initialize(EGLint *major, EGLint *minor) {
 
         EGLDisplay idpy = disp[i].dpy;
         if (cnx->egl.eglInitialize(idpy, &cnx->major, &cnx->minor)) {
-            //ALOGD("initialized %d dpy=%p, ver=%d.%d, cnx=%p",
+            //LOGD("initialized %d dpy=%p, ver=%d.%d, cnx=%p",
             //        i, idpy, cnx->major, cnx->minor, cnx);
 
             // display is now initialized
@@ -201,7 +201,7 @@ EGLBoolean egl_display_t::initialize(EGLint *major, EGLint *minor) {
                     EGL_CLIENT_APIS);
 
         } else {
-            ALOGW("%d: eglInitialize(%p) failed (%s)", i, idpy,
+            LOGW("%d: eglInitialize(%p) failed (%s)", i, idpy,
                     egl_tls_t::egl_strerror(cnx->egl.eglGetError()));
         }
     }
@@ -309,7 +309,7 @@ EGLBoolean egl_display_t::terminate() {
         egl_connection_t* const cnx = &gEGLImpl[i];
         if (cnx->dso && disp[i].state == egl_display_t::INITIALIZED) {
             if (cnx->egl.eglTerminate(disp[i].dpy) == EGL_FALSE) {
-                ALOGW("%d: eglTerminate(%p) failed (%s)", i, disp[i].dpy,
+                LOGW("%d: eglTerminate(%p) failed (%s)", i, disp[i].dpy,
                         egl_tls_t::egl_strerror(cnx->egl.eglGetError()));
             }
             // REVISIT: it's unclear what to do if eglTerminate() fails
@@ -327,7 +327,7 @@ EGLBoolean egl_display_t::terminate() {
     // there are no reference to them, it which case, we're free to
     // delete them.
     size_t count = objects.size();
-    ALOGW_IF(count, "eglTerminate() called w/ %d objects remaining", count);
+    LOGW_IF(count, "eglTerminate() called w/ %d objects remaining", count);
     for (size_t i=0 ; i<count ; i++) {
         egl_object_t* o = objects.itemAt(i);
         o->destroy();

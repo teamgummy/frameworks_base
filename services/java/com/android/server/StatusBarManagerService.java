@@ -576,7 +576,7 @@ public class StatusBarManagerService extends IStatusBarService.Stub
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (Intent.ACTION_CLOSE_SYSTEM_DIALOGS.equals(action)
+            if (Intent.ACTION_CLOSE_SYSTEM_DILOGS.equals(action)
                     || Intent.ACTION_SCREEN_OFF.equals(action)) {
                 collapse();
             }

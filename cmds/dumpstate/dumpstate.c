@@ -84,9 +84,9 @@ static void dumpstate() {
     dump_file("BUDDYINFO", "/proc/buddyinfo");
 
     if (screenshot_path[0]) {
-        ALOGI("taking screenshot\n");
+        LOGI("taking screenshot\n");
         run_command(NULL, 5, "su", "root", "screenshot", screenshot_path, NULL);
-        ALOGI("wrote screenshot: %s\n", screenshot_path);
+        LOGI("wrote screenshot: %s\n", screenshot_path);
     }
 
     run_command("SYSTEM LOG", 20, "logcat", "-v", "threadtime", "-d", "*:v", NULL);
@@ -289,7 +289,7 @@ int main(int argc, char *argv[]) {
     int use_socket = 0;
     int do_fb = 0;
 
-    ALOGI("begin\n");
+    LOGI("begin\n");
 
     /* set as high priority, and protect from OOM killer */
     setpriority(PRIO_PROCESS, 0, -20);
@@ -335,15 +335,15 @@ int main(int argc, char *argv[]) {
         /* switch to non-root user and group */
         gid_t groups[] = { AID_LOG, AID_SDCARD_RW, AID_MOUNT, AID_INET };
         if (setgroups(sizeof(groups)/sizeof(groups[0]), groups) != 0) {
-            ALOGE("Unable to setgroups, aborting: %s\n", strerror(errno));
+            LOGE("Unable to setgroups, aborting: %s\n", strerror(errno));
             return -1;
         }
         if (setgid(AID_SHELL) != 0) {
-            ALOGE("Unable to setgid, aborting: %s\n", strerror(errno));
+            LOGE("Unable to setgid, aborting: %s\n", strerror(errno));
             return -1;
         }
         if (setuid(AID_SHELL) != 0) {
-            ALOGE("Unable to setuid, aborting: %s\n", strerror(errno));
+            LOGE("Unable to setuid, aborting: %s\n", strerror(errno));
             return -1;
         }
     }
@@ -404,7 +404,7 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "rename(%s, %s): %s\n", tmp_path, path, strerror(errno));
     }
 
-    ALOGI("done\n");
+    LOGI("done\n");
 
     return 0;
 }
