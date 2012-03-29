@@ -43,7 +43,7 @@ public:
 
     status_t enable()
     {
-        ALOGV("enable");
+        LOGV("enable");
         Parcel data, reply;
         data.writeInterfaceToken(IEffect::getInterfaceDescriptor());
         remote()->transact(ENABLE, data, &reply);
@@ -52,7 +52,7 @@ public:
 
     status_t disable()
     {
-        ALOGV("disable");
+        LOGV("disable");
         Parcel data, reply;
         data.writeInterfaceToken(IEffect::getInterfaceDescriptor());
         remote()->transact(DISABLE, data, &reply);
@@ -65,7 +65,7 @@ public:
                      uint32_t *pReplySize,
                      void *pReplyData)
     {
-        ALOGV("command");
+        LOGV("command");
         Parcel data, reply;
         data.writeInterfaceToken(IEffect::getInterfaceDescriptor());
         data.writeInt32(cmdCode);
@@ -95,7 +95,7 @@ public:
 
     void disconnect()
     {
-        ALOGV("disconnect");
+        LOGV("disconnect");
         Parcel data, reply;
         data.writeInterfaceToken(IEffect::getInterfaceDescriptor());
         remote()->transact(DISCONNECT, data, &reply);
@@ -124,21 +124,21 @@ status_t BnEffect::onTransact(
 {
     switch(code) {
         case ENABLE: {
-            ALOGV("ENABLE");
+            LOGV("ENABLE");
             CHECK_INTERFACE(IEffect, data, reply);
             reply->writeInt32(enable());
             return NO_ERROR;
         } break;
 
         case DISABLE: {
-            ALOGV("DISABLE");
+            LOGV("DISABLE");
             CHECK_INTERFACE(IEffect, data, reply);
             reply->writeInt32(disable());
             return NO_ERROR;
         } break;
 
         case COMMAND: {
-            ALOGV("COMMAND");
+            LOGV("COMMAND");
             CHECK_INTERFACE(IEffect, data, reply);
             uint32_t cmdCode = data.readInt32();
             uint32_t cmdSize = data.readInt32();
@@ -172,7 +172,7 @@ status_t BnEffect::onTransact(
         } break;
 
         case DISCONNECT: {
-            ALOGV("DISCONNECT");
+            LOGV("DISCONNECT");
             CHECK_INTERFACE(IEffect, data, reply);
             disconnect();
             return NO_ERROR;

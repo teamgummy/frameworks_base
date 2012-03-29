@@ -61,7 +61,7 @@ status_t Visualizer::setEnabled(bool enabled)
         if (enabled) {
             if (t->exitPending()) {
                 if (t->requestExitAndWait() == WOULD_BLOCK) {
-                    ALOGE("Visualizer::enable() called from thread");
+                    LOGE("Visualizer::enable() called from thread");
                     return INVALID_OPERATION;
                 }
             }
@@ -116,11 +116,11 @@ status_t Visualizer::setCaptureCallBack(capture_cbk_t cbk, void* user, uint32_t 
     if (cbk != NULL) {
         mCaptureThread = new CaptureThread(*this, rate, ((flags & CAPTURE_CALL_JAVA) != 0));
         if (mCaptureThread == 0) {
-            ALOGE("Could not create callback thread");
+            LOGE("Could not create callback thread");
             return NO_INIT;
         }
     }
-    ALOGV("setCaptureCallBack() rate: %d thread %p flags 0x%08x",
+    LOGV("setCaptureCallBack() rate: %d thread %p flags 0x%08x",
             rate, mCaptureThread.get(), mCaptureFlags);
     return NO_ERROR;
 }
@@ -147,7 +147,7 @@ status_t Visualizer::setCaptureSize(uint32_t size)
     *((int32_t *)p->data + 1)= size;
     status_t status = setParameter(p);
 
-    ALOGV("setCaptureSize size %d  status %d p->status %d", size, status, p->status);
+    LOGV("setCaptureSize size %d  status %d p->status %d", size, status, p->status);
 
     if (status == NO_ERROR) {
         status = p->status;
@@ -172,12 +172,12 @@ status_t Visualizer::getWaveForm(uint8_t *waveform)
     if (mEnabled) {
         uint32_t replySize = mCaptureSize;
         status = command(VISUALIZER_CMD_CAPTURE, 0, NULL, &replySize, waveform);
-        ALOGV("getWaveForm() command returned %d", status);
+        LOGV("getWaveForm() command returned %d", status);
         if (replySize == 0) {
             status = NOT_ENOUGH_DATA;
         }
     } else {
-        ALOGV("getWaveForm() disabled");
+        LOGV("getWaveForm() disabled");
         memset(waveform, 0x80, mCaptureSize);
     }
     return status;
@@ -236,7 +236,7 @@ status_t Visualizer::doFft(uint8_t *fft, uint8_t *waveform)
 void Visualizer::periodicCapture()
 {
     Mutex::Autolock _l(mLock);
-    ALOGV("periodicCapture() %p mCaptureCallBack %p mCaptureFlags 0x%08x",
+    LOGV("periodicCapture() %p mCaptureCallBack %p mCaptureFlags 0x%08x",
             this, mCaptureCallBack, mCaptureFlags);
     if (mCaptureCallBack != NULL &&
         (mCaptureFlags & (CAPTURE_WAVEFORM|CAPTURE_FFT)) &&
@@ -289,7 +289,7 @@ uint32_t Visualizer::initCaptureSize()
     }
     mCaptureSize = size;
 
-    ALOGV("initCaptureSize size %d status %d", mCaptureSize, status);
+    LOGV("initCaptureSize size %d status %d", mCaptureSize, status);
 
     return size;
 }
@@ -300,18 +300,18 @@ Visualizer::CaptureThread::CaptureThread(Visualizer& receiver, uint32_t captureR
     : Thread(bCanCallJava), mReceiver(receiver)
 {
     mSleepTimeUs = 1000000000 / captureRate;
-    ALOGV("CaptureThread cstor %p captureRate %d mSleepTimeUs %d", this, captureRate, mSleepTimeUs);
+    LOGV("CaptureThread cstor %p captureRate %d mSleepTimeUs %d", this, captureRate, mSleepTimeUs);
 }
 
 bool Visualizer::CaptureThread::threadLoop()
 {
-    ALOGV("CaptureThread %p enter", this);
+    LOGV("CaptureThread %p enter", this);
     while (!exitPending())
     {
         usleep(mSleepTimeUs);
         mReceiver.periodicCapture();
     }
-    ALOGV("CaptureThread %p exiting", this);
+    LOGV("CaptureThread %p exiting", this);
     return false;
 }
 

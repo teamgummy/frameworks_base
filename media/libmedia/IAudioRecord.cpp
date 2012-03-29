@@ -50,7 +50,7 @@ public:
         if (status == NO_ERROR) {
             status = reply.readInt32();
         } else {
-            ALOGW("start() error: %s", strerror(-status));
+            LOGW("start() error: %s", strerror(-status));
         }
         return status;
     }
