@@ -120,7 +120,7 @@ int ZipFileRO::entryToIndex(const ZipEntryRO entry) const
 {
     long ent = ((long) entry) - kZipEntryAdj;
     if (ent < 0 || ent >= mHashTableSize || mHashTable[ent].name == NULL) {
-        ALOGW("Invalid ZipEntryRO %p (%ld)\n", entry, ent);
+        LOGW("Invalid ZipEntryRO %p (%ld)\n", entry, ent);
         return -1;
     }
     return ent;
@@ -142,7 +142,7 @@ status_t ZipFileRO::open(const char* zipFileName)
      */
     fd = ::open(zipFileName, O_RDONLY | O_BINARY);
     if (fd < 0) {
-        ALOGW("Unable to open zip '%s': %s\n", zipFileName, strerror(errno));
+        LOGW("Unable to open zip '%s': %s\n", zipFileName, strerror(errno));
         return NAME_NOT_FOUND;
     }
 
@@ -194,7 +194,7 @@ bool ZipFileRO::mapCentralDirectory(void)
 
     unsigned char* scanBuf = (unsigned char*) malloc(readAmount);
     if (scanBuf == NULL) {
-        ALOGW("couldn't allocate scanBuf: %s", strerror(errno));
+        LOGW("couldn't allocate scanBuf: %s", strerror(errno));
         free(scanBuf);
         return false;
     }
@@ -203,14 +203,14 @@ bool ZipFileRO::mapCentralDirectory(void)
      * Make sure this is a Zip archive.
      */
     if (lseek64(mFd, 0, SEEK_SET) != 0) {
-        ALOGW("seek to start failed: %s", strerror(errno));
+        LOGW("seek to start failed: %s", strerror(errno));
         free(scanBuf);
         return false;
     }
 
     ssize_t actual = TEMP_FAILURE_RETRY(read(mFd, scanBuf, sizeof(int32_t)));
     if (actual != (ssize_t) sizeof(int32_t)) {
-        ALOGI("couldn't read first signature from zip archive: %s", strerror(errno));
+        LOGI("couldn't read first signature from zip archive: %s", strerror(errno));
         free(scanBuf);
         return false;
     }
@@ -218,11 +218,11 @@ bool ZipFileRO::mapCentralDirectory(void)
     {
         unsigned int header = get4LE(scanBuf);
         if (header == kEOCDSignature) {
-            ALOGI("Found Zip archive, but it looks empty\n");
+            LOGI("Found Zip archive, but it looks empty\n");
             free(scanBuf);
             return false;
         } else if (header != kLFHSignature) {
-            ALOGV("Not a Zip archive (found 0x%08x)\n", header);
+            LOGV("Not a Zip archive (found 0x%08x)\n", header);
             free(scanBuf);
             return false;
         }
@@ -243,13 +243,13 @@ bool ZipFileRO::mapCentralDirectory(void)
     off64_t searchStart = mFileLength - readAmount;
 
     if (lseek64(mFd, searchStart, SEEK_SET) != searchStart) {
-        ALOGW("seek %ld failed: %s\n",  (long) searchStart, strerror(errno));
+        LOGW("seek %ld failed: %s\n",  (long) searchStart, strerror(errno));
         free(scanBuf);
         return false;
     }
     actual = TEMP_FAILURE_RETRY(read(mFd, scanBuf, readAmount));
     if (actual != (ssize_t) readAmount) {
-        ALOGW("Zip: read " ZD ", expected " ZD ". Failed: %s\n",
+        LOGW("Zip: read " ZD ", expected " ZD ". Failed: %s\n",
             (ZD_TYPE) actual, (ZD_TYPE) readAmount, strerror(errno));
         free(scanBuf);
         return false;
@@ -264,12 +264,12 @@ bool ZipFileRO::mapCentralDirectory(void)
     int i;
     for (i = readAmount - kEOCDLen; i >= 0; i--) {
         if (scanBuf[i] == 0x50 && get4LE(&scanBuf[i]) == kEOCDSignature) {
-            ALOGV("+++ Found EOCD at buf+%d\n", i);
+            LOGV("+++ Found EOCD at buf+%d\n", i);
             break;
         }
     }
     if (i < 0) {
-        ALOGD("Zip: EOCD not found, %s is not zip\n", mFileName);
+        LOGD("Zip: EOCD not found, %s is not zip\n", mFileName);
         free(scanBuf);
         return false;
     }
@@ -290,26 +290,26 @@ bool ZipFileRO::mapCentralDirectory(void)
 
     // Verify that they look reasonable.
     if ((long long) dirOffset + (long long) dirSize > (long long) eocdOffset) {
-        ALOGW("bad offsets (dir %ld, size %u, eocd %ld)\n",
+        LOGW("bad offsets (dir %ld, size %u, eocd %ld)\n",
             (long) dirOffset, dirSize, (long) eocdOffset);
         return false;
     }
     if (numEntries == 0) {
-        ALOGW("empty archive?\n");
+        LOGW("empty archive?\n");
         return false;
     }
 
-    ALOGV("+++ numEntries=%d dirSize=%d dirOffset=%d\n",
+    LOGV("+++ numEntries=%d dirSize=%d dirOffset=%d\n",
         numEntries, dirSize, dirOffset);
 
     mDirectoryMap = new FileMap();
     if (mDirectoryMap == NULL) {
-        ALOGW("Unable to create directory map: %s", strerror(errno));
+        LOGW("Unable to create directory map: %s", strerror(errno));
         return false;
     }
 
     if (!mDirectoryMap->create(mFileName, mFd, dirOffset, dirSize, true)) {
-        ALOGW("Unable to map '%s' (" ZD " to " ZD "): %s\n", mFileName,
+        LOGW("Unable to map '%s' (" ZD " to " ZD "): %s\n", mFileName,
                 (ZD_TYPE) dirOffset, (ZD_TYPE) (dirOffset + dirSize), strerror(errno));
         return false;
     }
@@ -341,17 +341,17 @@ bool ZipFileRO::parseZipArchive(void)
     const unsigned char* ptr = cdPtr;
     for (int i = 0; i < numEntries; i++) {
         if (get4LE(ptr) != kCDESignature) {
-            ALOGW("Missed a central dir sig (at %d)\n", i);
+            LOGW("Missed a central dir sig (at %d)\n", i);
             goto bail;
         }
         if (ptr + kCDELen > cdPtr + cdLength) {
-            ALOGW("Ran off the end (at %d)\n", i);
+            LOGW("Ran off the end (at %d)\n", i);
             goto bail;
         }
 
         long localHdrOffset = (long) get4LE(ptr + kCDELocalOffset);
         if (localHdrOffset >= mDirectoryOffset) {
-            ALOGW("bad LFH offset %ld at entry %d\n", localHdrOffset, i);
+            LOGW("bad LFH offset %ld at entry %d\n", localHdrOffset, i);
             goto bail;
         }
 
@@ -367,12 +367,12 @@ bool ZipFileRO::parseZipArchive(void)
 
         ptr += kCDELen + fileNameLen + extraLen + commentLen;
         if ((size_t)(ptr - cdPtr) > cdLength) {
-            ALOGW("bad CD advance (%d vs " ZD ") at entry %d\n",
+            LOGW("bad CD advance (%d vs " ZD ") at entry %d\n",
                 (int) (ptr - cdPtr), (ZD_TYPE) cdLength, i);
             goto bail;
         }
     }
-    ALOGV("+++ zip good scan %d entries\n", numEntries);
+    LOGV("+++ zip good scan %d entries\n", numEntries);
     result = true;
 
 bail:
@@ -452,7 +452,7 @@ ZipEntryRO ZipFileRO::findEntryByName(const char* fileName) const
 ZipEntryRO ZipFileRO::findEntryByIndex(int idx) const
 {
     if (idx < 0 || idx >= mNumEntries) {
-        ALOGW("Invalid index %d\n", idx);
+        LOGW("Invalid index %d\n", idx);
         return NULL;
     }
 
@@ -527,7 +527,7 @@ bool ZipFileRO::getEntryInfo(ZipEntryRO entry, int* pMethod, size_t* pUncompLen,
     if (pOffset != NULL) {
         long localHdrOffset = get4LE(ptr + kCDELocalOffset);
         if (localHdrOffset + kLFHLen >= cdOffset) {
-            ALOGE("ERROR: bad local hdr offset in zip\n");
+            LOGE("ERROR: bad local hdr offset in zip\n");
             return false;
         }
 
@@ -544,12 +544,12 @@ bool ZipFileRO::getEntryInfo(ZipEntryRO entry, int* pMethod, size_t* pUncompLen,
                 TEMP_FAILURE_RETRY(pread64(mFd, lfhBuf, sizeof(lfhBuf), localHdrOffset));
 
         if (actual != sizeof(lfhBuf)) {
-            ALOGW("failed reading lfh from offset %ld\n", localHdrOffset);
+            LOGW("failed reading lfh from offset %ld\n", localHdrOffset);
             return false;
         }
 
         if (get4LE(lfhBuf) != kLFHSignature) {
-            ALOGW("didn't find signature at start of lfh; wanted: offset=%ld data=0x%08x; "
+            LOGW("didn't find signature at start of lfh; wanted: offset=%ld data=0x%08x; "
                     "got: data=0x%08lx\n",
                     localHdrOffset, kLFHSignature, get4LE(lfhBuf));
             return false;
@@ -567,20 +567,20 @@ bool ZipFileRO::getEntryInfo(ZipEntryRO entry, int* pMethod, size_t* pUncompLen,
             AutoMutex _l(mFdLock);
 
             if (lseek64(mFd, localHdrOffset, SEEK_SET) != localHdrOffset) {
-                ALOGW("failed seeking to lfh at offset %ld\n", localHdrOffset);
+                LOGW("failed seeking to lfh at offset %ld\n", localHdrOffset);
                 return false;
             }
 
             ssize_t actual =
                     TEMP_FAILURE_RETRY(read(mFd, lfhBuf, sizeof(lfhBuf)));
             if (actual != sizeof(lfhBuf)) {
-                ALOGW("failed reading lfh from offset %ld\n", localHdrOffset);
+                LOGW("failed reading lfh from offset %ld\n", localHdrOffset);
                 return false;
             }
 
             if (get4LE(lfhBuf) != kLFHSignature) {
                 off64_t actualOffset = lseek64(mFd, 0, SEEK_CUR);
-                ALOGW("didn't find signature at start of lfh; wanted: offset=%ld data=0x%08x; "
+                LOGW("didn't find signature at start of lfh; wanted: offset=%ld data=0x%08x; "
                         "got: offset=" ZD " data=0x%08lx\n",
                         localHdrOffset, kLFHSignature, (ZD_TYPE) actualOffset, get4LE(lfhBuf));
                 return false;
@@ -591,13 +591,13 @@ bool ZipFileRO::getEntryInfo(ZipEntryRO entry, int* pMethod, size_t* pUncompLen,
         off64_t dataOffset = localHdrOffset + kLFHLen
             + get2LE(lfhBuf + kLFHNameLen) + get2LE(lfhBuf + kLFHExtraLen);
         if (dataOffset >= cdOffset) {
-            ALOGW("bad data offset %ld in zip\n", (long) dataOffset);
+            LOGW("bad data offset %ld in zip\n", (long) dataOffset);
             return false;
         }
 
         /* check lengths */
         if ((off64_t)(dataOffset + compLen) > cdOffset) {
-            ALOGW("bad compressed length in zip (%ld + " ZD " > %ld)\n",
+            LOGW("bad compressed length in zip (%ld + " ZD " > %ld)\n",
                 (long) dataOffset, (ZD_TYPE) compLen, (long) cdOffset);
             return false;
         }
@@ -605,7 +605,7 @@ bool ZipFileRO::getEntryInfo(ZipEntryRO entry, int* pMethod, size_t* pUncompLen,
         if (method == kCompressStored &&
             (off64_t)(dataOffset + uncompLen) > cdOffset)
         {
-            ALOGE("ERROR: bad uncompressed length in zip (%ld + " ZD " > %ld)\n",
+            LOGE("ERROR: bad uncompressed length in zip (%ld + " ZD " > %ld)\n",
                 (long) dataOffset, (ZD_TYPE) uncompLen, (long) cdOffset);
             return false;
         }
@@ -754,14 +754,14 @@ bool ZipFileRO::uncompressEntry(ZipEntryRO entry, int fd) const
     if (method == kCompressStored) {
         ssize_t actual = write(fd, ptr, uncompLen);
         if (actual < 0) {
-            ALOGE("Write failed: %s\n", strerror(errno));
+            LOGE("Write failed: %s\n", strerror(errno));
             goto unmap;
         } else if ((size_t) actual != uncompLen) {
-            ALOGE("Partial write during uncompress (" ZD " of " ZD ")\n",
+            LOGE("Partial write during uncompress (" ZD " of " ZD ")\n",
                 (ZD_TYPE) actual, (ZD_TYPE) uncompLen);
             goto unmap;
         } else {
-            ALOGI("+++ successful write\n");
+            LOGI("+++ successful write\n");
         }
     } else {
         if (!inflateBuffer(fd, ptr, uncompLen, compLen))
@@ -806,10 +806,10 @@ bail:
     zerr = inflateInit2(&zstream, -MAX_WBITS);
     if (zerr != Z_OK) {
         if (zerr == Z_VERSION_ERROR) {
-            ALOGE("Installed zlib is not compatible with linked version (%s)\n",
+            LOGE("Installed zlib is not compatible with linked version (%s)\n",
                 ZLIB_VERSION);
         } else {
-            ALOGE("Call to inflateInit2 failed (zerr=%d)\n", zerr);
+            LOGE("Call to inflateInit2 failed (zerr=%d)\n", zerr);
         }
         goto bail;
     }
@@ -819,7 +819,7 @@ bail:
      */
     zerr = inflate(&zstream, Z_FINISH);
     if (zerr != Z_STREAM_END) {
-        ALOGW("Zip inflate failed, zerr=%d (nIn=%p aIn=%u nOut=%p aOut=%u)\n",
+        LOGW("Zip inflate failed, zerr=%d (nIn=%p aIn=%u nOut=%p aOut=%u)\n",
             zerr, zstream.next_in, zstream.avail_in,
             zstream.next_out, zstream.avail_out);
         goto z_bail;
@@ -827,7 +827,7 @@ bail:
 
     /* paranoia */
     if (zstream.total_out != uncompLen) {
-        ALOGW("Size mismatch on inflated file (%ld vs " ZD ")\n",
+        LOGW("Size mismatch on inflated file (%ld vs " ZD ")\n",
             zstream.total_out, (ZD_TYPE) uncompLen);
         goto z_bail;
     }
@@ -873,10 +873,10 @@ bail:
     zerr = inflateInit2(&zstream, -MAX_WBITS);
     if (zerr != Z_OK) {
         if (zerr == Z_VERSION_ERROR) {
-            ALOGE("Installed zlib is not compatible with linked version (%s)\n",
+            LOGE("Installed zlib is not compatible with linked version (%s)\n",
                 ZLIB_VERSION);
         } else {
-            ALOGE("Call to inflateInit2 failed (zerr=%d)\n", zerr);
+            LOGE("Call to inflateInit2 failed (zerr=%d)\n", zerr);
         }
         goto bail;
     }
@@ -890,7 +890,7 @@ bail:
          */
         zerr = inflate(&zstream, Z_NO_FLUSH);
         if (zerr != Z_OK && zerr != Z_STREAM_END) {
-            ALOGW("zlib inflate: zerr=%d (nIn=%p aIn=%u nOut=%p aOut=%u)\n",
+            LOGW("zlib inflate: zerr=%d (nIn=%p aIn=%u nOut=%p aOut=%u)\n",
                 zerr, zstream.next_in, zstream.avail_in,
                 zstream.next_out, zstream.avail_out);
             goto z_bail;
@@ -903,7 +903,7 @@ bail:
             long writeSize = zstream.next_out - writeBuf;
             int cc = write(fd, writeBuf, writeSize);
             if (cc != (int) writeSize) {
-                ALOGW("write failed in inflate (%d vs %ld)\n", cc, writeSize);
+                LOGW("write failed in inflate (%d vs %ld)\n", cc, writeSize);
                 goto z_bail;
             }
 
@@ -916,7 +916,7 @@ bail:
 
     /* paranoia */
     if (zstream.total_out != uncompLen) {
-        ALOGW("Size mismatch on inflated file (%ld vs " ZD ")\n",
+        LOGW("Size mismatch on inflated file (%ld vs " ZD ")\n",
             zstream.total_out, (ZD_TYPE) uncompLen);
         goto z_bail;
     }

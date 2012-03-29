@@ -90,14 +90,14 @@ bool ObbFile::readFrom(const char* filename)
 
     fd = ::open(filename, O_RDONLY);
     if (fd < 0) {
-        ALOGW("couldn't open file %s: %s", filename, strerror(errno));
+        LOGW("couldn't open file %s: %s", filename, strerror(errno));
         goto out;
     }
     success = readFrom(fd);
     close(fd);
 
     if (!success) {
-        ALOGW("failed to read from %s (fd=%d)\n", filename, fd);
+        LOGW("failed to read from %s (fd=%d)\n", filename, fd);
     }
 
 out:
@@ -107,7 +107,7 @@ out:
 bool ObbFile::readFrom(int fd)
 {
     if (fd < 0) {
-        ALOGW("attempt to read from invalid fd\n");
+        LOGW("attempt to read from invalid fd\n");
         return false;
     }
 
@@ -120,9 +120,9 @@ bool ObbFile::parseObbFile(int fd)
 
     if (fileLength < kFooterMinSize) {
         if (fileLength < 0) {
-            ALOGW("error seeking in ObbFile: %s\n", strerror(errno));
+            LOGW("error seeking in ObbFile: %s\n", strerror(errno));
         } else {
-            ALOGW("file is only %lld (less than %d minimum)\n", fileLength, kFooterMinSize);
+            LOGW("file is only %lld (less than %d minimum)\n", fileLength, kFooterMinSize);
         }
         return false;
     }
@@ -136,13 +136,13 @@ bool ObbFile::parseObbFile(int fd)
         char *footer = new char[kFooterTagSize];
         actual = TEMP_FAILURE_RETRY(read(fd, footer, kFooterTagSize));
         if (actual != kFooterTagSize) {
-            ALOGW("couldn't read footer signature: %s\n", strerror(errno));
+            LOGW("couldn't read footer signature: %s\n", strerror(errno));
             return false;
         }
 
         unsigned int fileSig = get4LE((unsigned char*)footer + sizeof(int32_t));
         if (fileSig != kSignature) {
-            ALOGW("footer didn't match magic string (expected 0x%08x; got 0x%08x)\n",
+            LOGW("footer didn't match magic string (expected 0x%08x; got 0x%08x)\n",
                     kSignature, fileSig);
             return false;
         }
@@ -150,13 +150,13 @@ bool ObbFile::parseObbFile(int fd)
         footerSize = get4LE((unsigned char*)footer);
         if (footerSize > (size_t)fileLength - kFooterTagSize
                 || footerSize > kMaxBufSize) {
-            ALOGW("claimed footer size is too large (0x%08zx; file size is 0x%08llx)\n",
+            LOGW("claimed footer size is too large (0x%08zx; file size is 0x%08llx)\n",
                     footerSize, fileLength);
             return false;
         }
 
         if (footerSize < (kFooterMinSize - kFooterTagSize)) {
-            ALOGW("claimed footer size is too small (0x%zx; minimum size is 0x%x)\n",
+            LOGW("claimed footer size is too small (0x%zx; minimum size is 0x%x)\n",
                     footerSize, kFooterMinSize - kFooterTagSize);
             return false;
         }
@@ -164,7 +164,7 @@ bool ObbFile::parseObbFile(int fd)
 
     off64_t fileOffset = fileLength - footerSize - kFooterTagSize;
     if (lseek64(fd, fileOffset, SEEK_SET) != fileOffset) {
-        ALOGW("seek %lld failed: %s\n", fileOffset, strerror(errno));
+        LOGW("seek %lld failed: %s\n", fileOffset, strerror(errno));
         return false;
     }
 
@@ -172,27 +172,27 @@ bool ObbFile::parseObbFile(int fd)
 
     char* scanBuf = (char*)malloc(footerSize);
     if (scanBuf == NULL) {
-        ALOGW("couldn't allocate scanBuf: %s\n", strerror(errno));
+        LOGW("couldn't allocate scanBuf: %s\n", strerror(errno));
         return false;
     }
 
     actual = TEMP_FAILURE_RETRY(read(fd, scanBuf, footerSize));
     // readAmount is guaranteed to be less than kMaxBufSize
     if (actual != (ssize_t)footerSize) {
-        ALOGI("couldn't read ObbFile footer: %s\n", strerror(errno));
+        LOGI("couldn't read ObbFile footer: %s\n", strerror(errno));
         free(scanBuf);
         return false;
     }
 
 #ifdef DEBUG
     for (int i = 0; i < footerSize; ++i) {
-        ALOGI("char: 0x%02x\n", scanBuf[i]);
+        LOGI("char: 0x%02x\n", scanBuf[i]);
     }
 #endif
 
     uint32_t sigVersion = get4LE((unsigned char*)scanBuf);
     if (sigVersion != kSigVersion) {
-        ALOGW("Unsupported ObbFile version %d\n", sigVersion);
+        LOGW("Unsupported ObbFile version %d\n", sigVersion);
         free(scanBuf);
         return false;
     }
@@ -205,7 +205,7 @@ bool ObbFile::parseObbFile(int fd)
     size_t packageNameLen = get4LE((unsigned char*)scanBuf + kPackageNameLenOffset);
     if (packageNameLen == 0
             || packageNameLen > (footerSize - kPackageNameOffset)) {
-        ALOGW("bad ObbFile package name length (0x%04zx; 0x%04zx possible)\n",
+        LOGW("bad ObbFile package name length (0x%04zx; 0x%04zx possible)\n",
                 packageNameLen, footerSize - kPackageNameOffset);
         free(scanBuf);
         return false;
@@ -217,7 +217,7 @@ bool ObbFile::parseObbFile(int fd)
     free(scanBuf);
 
 #ifdef DEBUG
-    ALOGI("Obb scan succeeded: packageName=%s, version=%d\n", mPackageName.string(), mVersion);
+    LOGI("Obb scan succeeded: packageName=%s, version=%d\n", mPackageName.string(), mVersion);
 #endif
 
     return true;
@@ -237,7 +237,7 @@ bool ObbFile::writeTo(const char* filename)
 
 out:
     if (!success) {
-        ALOGW("failed to write to %s: %s\n", filename, strerror(errno));
+        LOGW("failed to write to %s: %s\n", filename, strerror(errno));
     }
     return success;
 }
@@ -251,7 +251,7 @@ bool ObbFile::writeTo(int fd)
     lseek64(fd, 0, SEEK_END);
 
     if (mPackageName.size() == 0 || mVersion == -1) {
-        ALOGW("tried to write uninitialized ObbFile data\n");
+        LOGW("tried to write uninitialized ObbFile data\n");
         return false;
     }
 
@@ -260,48 +260,48 @@ bool ObbFile::writeTo(int fd)
 
     put4LE(intBuf, kSigVersion);
     if (write(fd, &intBuf, sizeof(uint32_t)) != (ssize_t)sizeof(uint32_t)) {
-        ALOGW("couldn't write signature version: %s\n", strerror(errno));
+        LOGW("couldn't write signature version: %s\n", strerror(errno));
         return false;
     }
 
     put4LE(intBuf, mVersion);
     if (write(fd, &intBuf, sizeof(uint32_t)) != (ssize_t)sizeof(uint32_t)) {
-        ALOGW("couldn't write package version\n");
+        LOGW("couldn't write package version\n");
         return false;
     }
 
     put4LE(intBuf, mFlags);
     if (write(fd, &intBuf, sizeof(uint32_t)) != (ssize_t)sizeof(uint32_t)) {
-        ALOGW("couldn't write package version\n");
+        LOGW("couldn't write package version\n");
         return false;
     }
 
     if (write(fd, mSalt, sizeof(mSalt)) != (ssize_t)sizeof(mSalt)) {
-        ALOGW("couldn't write salt: %s\n", strerror(errno));
+        LOGW("couldn't write salt: %s\n", strerror(errno));
         return false;
     }
 
     size_t packageNameLen = mPackageName.size();
     put4LE(intBuf, packageNameLen);
     if (write(fd, &intBuf, sizeof(uint32_t)) != (ssize_t)sizeof(uint32_t)) {
-        ALOGW("couldn't write package name length: %s\n", strerror(errno));
+        LOGW("couldn't write package name length: %s\n", strerror(errno));
         return false;
     }
 
     if (write(fd, mPackageName.string(), packageNameLen) != (ssize_t)packageNameLen) {
-        ALOGW("couldn't write package name: %s\n", strerror(errno));
+        LOGW("couldn't write package name: %s\n", strerror(errno));
         return false;
     }
 
     put4LE(intBuf, kPackageNameOffset + packageNameLen);
     if (write(fd, &intBuf, sizeof(uint32_t)) != (ssize_t)sizeof(uint32_t)) {
-        ALOGW("couldn't write footer size: %s\n", strerror(errno));
+        LOGW("couldn't write footer size: %s\n", strerror(errno));
         return false;
     }
 
     put4LE(intBuf, kSignature);
     if (write(fd, &intBuf, sizeof(uint32_t)) != (ssize_t)sizeof(uint32_t)) {
-        ALOGW("couldn't write footer magic signature: %s\n", strerror(errno));
+        LOGW("couldn't write footer magic signature: %s\n", strerror(errno));
         return false;
     }
 
@@ -322,7 +322,7 @@ bool ObbFile::removeFrom(const char* filename)
 
 out:
     if (!success) {
-        ALOGW("failed to remove signature from %s: %s\n", filename, strerror(errno));
+        LOGW("failed to remove signature from %s: %s\n", filename, strerror(errno));
     }
     return success;
 }

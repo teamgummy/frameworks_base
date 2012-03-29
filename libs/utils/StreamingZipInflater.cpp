@@ -77,7 +77,7 @@ StreamingZipInflater::~StreamingZipInflater() {
 }
 
 void StreamingZipInflater::initInflateState() {
-    ALOGV("Initializing inflate state");
+    LOGV("Initializing inflate state");
 
     memset(&mInflateState, 0, sizeof(mInflateState));
     mInflateState.zalloc = Z_NULL;
@@ -138,7 +138,7 @@ ssize_t StreamingZipInflater::read(void* outBuf, size_t count) {
             if (mInflateState.avail_in == 0) {
                 int err = readNextChunk();
                 if (err < 0) {
-                    ALOGE("Unable to access asset data: %d", err);
+                    LOGE("Unable to access asset data: %d", err);
                     if (!mStreamNeedsInit) {
                         ::inflateEnd(&mInflateState);
                         initInflateState();
@@ -152,20 +152,20 @@ ssize_t StreamingZipInflater::read(void* outBuf, size_t count) {
             mInflateState.avail_out = mOutBufSize;
 
             /*
-            ALOGV("Inflating to outbuf: avail_in=%u avail_out=%u next_in=%p next_out=%p",
+            LOGV("Inflating to outbuf: avail_in=%u avail_out=%u next_in=%p next_out=%p",
                     mInflateState.avail_in, mInflateState.avail_out,
                     mInflateState.next_in, mInflateState.next_out);
             */
             int result = Z_OK;
             if (mStreamNeedsInit) {
-                ALOGV("Initializing zlib to inflate");
+                LOGV("Initializing zlib to inflate");
                 result = inflateInit2(&mInflateState, -MAX_WBITS);
                 mStreamNeedsInit = false;
             }
             if (result == Z_OK) result = ::inflate(&mInflateState, Z_SYNC_FLUSH);
             if (result < 0) {
                 // Whoops, inflation failed
-                ALOGE("Error inflating asset: %d", result);
+                LOGE("Error inflating asset: %d", result);
                 ::inflateEnd(&mInflateState);
                 initInflateState();
                 return -1;
@@ -192,10 +192,10 @@ int StreamingZipInflater::readNextChunk() {
         size_t toRead = min_of(mInBufSize, mInTotalSize - mInNextChunkOffset);
         if (toRead > 0) {
             ssize_t didRead = ::read(mFd, mInBuf, toRead);
-            //ALOGV("Reading input chunk, size %08x didread %08x", toRead, didRead);
+            //LOGV("Reading input chunk, size %08x didread %08x", toRead, didRead);
             if (didRead < 0) {
                 // TODO: error
-                ALOGE("Error reading asset data");
+                LOGE("Error reading asset data");
                 return didRead;
             } else {
                 mInNextChunkOffset += didRead;

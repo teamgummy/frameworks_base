@@ -64,12 +64,12 @@ FileMap::~FileMap(void)
     }
 #ifdef HAVE_POSIX_FILEMAP    
     if (mBasePtr && munmap(mBasePtr, mBaseLength) != 0) {
-        ALOGD("munmap(%p, %d) failed\n", mBasePtr, (int) mBaseLength);
+        LOGD("munmap(%p, %d) failed\n", mBasePtr, (int) mBaseLength);
     }
 #endif
 #ifdef HAVE_WIN32_FILEMAP
     if (mBasePtr && UnmapViewOfFile(mBasePtr) == 0) {
-        ALOGD("UnmapViewOfFile(%p) failed, error = %ld\n", mBasePtr,
+        LOGD("UnmapViewOfFile(%p) failed, error = %ld\n", mBasePtr,
               GetLastError() );
     }
     if (mFileMapping != INVALID_HANDLE_VALUE) {
@@ -108,7 +108,7 @@ bool FileMap::create(const char* origFileName, int fd, off64_t offset, size_t le
     mFileHandle  = (HANDLE) _get_osfhandle(fd);
     mFileMapping = CreateFileMapping( mFileHandle, NULL, protect, 0, 0, NULL);
     if (mFileMapping == NULL) {
-        ALOGE("CreateFileMapping(%p, %lx) failed with error %ld\n",
+        LOGE("CreateFileMapping(%p, %lx) failed with error %ld\n",
               mFileHandle, protect, GetLastError() );
         return false;
     }
@@ -123,7 +123,7 @@ bool FileMap::create(const char* origFileName, int fd, off64_t offset, size_t le
                               (DWORD)(adjOffset),
                               adjLength );
     if (mBasePtr == NULL) {
-        ALOGE("MapViewOfFile(%ld, %ld) failed with error %ld\n",
+        LOGE("MapViewOfFile(%ld, %ld) failed with error %ld\n",
               adjOffset, adjLength, GetLastError() );
         CloseHandle(mFileMapping);
         mFileMapping = INVALID_HANDLE_VALUE;
@@ -147,7 +147,7 @@ bool FileMap::create(const char* origFileName, int fd, off64_t offset, size_t le
 #if NOT_USING_KLIBC
         mPageSize = sysconf(_SC_PAGESIZE);
         if (mPageSize == -1) {
-            ALOGE("could not get _SC_PAGESIZE\n");
+            LOGE("could not get _SC_PAGESIZE\n");
             return false;
         }
 #else
@@ -175,7 +175,7 @@ try_again:
     		goto try_again;
     	}
     
-        ALOGE("mmap(%ld,%ld) failed: %s\n",
+        LOGE("mmap(%ld,%ld) failed: %s\n",
             (long) adjOffset, (long) adjLength, strerror(errno));
         return false;
     }
@@ -190,7 +190,7 @@ try_again:
 
     assert(mBasePtr != NULL);
 
-    ALOGV("MAP: base %p/%d data %p/%d\n",
+    LOGV("MAP: base %p/%d data %p/%d\n",
         mBasePtr, (int) mBaseLength, mDataPtr, (int) mDataLength);
 
     return true;
@@ -217,7 +217,7 @@ int FileMap::advise(MapAdvice advice)
 
     cc = madvise(mBasePtr, mBaseLength, sysAdvice);
     if (cc != 0)
-        ALOGW("madvise(%d) failed: %s\n", sysAdvice, strerror(errno));
+        LOGW("madvise(%d) failed: %s\n", sysAdvice, strerror(errno));
     return cc;
 #else
 	return -1;
