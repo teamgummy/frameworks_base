@@ -232,7 +232,7 @@ public class AudioSystem
     public static final int FORCE_WIRED_ACCESSORY = 5;
     public static final int FORCE_BT_CAR_DOCK = 6;
     public static final int FORCE_BT_DESK_DOCK = 7;
-    public static final int FORCE_ANLOG_DOCK = 8;
+    public static final int FORCE_ANALOG_DOCK = 8;
     public static final int FORCE_DIGITAL_DOCK = 9;
     private static final int NUM_FORCE_CONFIG = 10;
     public static final int FORCE_DEFAULT = FORCE_NONE;

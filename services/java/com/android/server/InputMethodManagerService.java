@@ -386,7 +386,7 @@ public class InputMethodManagerService extends IInputMethodManager.Stub
             } else if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
                 mScreenOn = false;
                 setImeWindowVisibilityStatusHiddenLocked();
-            } else if (intent.getAction().equals(Intent.ACTION_CLOSE_SYSTEM_DILOGS)) {
+            } else if (intent.getAction().equals(Intent.ACTION_CLOSE_SYSTEM_DIALOGS)) {
                 hideInputMethodMenu();
                 return;
             } else {
@@ -558,7 +558,7 @@ public class InputMethodManagerService extends IInputMethodManager.Stub
         IntentFilter screenOnOffFilt = new IntentFilter();
         screenOnOffFilt.addAction(Intent.ACTION_SCREEN_ON);
         screenOnOffFilt.addAction(Intent.ACTION_SCREEN_OFF);
-        screenOnOffFilt.addAction(Intent.ACTION_CLOSE_SYSTEM_DILOGS);
+        screenOnOffFilt.addAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
         mContext.registerReceiver(new ScreenOnOffReceiver(), screenOnOffFilt);
 
         mNotificationShown = false;
@@ -2281,7 +2281,7 @@ public class InputMethodManagerService extends IInputMethodManager.Stub
             mSwitchingDialog = mDialogBuilder.create();
             mSwitchingDialog.setCanceledOnTouchOutside(true);
             mSwitchingDialog.getWindow().setType(
-                    WindowManager.LayoutParams.TYPE_INPUT_METHOD_DILOG);
+                    WindowManager.LayoutParams.TYPE_INPUT_METHOD_DIALOG);
             mSwitchingDialog.getWindow().getAttributes().setTitle("Select input method");
             mSwitchingDialog.show();
         }

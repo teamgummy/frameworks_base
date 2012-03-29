@@ -864,7 +864,7 @@ public final class ActivityManagerService extends ActivityManagerNative
     static final int CHECK_EXCESSIVE_WAKE_LOCKS_MSG = 27;
     static final int CLEAR_DNS_CACHE = 28;
     static final int UPDATE_HTTP_PROXY = 29;
-    static final int SHOW_COMPAT_MODE_DILOG_MSG = 30;
+    static final int SHOW_COMPAT_MODE_DIALOG_MSG = 30;
     static final int DISPATCH_FOREGROUND_ACTIVITIES_CHANGED = 31;
     static final int DISPATCH_PROCESS_DIED = 32;
     static final int REPORT_MEM_USAGE = 33;
@@ -1170,7 +1170,7 @@ public final class ActivityManagerService extends ActivityManagerNative
                     sendMessageDelayed(nmsg, POWER_CHECK_DELAY);
                 }
             } break;
-            case SHOW_COMPAT_MODE_DILOG_MSG: {
+            case SHOW_COMPAT_MODE_DIALOG_MSG: {
                 synchronized (ActivityManagerService.this) {
                     ActivityRecord ar = (ActivityRecord)msg.obj;
                     if (mCompatModeDialog != null) {
@@ -3425,7 +3425,7 @@ public final class ActivityManagerService extends ActivityManagerNative
     }
 
     public void closeSystemDialogs(String reason) {
-        Intent intent = new Intent(Intent.ACTION_CLOSE_SYSTEM_DILOGS);
+        Intent intent = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
         intent.addFlags(Intent.FLAG_RECEIVER_REGISTERED_ONLY);
         if (reason != null) {
             intent.putExtra("reason", reason);
@@ -3451,7 +3451,7 @@ public final class ActivityManagerService extends ActivityManagerNative
             
             for (i=mMainStack.mHistory.size()-1; i>=0; i--) {
                 ActivityRecord r = (ActivityRecord)mMainStack.mHistory.get(i);
-                if ((r.info.flags&ActivityInfo.FLAG_FINISH_ON_CLOSE_SYSTEM_DILOGS) != 0) {
+                if ((r.info.flags&ActivityInfo.FLAG_FINISH_ON_CLOSE_SYSTEM_DIALOGS) != 0) {
                     r.stack.finishActivityLocked(r, i,
                             Activity.RESULT_CANCELED, null, "close-sys");
                 }
@@ -7361,7 +7361,7 @@ public final class ActivityManagerService extends ActivityManagerNative
             }
         }
 
-        if ((violationMask & StrictMode.PENALTY_DILOG) != 0) {
+        if ((violationMask & StrictMode.PENALTY_DIALOG) != 0) {
             AppErrorResult result = new AppErrorResult();
             synchronized (this) {
                 final long origId = Binder.clearCallingIdentity();

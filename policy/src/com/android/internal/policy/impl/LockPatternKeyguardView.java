@@ -1169,7 +1169,7 @@ public class LockPatternKeyguardView extends KeyguardViewBase implements Handler
                 .setMessage(message)
                 .setNeutralButton(R.string.ok, null)
                 .create();
-        dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DILOG);
+        dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
         dialog.show();
     }
 
@@ -1425,7 +1425,7 @@ public class LockPatternKeyguardView extends KeyguardViewBase implements Handler
                 faceLockPosition = new int[2];
                 mFaceLockAreaView.getLocationInWindow(faceLockPosition);
                 startFaceLock(mFaceLockAreaView.getWindowToken(),
-                        mfaceLockPosition[0], faceLockPosition[1],
+                        faceLockPosition[0], faceLockPosition[1],
                         mFaceLockAreaView.getWidth(), mFaceLockAreaView.getHeight());
             }
         }

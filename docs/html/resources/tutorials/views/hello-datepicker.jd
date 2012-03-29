@@ -42,10 +42,10 @@ the user, a {@link android.widget.TextView} will update with the new date.</p>
     private int mMonth;
     private int mDay;
 
-    static final int DATE_DILOG_ID = 0;
+    static final int DATE_DIALOG_ID = 0;
 </pre>
   <p>The first group of members define variables for the layout {@link android.view.View}s and the
-date items. The <code>DATE_DILOG_ID</code> is a static integer that uniquely identifies the {@link
+date items. The <code>DATE_DIALOG_ID</code> is a static integer that uniquely identifies the {@link
 android.app.Dialog} that will display the date picker.</p>
   </li>
 
@@ -63,7 +63,7 @@ method:
         // add a click listener to the button
         mPickDate.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                showDialog(DATE_DILOG_ID);
+                showDialog(DATE_DIALOG_ID);
             }
         });
 
@@ -141,7 +141,7 @@ HelloDatePicker} class:
 &#64;Override
 protected Dialog onCreateDialog(int id) {
     switch (id) {
-    case DATE_DILOG_ID:
+    case DATE_DIALOG_ID:
         return new DatePickerDialog(this,
                     mDateSetListener,
                     mYear, mMonth, mDay);

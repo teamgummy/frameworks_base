@@ -44,7 +44,7 @@ parent.link=index.html
     private int mMonth;
     private int mDay;
 
-    static final int DATE_DILOG_ID = 0;
+    static final int DATE_DIALOG_ID = 0;
 
     &#64;Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +58,7 @@ parent.link=index.html
         // add a click listener to the button
         mPickDate.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                showDialog(DATE_DILOG_ID);
+                showDialog(DATE_DIALOG_ID);
             }
         });
 
@@ -74,7 +74,7 @@ parent.link=index.html
 </pre>
 <p class="note"><strong>Tip:</strong> Press Ctrl(or Cmd) + Shift + O to import all needed packages.</p>
 	<p>We start by instantiating variables for our Views and date fields.
-	The <code>DATE_DILOG_ID</code> is a static integer that uniquely identifies the Dialog. In the
+	The <code>DATE_DIALOG_ID</code> is a static integer that uniquely identifies the Dialog. In the
 	<code>onCreate()</code> method, we get prepared by setting the layout and capturing the View elements. 
 	Then we create an on-click listener for the Button, so that when it is clicked it will
 	show our DatePicker dialog. The <code>showDialog()</code> method  will pop-up the date picker dialog
@@ -90,7 +90,7 @@ parent.link=index.html
 &#64;Override
 protected Dialog onCreateDialog(int id) {
     switch (id) {
-    case DATE_DILOG_ID:
+    case DATE_DIALOG_ID:
         return new DatePickerDialog(this,
                     mDateSetListener,
                     mYear, mMonth, mDay);

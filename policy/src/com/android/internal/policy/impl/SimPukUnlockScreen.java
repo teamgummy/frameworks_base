@@ -216,7 +216,7 @@ public class SimPukUnlockScreen extends LinearLayout implements KeyguardScreen,
             mSimUnlockProgressDialog.setIndeterminate(true);
             mSimUnlockProgressDialog.setCancelable(false);
             mSimUnlockProgressDialog.getWindow().setType(
-                    WindowManager.LayoutParams.TYPE_KEYGUARD_DILOG);
+                    WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
         }
         return mSimUnlockProgressDialog;
     }

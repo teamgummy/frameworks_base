@@ -42,10 +42,10 @@ android.app.TimePickerDialog}.</p>
     private int mHour;
     private int mMinute;
 
-    static final int TIME_DILOG_ID = 0;
+    static final int TIME_DIALOG_ID = 0;
 </pre>
 <p>This declares variables for the layout elements and time fields.
-The <code>TIME_DILOG_ID</code> is a static integer that uniquely identifies the dialog.</p>
+The <code>TIME_DIALOG_ID</code> is a static integer that uniquely identifies the dialog.</p>
   </li>
   <li>Now insert the following code for the {@link android.app.Activity#onCreate(Bundle) onCreate()}
 method:
@@ -62,7 +62,7 @@ method:
         // add a click listener to the button
         mPickTime.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                showDialog(TIME_DILOG_ID);
+                showDialog(TIME_DIALOG_ID);
             }
         });
 
@@ -137,7 +137,7 @@ the new time and updates the layout's {@link android.widget.TextView}.</p>
 &#64;Override
 protected Dialog onCreateDialog(int id) {
     switch (id) {
-    case TIME_DILOG_ID:
+    case TIME_DIALOG_ID:
         return new TimePickerDialog(this,
                 mTimeSetListener, mHour, mMinute, false);
     }

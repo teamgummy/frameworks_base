@@ -102,7 +102,7 @@ public final class ViewRootImpl extends Handler implements ViewParent,
     /** @noinspection PointlessBooleanExpression*/
     private static final boolean DEBUG_DRAW = false || LOCAL_LOGV;
     private static final boolean DEBUG_LAYOUT = false || LOCAL_LOGV;
-    private static final boolean DEBUG_DILOG = false || LOCAL_LOGV;
+    private static final boolean DEBUG_DIALOG = false || LOCAL_LOGV;
     private static final boolean DEBUG_INPUT_RESIZE = false || LOCAL_LOGV;
     private static final boolean DEBUG_ORIENTATION = false || LOCAL_LOGV;
     private static final boolean DEBUG_TRACKBALL = false || LOCAL_LOGV;
@@ -1032,26 +1032,26 @@ public final class ViewRootImpl extends Handler implements ViewParent,
                 if (mTmpValue.type == TypedValue.TYPE_DIMENSION) {
                     baseSize = (int)mTmpValue.getDimension(packageMetrics);
                 }
-                if (DEBUG_DILOG) Log.v(TAG, "Window " + mView + ": baseSize=" + baseSize);
+                if (DEBUG_DIALOG) Log.v(TAG, "Window " + mView + ": baseSize=" + baseSize);
                 if (baseSize != 0 && desiredWindowWidth > baseSize) {
                     childWidthMeasureSpec = getRootMeasureSpec(baseSize, lp.width);
                     childHeightMeasureSpec = getRootMeasureSpec(desiredWindowHeight, lp.height);
                     host.measure(childWidthMeasureSpec, childHeightMeasureSpec);
-                    if (DEBUG_DILOG) Log.v(TAG, "Window " + mView + ": measured ("
+                    if (DEBUG_DIALOG) Log.v(TAG, "Window " + mView + ": measured ("
                             + host.getMeasuredWidth() + "," + host.getMeasuredHeight() + ")");
                     if ((host.getMeasuredWidthAndState()&View.MEASURED_STATE_TOO_SMALL) == 0) {
                         goodMeasure = true;
                     } else {
                         // Didn't fit in that size... try expanding a bit.
                         baseSize = (baseSize+desiredWindowWidth)/2;
-                        if (DEBUG_DILOG) Log.v(TAG, "Window " + mView + ": next baseSize="
+                        if (DEBUG_DIALOG) Log.v(TAG, "Window " + mView + ": next baseSize="
                                 + baseSize);
                         childWidthMeasureSpec = getRootMeasureSpec(baseSize, lp.width);
                         host.measure(childWidthMeasureSpec, childHeightMeasureSpec);
-                        if (DEBUG_DILOG) Log.v(TAG, "Window " + mView + ": measured ("
+                        if (DEBUG_DIALOG) Log.v(TAG, "Window " + mView + ": measured ("
                                 + host.getMeasuredWidth() + "," + host.getMeasuredHeight() + ")");
                         if ((host.getMeasuredWidthAndState()&View.MEASURED_STATE_TOO_SMALL) == 0) {
-                            if (DEBUG_DILOG) Log.v(TAG, "Good!");
+                            if (DEBUG_DIALOG) Log.v(TAG, "Good!");
                             goodMeasure = true;
                         }
                     }
@@ -2347,7 +2347,7 @@ public final class ViewRootImpl extends Handler implements ViewParent,
     public final static int DISPATCH_KEY_FROM_IME = 1011;
     public final static int FINISH_INPUT_CONNECTION = 1012;
     public final static int CHECK_FOCUS = 1013;
-    public final static int CLOSE_SYSTEM_DILOGS = 1014;
+    public final static int CLOSE_SYSTEM_DIALOGS = 1014;
     public final static int DISPATCH_DRAG_EVENT = 1015;
     public final static int DISPATCH_DRAG_LOCATION_EVENT = 1016;
     public final static int DISPATCH_SYSTEM_UI_VISIBILITY = 1017;
@@ -2390,8 +2390,8 @@ public final class ViewRootImpl extends Handler implements ViewParent,
                 return "FINISH_INPUT_CONNECTION";
             case CHECK_FOCUS:
                 return "CHECK_FOCUS";
-            case CLOSE_SYSTEM_DILOGS:
-                return "CLOSE_SYSTEM_DILOGS";
+            case CLOSE_SYSTEM_DIALOGS:
+                return "CLOSE_SYSTEM_DIALOGS";
             case DISPATCH_DRAG_EVENT:
                 return "DISPATCH_DRAG_EVENT";
             case DISPATCH_DRAG_LOCATION_EVENT:
@@ -2608,7 +2608,7 @@ public final class ViewRootImpl extends Handler implements ViewParent,
                 imm.checkFocus();
             }
         } break;
-        case CLOSE_SYSTEM_DILOGS: {
+        case CLOSE_SYSTEM_DIALOGS: {
             if (mView != null) {
                 mView.onCloseSystemDialogs((String)msg.obj);
             }
@@ -3942,7 +3942,7 @@ public final class ViewRootImpl extends Handler implements ViewParent,
 
     public void dispatchCloseSystemDialogs(String reason) {
         Message msg = Message.obtain();
-        msg.what = CLOSE_SYSTEM_DILOGS;
+        msg.what = CLOSE_SYSTEM_DIALOGS;
         msg.obj = reason;
         sendMessage(msg);
     }

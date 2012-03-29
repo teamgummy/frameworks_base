@@ -410,7 +410,7 @@ NO DOC BLOCK: android.content.Intent Field FLAG_ACTIVITY_NO_ANIMATION
 NO DOC BLOCK: android.view.KeyEvent Field FLAG_CANCELED
 NO DOC BLOCK: android.view.KeyEvent Field FLAG_CANCELED_LONG_PRESS
 NO DOC BLOCK: android.view.WindowManager.LayoutParams Field FLAG_DISMISS_KEYGUARD
-NO DOC BLOCK: android.content.pm.ActivityInfo Field FLAG_FINISH_ON_CLOSE_SYSTEM_DILOGS
+NO DOC BLOCK: android.content.pm.ActivityInfo Field FLAG_FINISH_ON_CLOSE_SYSTEM_DIALOGS
 NO DOC BLOCK: android.app.ActivityManager.RunningServiceInfo Field FLAG_FOREGROUND
 NO DOC BLOCK: android.app.Notification Field FLAG_FOREGROUND_SERVICE
 NO DOC BLOCK: android.view.KeyEvent Field FLAG_LONG_PRESS

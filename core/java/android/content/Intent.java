@@ -1362,7 +1362,7 @@ public class Intent implements Parcelable, Cloneable {
      * temporary system dialog to dismiss.  Some examples of temporary system
      * dialogs are the notification window-shade and the recent tasks dialog.
      */
-    public static final String ACTION_CLOSE_SYSTEM_DILOGS = "android.intent.action.CLOSE_SYSTEM_DILOGS";
+    public static final String ACTION_CLOSE_SYSTEM_DIALOGS = "android.intent.action.CLOSE_SYSTEM_DIALOGS";
     /**
      * Broadcast Action: Trigger the download and eventual installation
      * of a package.

@@ -94,7 +94,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
         // receive broadcasts
         IntentFilter filter = new IntentFilter();
-        filter.addAction(Intent.ACTION_CLOSE_SYSTEM_DILOGS);
+        filter.addAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
         filter.addAction(Intent.ACTION_SCREEN_OFF);
         filter.addAction(TelephonyIntents.ACTION_EMERGENCY_CALLBACK_MODE_CHANGED);
         context.registerReceiver(mBroadcastReceiver, filter);
@@ -274,7 +274,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
         final AlertDialog dialog = ab.create();
         dialog.getListView().setItemsCanFocus(true);
-        dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_DILOG);
+        dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG);
 
         dialog.setOnDismissListener(this);
 
@@ -375,9 +375,9 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
         mAdapter.notifyDataSetChanged();
         if (mKeyguardShowing) {
-            mDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DILOG);
+            mDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
         } else {
-            mDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_DILOG);
+            mDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG);
         }
         if (SHOW_SILENT_TOGGLE) {
             IntentFilter filter = new IntentFilter(AudioManager.RINGER_MODE_CHANGED_ACTION);
@@ -720,17 +720,17 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
             int index = (Integer) v.getTag();
             mAudioManager.setRingerMode(indexToRingerMode(index));
-            mHandler.sendEmptyMessageDelayed(MESSAGE_DISMISS, DILOG_DISMISS_DELAY);
+            mHandler.sendEmptyMessageDelayed(MESSAGE_DISMISS, DIALOG_DISMISS_DELAY);
         }
     }
 
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if (Intent.ACTION_CLOSE_SYSTEM_DILOGS.equals(action)
+            if (Intent.ACTION_CLOSE_SYSTEM_DIALOGS.equals(action)
                     || Intent.ACTION_SCREEN_OFF.equals(action)) {
-                String reason = intent.getStringExtra(PhoneWindowManager.SYSTEM_DILOG_REASON_KEY);
-                if (!PhoneWindowManager.SYSTEM_DILOG_REASON_GLOBAL_ACTIONS.equals(reason)) {
+                String reason = intent.getStringExtra(PhoneWindowManager.SYSTEM_DIALOG_REASON_KEY);
+                if (!PhoneWindowManager.SYSTEM_DIALOG_REASON_GLOBAL_ACTIONS.equals(reason)) {
                     mHandler.sendEmptyMessage(MESSAGE_DISMISS);
                 }
             } else if (TelephonyIntents.ACTION_EMERGENCY_CALLBACK_MODE_CHANGED.equals(action)) {
@@ -766,7 +766,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
     private static final int MESSAGE_DISMISS = 0;
     private static final int MESSAGE_REFRESH = 1;
-    private static final int DILOG_DISMISS_DELAY = 300; // ms
+    private static final int DIALOG_DISMISS_DELAY = 300; // ms
 
     private Handler mHandler = new Handler() {
         public void handleMessage(Message msg) {

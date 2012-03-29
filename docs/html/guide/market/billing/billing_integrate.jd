@@ -553,7 +553,7 @@ href="http://market.android.com/support/bin/answer.py?answer=190860">Updating Go
 Help topic.</p>
 
 <p>The sample application demonstrates how you can handle this error condition (see
-<code>DILOG_CANNOT_CONNECT_ID</code> in <code>Dungeons.java</code>).</p>
+<code>DIALOG_CANNOT_CONNECT_ID</code> in <code>Dungeons.java</code>).</p>
 
 <h4>Making a purchase request (REQUEST_PURCHASE)</h4>
 

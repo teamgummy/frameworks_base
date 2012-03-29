@@ -117,7 +117,7 @@ public class KeyCharacterMap {
      * This private-use character is used to bring up a character picker for
      * miscellaneous symbols.
      */
-    public static final char PICKER_DILOG_INPUT = '\uEF01';
+    public static final char PICKER_DIALOG_INPUT = '\uEF01';
 
     /**
      * Modifier keys may be chorded with character keys.

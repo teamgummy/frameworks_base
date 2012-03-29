@@ -2470,7 +2470,7 @@ public class AudioService extends IAudioService.Stub {
                         config = AudioSystem.FORCE_BT_CAR_DOCK;
                         break;
                     case Intent.EXTRA_DOCK_STATE_LE_DESK:
-                        config = AudioSystem.FORCE_ANLOG_DOCK;
+                        config = AudioSystem.FORCE_ANALOG_DOCK;
                         break;
                     case Intent.EXTRA_DOCK_STATE_HE_DESK:
                         config = AudioSystem.FORCE_DIGITAL_DOCK;

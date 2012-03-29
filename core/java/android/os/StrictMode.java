@@ -134,7 +134,7 @@ public final class StrictMode {
     private static final long MIN_LOG_INTERVAL_MS = 1000;
 
     // Only show an annoying dialog at most every 30 seconds
-    private static final long MIN_DILOG_INTERVAL_MS = 30000;
+    private static final long MIN_DIALOG_INTERVAL_MS = 30000;
 
     // How many Span tags (e.g. animations) to report.
     private static final int MAX_SPAN_TAGS = 20;
@@ -209,7 +209,7 @@ public final class StrictMode {
     /**
      * @hide
      */
-    public static final int PENALTY_DILOG = 0x20;
+    public static final int PENALTY_DIALOG = 0x20;
 
     /**
      * Death on any detected violation.
@@ -254,7 +254,7 @@ public final class StrictMode {
      * Mask of all the penalty bits valid for thread policies.
      */
     private static final int THREAD_PENALTY_MASK =
-            PENALTY_LOG | PENALTY_DILOG | PENALTY_DEATH | PENALTY_DROPBOX | PENALTY_GATHER |
+            PENALTY_LOG | PENALTY_DIALOG | PENALTY_DEATH | PENALTY_DROPBOX | PENALTY_GATHER |
             PENALTY_DEATH_ON_NETWORK | PENALTY_FLASH;
 
 
@@ -430,7 +430,7 @@ public final class StrictMode {
              * violations, rate-limited to be only a little annoying.
              */
             public Builder penaltyDialog() {
-                return enable(PENALTY_DILOG);
+                return enable(PENALTY_DIALOG);
             }
 
             /**
@@ -504,7 +504,7 @@ public final class StrictMode {
                 // set, enable simple logging.
                 if (mMask != 0 &&
                     (mMask & (PENALTY_DEATH | PENALTY_LOG |
-                              PENALTY_DROPBOX | PENALTY_DILOG)) == 0) {
+                              PENALTY_DROPBOX | PENALTY_DIALOG)) == 0) {
                     penaltyLog();
                 }
                 return new ThreadPolicy(mMask);
@@ -690,7 +690,7 @@ public final class StrictMode {
                 // set, enable simple logging.
                 if (mMask != 0 &&
                     (mMask & (PENALTY_DEATH | PENALTY_LOG |
-                              PENALTY_DROPBOX | PENALTY_DILOG)) == 0) {
+                              PENALTY_DROPBOX | PENALTY_DIALOG)) == 0) {
                     penaltyLog();
                 }
                 return new VmPolicy(mMask,
@@ -1269,9 +1269,9 @@ public final class StrictMode {
             // by the ActivityManagerService remaining set.
             int violationMaskSubset = 0;
 
-            if ((info.policy & PENALTY_DILOG) != 0 &&
-                timeSinceLastViolationMillis > MIN_DILOG_INTERVAL_MS) {
-                violationMaskSubset |= PENALTY_DILOG;
+            if ((info.policy & PENALTY_DIALOG) != 0 &&
+                timeSinceLastViolationMillis > MIN_DIALOG_INTERVAL_MS) {
+                violationMaskSubset |= PENALTY_DIALOG;
             }
 
             if ((info.policy & PENALTY_DROPBOX) != 0 && lastViolationTime == 0) {

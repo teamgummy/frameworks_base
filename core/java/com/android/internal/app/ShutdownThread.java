@@ -160,7 +160,7 @@ public final class ShutdownThread extends Thread {
                         .setNegativeButton(com.android.internal.R.string.no, null)
                         .create();
             }
-            dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DILOG);
+            dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
             dialog.show();
         } else {
             beginShutdownSequence(context);
@@ -174,7 +174,7 @@ public final class ShutdownThread extends Thread {
 
         CloseDialogReceiver(Context context) {
             mContext = context;
-            IntentFilter filter = new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DILOGS);
+            IntentFilter filter = new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
             context.registerReceiver(this, filter);
         }
 
@@ -224,7 +224,7 @@ public final class ShutdownThread extends Thread {
         }
         pd.setIndeterminate(true);
         pd.setCancelable(false);
-        pd.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DILOG);
+        pd.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
 
         pd.show();
 

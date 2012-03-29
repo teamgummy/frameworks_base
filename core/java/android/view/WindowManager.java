@@ -138,7 +138,7 @@ public interface WindowManager extends ViewManager {
          * @see #TYPE_APPLICATION_PANEL
          * @see #TYPE_APPLICATION_MEDIA
          * @see #TYPE_APPLICATION_SUB_PANEL
-         * @see #TYPE_APPLICATION_ATTACHED_DILOG
+         * @see #TYPE_APPLICATION_ATTACHED_DIALOG
          * @see #TYPE_STATUS_BAR
          * @see #TYPE_SEARCH_BAR
          * @see #TYPE_PHONE
@@ -148,11 +148,11 @@ public interface WindowManager extends ViewManager {
          * @see #TYPE_SYSTEM_OVERLAY
          * @see #TYPE_PRIORITY_PHONE
          * @see #TYPE_STATUS_BAR_PANEL
-         * @see #TYPE_SYSTEM_DILOG
-         * @see #TYPE_KEYGUARD_DILOG
+         * @see #TYPE_SYSTEM_DIALOG
+         * @see #TYPE_KEYGUARD_DIALOG
          * @see #TYPE_SYSTEM_ERROR
          * @see #TYPE_INPUT_METHOD
-         * @see #TYPE_INPUT_METHOD_DILOG
+         * @see #TYPE_INPUT_METHOD_DIALOG
          */
         @ViewDebug.ExportedProperty(mapping = {
             @ViewDebug.IntToString(from = TYPE_BASE_APPLICATION, to = "TYPE_BASE_APPLICATION"),
@@ -161,7 +161,7 @@ public interface WindowManager extends ViewManager {
             @ViewDebug.IntToString(from = TYPE_APPLICATION_PANEL, to = "TYPE_APPLICATION_PANEL"),
             @ViewDebug.IntToString(from = TYPE_APPLICATION_MEDIA, to = "TYPE_APPLICATION_MEDIA"),
             @ViewDebug.IntToString(from = TYPE_APPLICATION_SUB_PANEL, to = "TYPE_APPLICATION_SUB_PANEL"),
-            @ViewDebug.IntToString(from = TYPE_APPLICATION_ATTACHED_DILOG, to = "TYPE_APPLICATION_ATTACHED_DILOG"),
+            @ViewDebug.IntToString(from = TYPE_APPLICATION_ATTACHED_DIALOG, to = "TYPE_APPLICATION_ATTACHED_DIALOG"),
             @ViewDebug.IntToString(from = TYPE_STATUS_BAR, to = "TYPE_STATUS_BAR"),
             @ViewDebug.IntToString(from = TYPE_SEARCH_BAR, to = "TYPE_SEARCH_BAR"),
             @ViewDebug.IntToString(from = TYPE_PHONE, to = "TYPE_PHONE"),
@@ -172,11 +172,11 @@ public interface WindowManager extends ViewManager {
             @ViewDebug.IntToString(from = TYPE_PRIORITY_PHONE, to = "TYPE_PRIORITY_PHONE"),
             @ViewDebug.IntToString(from = TYPE_STATUS_BAR_PANEL, to = "TYPE_STATUS_BAR_PANEL"),
             @ViewDebug.IntToString(from = TYPE_STATUS_BAR_SUB_PANEL, to = "TYPE_STATUS_BAR_SUB_PANEL"),
-            @ViewDebug.IntToString(from = TYPE_SYSTEM_DILOG, to = "TYPE_SYSTEM_DILOG"),
-            @ViewDebug.IntToString(from = TYPE_KEYGUARD_DILOG, to = "TYPE_KEYGUARD_DILOG"),
+            @ViewDebug.IntToString(from = TYPE_SYSTEM_DIALOG, to = "TYPE_SYSTEM_DIALOG"),
+            @ViewDebug.IntToString(from = TYPE_KEYGUARD_DIALOG, to = "TYPE_KEYGUARD_DIALOG"),
             @ViewDebug.IntToString(from = TYPE_SYSTEM_ERROR, to = "TYPE_SYSTEM_ERROR"),
             @ViewDebug.IntToString(from = TYPE_INPUT_METHOD, to = "TYPE_INPUT_METHOD"),
-            @ViewDebug.IntToString(from = TYPE_INPUT_METHOD_DILOG, to = "TYPE_INPUT_METHOD_DILOG"),
+            @ViewDebug.IntToString(from = TYPE_INPUT_METHOD_DIALOG, to = "TYPE_INPUT_METHOD_DIALOG"),
             @ViewDebug.IntToString(from = TYPE_WALLPAPER, to = "TYPE_WALLPAPER"),
             @ViewDebug.IntToString(from = TYPE_STATUS_BAR_PANEL, to = "TYPE_STATUS_BAR_PANEL"),
             @ViewDebug.IntToString(from = TYPE_SECURE_SYSTEM_OVERLAY, to = "TYPE_SECURE_SYSTEM_OVERLAY"),
@@ -251,7 +251,7 @@ public interface WindowManager extends ViewManager {
          * of the window happens as that of a top-level window, <em>not</em>
          * as a child of its container.
          */
-        public static final int TYPE_APPLICATION_ATTACHED_DILOG = FIRST_SUB_WINDOW+3;
+        public static final int TYPE_APPLICATION_ATTACHED_DIALOG = FIRST_SUB_WINDOW+3;
         
         /**
          * Window type: window for showing overlays on top of media windows.
@@ -327,12 +327,12 @@ public interface WindowManager extends ViewManager {
         /**
          * Window type: panel that slides out from the status bar
          */
-        public static final int TYPE_SYSTEM_DILOG      = FIRST_SYSTEM_WINDOW+8;
+        public static final int TYPE_SYSTEM_DIALOG      = FIRST_SYSTEM_WINDOW+8;
     
         /**
          * Window type: dialogs that the keyguard shows
          */
-        public static final int TYPE_KEYGUARD_DILOG    = FIRST_SYSTEM_WINDOW+9;
+        public static final int TYPE_KEYGUARD_DIALOG    = FIRST_SYSTEM_WINDOW+9;
         
         /**
          * Window type: internal system error windows, appear on top of
@@ -351,7 +351,7 @@ public interface WindowManager extends ViewManager {
          * Window type: internal input methods dialog windows, which appear above
          * the current input method window.
          */
-        public static final int TYPE_INPUT_METHOD_DILOG= FIRST_SYSTEM_WINDOW+12;
+        public static final int TYPE_INPUT_METHOD_DIALOG= FIRST_SYSTEM_WINDOW+12;
 
         /**
          * Window type: wallpaper window, placed behind any window that wants

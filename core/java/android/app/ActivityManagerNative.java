@@ -1231,7 +1231,7 @@ public abstract class ActivityManagerNative extends Binder implements IActivityM
             return true;
         }
         
-        case CLOSE_SYSTEM_DILOGS_TRANSACTION: {
+        case CLOSE_SYSTEM_DIALOGS_TRANSACTION: {
             data.enforceInterface(IActivityManager.descriptor);
             String reason = data.readString();
             closeSystemDialogs(reason);
@@ -3080,7 +3080,7 @@ class ActivityManagerProxy implements IActivityManager
         Parcel reply = Parcel.obtain();
         data.writeInterfaceToken(IActivityManager.descriptor);
         data.writeString(reason);
-        mRemote.transact(CLOSE_SYSTEM_DILOGS_TRANSACTION, data, reply, 0);
+        mRemote.transact(CLOSE_SYSTEM_DIALOGS_TRANSACTION, data, reply, 0);
         reply.readException();
         data.recycle();
         reply.recycle();

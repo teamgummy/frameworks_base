@@ -1132,7 +1132,7 @@
   </text>
 </comment>
 <comment>
-  <identifier id="android.content.pm.ActivityInfo.FLAG_FINISH_ON_CLOSE_SYSTEM_DILOGS"/>
+  <identifier id="android.content.pm.ActivityInfo.FLAG_FINISH_ON_CLOSE_SYSTEM_DIALOGS"/>
   <text>
     InsertCommentsHere
   </text>

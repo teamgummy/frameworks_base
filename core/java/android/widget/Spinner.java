@@ -52,7 +52,7 @@ public class Spinner extends AbsSpinner implements OnClickListener {
     /**
      * Use a dialog window for selecting spinner options.
      */
-    public static final int MODE_DILOG = 0;
+    public static final int MODE_DIALOG = 0;
 
     /**
      * Use a dropdown anchored to the Spinner for selecting spinner options.
@@ -86,13 +86,13 @@ public class Spinner extends AbsSpinner implements OnClickListener {
     /**
      * Construct a new spinner with the given context's theme and the supplied
      * mode of displaying choices. <code>mode</code> may be one of
-     * {@link #MODE_DILOG} or {@link #MODE_DROPDOWN}.
+     * {@link #MODE_DIALOG} or {@link #MODE_DROPDOWN}.
      *
      * @param context The Context the view is running in, through which it can
      *        access the current theme, resources, etc.
      * @param mode Constant describing how the user will select choices from the spinner.
      * 
-     * @see #MODE_DILOG
+     * @see #MODE_DIALOG
      * @see #MODE_DROPDOWN
      */
     public Spinner(Context context, int mode) {
@@ -128,7 +128,7 @@ public class Spinner extends AbsSpinner implements OnClickListener {
 
     /**
      * Construct a new spinner with the given context's theme, the supplied attribute set,
-     * and default style. <code>mode</code> may be one of {@link #MODE_DILOG} or
+     * and default style. <code>mode</code> may be one of {@link #MODE_DIALOG} or
      * {@link #MODE_DROPDOWN} and determines how the user will select choices from the spinner.
      *
      * @param context The Context the view is running in, through which it can
@@ -140,7 +140,7 @@ public class Spinner extends AbsSpinner implements OnClickListener {
      *        from the current theme, or an explicit style resource.
      * @param mode Constant describing how the user will select choices from the spinner.
      * 
-     * @see #MODE_DILOG
+     * @see #MODE_DIALOG
      * @see #MODE_DROPDOWN
      */
     public Spinner(Context context, AttributeSet attrs, int defStyle, int mode) {
@@ -150,11 +150,11 @@ public class Spinner extends AbsSpinner implements OnClickListener {
                 com.android.internal.R.styleable.Spinner, defStyle, 0);
 
         if (mode == MODE_THEME) {
-            mode = a.getInt(com.android.internal.R.styleable.Spinner_spinnerMode, MODE_DILOG);
+            mode = a.getInt(com.android.internal.R.styleable.Spinner_spinnerMode, MODE_DIALOG);
         }
         
         switch (mode) {
-        case MODE_DILOG: {
+        case MODE_DIALOG: {
             mPopup = new DialogPopup();
             break;
         }

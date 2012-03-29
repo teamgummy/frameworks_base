@@ -105,11 +105,11 @@ import static android.view.WindowManager.LayoutParams.TYPE_APPLICATION_MEDIA;
 import static android.view.WindowManager.LayoutParams.TYPE_APPLICATION_MEDIA_OVERLAY;
 import static android.view.WindowManager.LayoutParams.TYPE_APPLICATION_PANEL;
 import static android.view.WindowManager.LayoutParams.TYPE_APPLICATION_SUB_PANEL;
-import static android.view.WindowManager.LayoutParams.TYPE_APPLICATION_ATTACHED_DILOG;
+import static android.view.WindowManager.LayoutParams.TYPE_APPLICATION_ATTACHED_DIALOG;
 import static android.view.WindowManager.LayoutParams.TYPE_DRAG;
 import static android.view.WindowManager.LayoutParams.TYPE_HIDDEN_NAV_CONSUMER;
 import static android.view.WindowManager.LayoutParams.TYPE_KEYGUARD;
-import static android.view.WindowManager.LayoutParams.TYPE_KEYGUARD_DILOG;
+import static android.view.WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG;
 import static android.view.WindowManager.LayoutParams.TYPE_PHONE;
 import static android.view.WindowManager.LayoutParams.TYPE_PRIORITY_PHONE;
 import static android.view.WindowManager.LayoutParams.TYPE_SEARCH_BAR;
@@ -117,11 +117,11 @@ import static android.view.WindowManager.LayoutParams.TYPE_SECURE_SYSTEM_OVERLAY
 import static android.view.WindowManager.LayoutParams.TYPE_STATUS_BAR;
 import static android.view.WindowManager.LayoutParams.TYPE_STATUS_BAR_PANEL;
 import static android.view.WindowManager.LayoutParams.TYPE_STATUS_BAR_SUB_PANEL;
-import static android.view.WindowManager.LayoutParams.TYPE_SYSTEM_DILOG;
+import static android.view.WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG;
 import static android.view.WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
 import static android.view.WindowManager.LayoutParams.TYPE_SYSTEM_ERROR;
 import static android.view.WindowManager.LayoutParams.TYPE_INPUT_METHOD;
-import static android.view.WindowManager.LayoutParams.TYPE_INPUT_METHOD_DILOG;
+import static android.view.WindowManager.LayoutParams.TYPE_INPUT_METHOD_DIALOG;
 import static android.view.WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY;
 import static android.view.WindowManager.LayoutParams.TYPE_TOAST;
 import static android.view.WindowManager.LayoutParams.TYPE_VOLUME_OVERLAY;
@@ -175,7 +175,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     // These need to match the documentation/constant in
     // core/res/res/values/config.xml
     static final int LONG_PRESS_HOME_NOTHING = 0;
-    static final int LONG_PRESS_HOME_RECENT_DILOG = 1;
+    static final int LONG_PRESS_HOME_RECENT_DIALOG = 1;
     static final int LONG_PRESS_HOME_RECENT_SYSTEM_UI = 2;
 
     // wallpaper is at the bottom, though the window manager may move it.
@@ -183,7 +183,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     static final int APPLICATION_LAYER = 2;
     static final int PHONE_LAYER = 3;
     static final int SEARCH_BAR_LAYER = 4;
-    static final int SYSTEM_DILOG_LAYER = 5;
+    static final int SYSTEM_DIALOG_LAYER = 5;
     // toasts and the plugged-in battery thing
     static final int TOAST_LAYER = 6;
     // SIM errors and unlock.  Not sure if this really should be in a high layer.
@@ -193,11 +193,11 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     // on-screen keyboards and other such input method user interfaces go here.
     static final int INPUT_METHOD_LAYER = 9;
     // on-screen keyboards and other such input method user interfaces go here.
-    static final int INPUT_METHOD_DILOG_LAYER = 10;
+    static final int INPUT_METHOD_DIALOG_LAYER = 10;
     // the keyguard; nothing on top of these can take focus, since they are
     // responsible for power management when displayed.
     static final int KEYGUARD_LAYER = 11;
-    static final int KEYGUARD_DILOG_LAYER = 12;
+    static final int KEYGUARD_DIALOG_LAYER = 12;
     static final int STATUS_BAR_SUB_PANEL_LAYER = 13;
     static final int STATUS_BAR_LAYER = 14;
     static final int STATUS_BAR_PANEL_LAYER = 15;
@@ -224,10 +224,10 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     static final int APPLICATION_PANEL_SUBLAYER = 1;
     static final int APPLICATION_SUB_PANEL_SUBLAYER = 2;
     
-    static public final String SYSTEM_DILOG_REASON_KEY = "reason";
-    static public final String SYSTEM_DILOG_REASON_GLOBAL_ACTIONS = "globalactions";
-    static public final String SYSTEM_DILOG_REASON_RECENT_APPS = "recentapps";
-    static public final String SYSTEM_DILOG_REASON_HOME_KEY = "homekey";
+    static public final String SYSTEM_DIALOG_REASON_KEY = "reason";
+    static public final String SYSTEM_DIALOG_REASON_GLOBAL_ACTIONS = "globalactions";
+    static public final String SYSTEM_DIALOG_REASON_RECENT_APPS = "recentapps";
+    static public final String SYSTEM_DIALOG_REASON_HOME_KEY = "homekey";
 
     // Useful scan codes.
     private static final int SW_LID = 0x00;
@@ -654,13 +654,13 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             case LONG_PRESS_POWER_GLOBAL_ACTIONS:
                 mPowerKeyHandled = true;
                 performHapticFeedbackLw(null, HapticFeedbackConstants.LONG_PRESS, false);
-                sendCloseSystemWindows(SYSTEM_DILOG_REASON_GLOBAL_ACTIONS);
+                sendCloseSystemWindows(SYSTEM_DIALOG_REASON_GLOBAL_ACTIONS);
                 showGlobalActionsDialog();
                 break;
             case LONG_PRESS_POWER_SHUT_OFF:
                 mPowerKeyHandled = true;
                 performHapticFeedbackLw(null, HapticFeedbackConstants.LONG_PRESS, false);
-                sendCloseSystemWindows(SYSTEM_DILOG_REASON_GLOBAL_ACTIONS);
+                sendCloseSystemWindows(SYSTEM_DIALOG_REASON_GLOBAL_ACTIONS);
                 ShutdownThread.shutdown(mContext, true);
                 break;
             }
@@ -732,14 +732,14 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
         if (mLongPressOnHomeBehavior != LONG_PRESS_HOME_NOTHING) {
             performHapticFeedbackLw(null, HapticFeedbackConstants.LONG_PRESS, false);
-            sendCloseSystemWindows(SYSTEM_DILOG_REASON_RECENT_APPS);
+            sendCloseSystemWindows(SYSTEM_DIALOG_REASON_RECENT_APPS);
 
             // Eat the longpress so it won't dismiss the recent apps dialog when
             // the user lets go of the home key
             mHomePressed = false;
         }
 
-        if (mLongPressOnHomeBehavior == LONG_PRESS_HOME_RECENT_DILOG) {
+        if (mLongPressOnHomeBehavior == LONG_PRESS_HOME_RECENT_DIALOG) {
             showOrHideRecentAppsDialog(RECENT_APPS_BEHAVIOR_SHOW_OR_DISMISS);
         } else if (mLongPressOnHomeBehavior == LONG_PRESS_HOME_RECENT_SYSTEM_UI) {
             try {
@@ -1198,24 +1198,24 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             return STATUS_BAR_PANEL_LAYER;
         case TYPE_STATUS_BAR_SUB_PANEL:
             return STATUS_BAR_SUB_PANEL_LAYER;
-        case TYPE_SYSTEM_DILOG:
-            return SYSTEM_DILOG_LAYER;
+        case TYPE_SYSTEM_DIALOG:
+            return SYSTEM_DIALOG_LAYER;
         case TYPE_SEARCH_BAR:
             return SEARCH_BAR_LAYER;
         case TYPE_PHONE:
             return PHONE_LAYER;
         case TYPE_KEYGUARD:
             return KEYGUARD_LAYER;
-        case TYPE_KEYGUARD_DILOG:
-            return KEYGUARD_DILOG_LAYER;
+        case TYPE_KEYGUARD_DIALOG:
+            return KEYGUARD_DIALOG_LAYER;
         case TYPE_SYSTEM_ALERT:
             return SYSTEM_ALERT_LAYER;
         case TYPE_SYSTEM_ERROR:
             return SYSTEM_ERROR_LAYER;
         case TYPE_INPUT_METHOD:
             return INPUT_METHOD_LAYER;
-        case TYPE_INPUT_METHOD_DILOG:
-            return INPUT_METHOD_DILOG_LAYER;
+        case TYPE_INPUT_METHOD_DIALOG:
+            return INPUT_METHOD_DIALOG_LAYER;
         case TYPE_VOLUME_OVERLAY:
             return VOLUME_OVERLAY_LAYER;
         case TYPE_SYSTEM_OVERLAY:
@@ -1247,7 +1247,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     public int subWindowTypeToLayerLw(int type) {
         switch (type) {
         case TYPE_APPLICATION_PANEL:
-        case TYPE_APPLICATION_ATTACHED_DILOG:
+        case TYPE_APPLICATION_ATTACHED_DIALOG:
             return APPLICATION_PANEL_SUBLAYER;
         case TYPE_APPLICATION_MEDIA:
             return APPLICATION_MEDIA_SUBLAYER;
@@ -1618,7 +1618,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             if (attrs != null) {
                 final int type = attrs.type;
                 if (type == WindowManager.LayoutParams.TYPE_KEYGUARD
-                        || type == WindowManager.LayoutParams.TYPE_KEYGUARD_DILOG) {
+                        || type == WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG) {
                     // the "app" is keyguard, so give it the key
                     return 0;
                 }
@@ -1863,7 +1863,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                             ActivityManagerNative.getDefault().stopAppSwitches();
                         } catch (RemoteException e) {
                         }
-                        sendCloseSystemWindows(SYSTEM_DILOG_REASON_HOME_KEY);
+                        sendCloseSystemWindows(SYSTEM_DIALOG_REASON_HOME_KEY);
                         startDockOrHome();
                     }
                 }
@@ -1874,7 +1874,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 ActivityManagerNative.getDefault().stopAppSwitches();
             } catch (RemoteException e) {
             }
-            sendCloseSystemWindows(SYSTEM_DILOG_REASON_HOME_KEY);
+            sendCloseSystemWindows(SYSTEM_DIALOG_REASON_HOME_KEY);
             startDockOrHome();
         }
     }

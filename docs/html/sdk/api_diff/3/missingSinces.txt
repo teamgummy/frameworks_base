@@ -755,9 +755,9 @@ NO DOC BLOCK: android.R.style Field Theme_Panel
 NO DOC BLOCK: android.R.attr Field thickness
 NO DOC BLOCK: android.R.drawable Field title_bar_tall
 NO DOC BLOCK: android.R.attr Field topOffset
-NO DOC BLOCK: android.view.WindowManager.LayoutParams Field TYPE_APPLICATION_ATTACHED_DILOG
+NO DOC BLOCK: android.view.WindowManager.LayoutParams Field TYPE_APPLICATION_ATTACHED_DIALOG
 NO DOC BLOCK: android.view.WindowManager.LayoutParams Field TYPE_INPUT_METHOD
-NO DOC BLOCK: android.view.WindowManager.LayoutParams Field TYPE_INPUT_METHOD_DILOG
+NO DOC BLOCK: android.view.WindowManager.LayoutParams Field TYPE_INPUT_METHOD_DIALOG
 NO DOC BLOCK: android.content.res.AssetFileDescriptor Field UNKNOWN_LENGTH
 NO DOC BLOCK: android.Manifest.permission Field UPDATE_DEVICE_STATS
 NO DOC BLOCK: android.R.attr Field updatePeriodMillis

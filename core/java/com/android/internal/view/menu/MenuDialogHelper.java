@@ -80,7 +80,7 @@ public class MenuDialogHelper implements DialogInterface.OnKeyListener,
         mDialog.setOnDismissListener(this);
         
         WindowManager.LayoutParams lp = mDialog.getWindow().getAttributes();
-        lp.type = WindowManager.LayoutParams.TYPE_APPLICATION_ATTACHED_DILOG;
+        lp.type = WindowManager.LayoutParams.TYPE_APPLICATION_ATTACHED_DIALOG;
         if (windowToken != null) {
             lp.token = windowToken;
         }

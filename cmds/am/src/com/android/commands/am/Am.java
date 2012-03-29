@@ -734,13 +734,13 @@ public class Am {
 
         static final int RESULT_DEFAULT = 0;
 
-        static final int RESULT_CRASH_DILOG = 0;
+        static final int RESULT_CRASH_DIALOG = 0;
         static final int RESULT_CRASH_KILL = 1;
 
         static final int RESULT_EARLY_ANR_CONTINUE = 0;
         static final int RESULT_EARLY_ANR_KILL = 1;
 
-        static final int RESULT_ANR_DILOG = 0;
+        static final int RESULT_ANR_DIALOG = 0;
         static final int RESULT_ANR_KILL = 1;
         static final int RESULT_ANR_WAIT = 1;
 
@@ -958,7 +958,7 @@ public class Am {
                         break;
                     } else if (mState == STATE_CRASHED) {
                         if ("c".equals(line) || "continue".equals(line)) {
-                            resumeController(RESULT_CRASH_DILOG);
+                            resumeController(RESULT_CRASH_DIALOG);
                         } else if ("k".equals(line) || "kill".equals(line)) {
                             resumeController(RESULT_CRASH_KILL);
                         } else {
@@ -966,7 +966,7 @@ public class Am {
                         }
                     } else if (mState == STATE_ANR) {
                         if ("c".equals(line) || "continue".equals(line)) {
-                            resumeController(RESULT_ANR_DILOG);
+                            resumeController(RESULT_ANR_DIALOG);
                         } else if ("k".equals(line) || "kill".equals(line)) {
                             resumeController(RESULT_ANR_KILL);
                         } else if ("w".equals(line) || "wait".equals(line)) {

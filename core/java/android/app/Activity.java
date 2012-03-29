@@ -641,10 +641,10 @@ public class Activity extends ContextThemeWrapper
 
     private static final String WINDOW_HIERARCHY_TAG = "android:viewHierarchyState";
     private static final String FRAGMENTS_TAG = "android:fragments";
-    private static final String SAVED_DILOG_IDS_KEY = "android:savedDialogIds";
-    private static final String SAVED_DILOGS_TAG = "android:savedDialogs";
-    private static final String SAVED_DILOG_KEY_PREFIX = "android:dialog_";
-    private static final String SAVED_DILOG_ARGS_KEY_PREFIX = "android:dialog_args_";
+    private static final String SAVED_DIALOG_IDS_KEY = "android:savedDialogIds";
+    private static final String SAVED_DIALOGS_TAG = "android:savedDialogs";
+    private static final String SAVED_DIALOG_KEY_PREFIX = "android:dialog_";
+    private static final String SAVED_DIALOG_ARGS_KEY_PREFIX = "android:dialog_args_";
 
     private static class ManagedDialog {
         Dialog mDialog;
@@ -914,12 +914,12 @@ public class Activity extends ContextThemeWrapper
      * @param savedInstanceState The bundle to restore from.
      */
     private void restoreManagedDialogs(Bundle savedInstanceState) {
-        final Bundle b = savedInstanceState.getBundle(SAVED_DILOGS_TAG);
+        final Bundle b = savedInstanceState.getBundle(SAVED_DIALOGS_TAG);
         if (b == null) {
             return;
         }
 
-        final int[] ids = b.getIntArray(SAVED_DILOG_IDS_KEY);
+        final int[] ids = b.getIntArray(SAVED_DIALOG_IDS_KEY);
         final int numDialogs = ids.length;
         mManagedDialogs = new SparseArray<ManagedDialog>(numDialogs);
         for (int i = 0; i < numDialogs; i++) {
@@ -950,11 +950,11 @@ public class Activity extends ContextThemeWrapper
     }
 
     private static String savedDialogKeyFor(int key) {
-        return SAVED_DILOG_KEY_PREFIX + key;
+        return SAVED_DIALOG_KEY_PREFIX + key;
     }
 
     private static String savedDialogArgsKeyFor(int key) {
-        return SAVED_DILOG_ARGS_KEY_PREFIX + key;
+        return SAVED_DIALOG_ARGS_KEY_PREFIX + key;
     }
 
     /**
@@ -1198,8 +1198,8 @@ public class Activity extends ContextThemeWrapper
             }
         }
 
-        dialogState.putIntArray(SAVED_DILOG_IDS_KEY, ids);
-        outState.putBundle(SAVED_DILOGS_TAG, dialogState);
+        dialogState.putIntArray(SAVED_DIALOG_IDS_KEY, ids);
+        outState.putBundle(SAVED_DIALOGS_TAG, dialogState);
     }
 
 
