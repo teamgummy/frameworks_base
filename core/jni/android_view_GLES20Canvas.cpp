@@ -66,7 +66,7 @@ using namespace uirenderer;
 
 // Debug
 #if DEBUG_RENDERER
-    #define RENDERER_LOGD(...) LOGD(__VA_ARGS__)
+    #define RENDERER_LOGD(...) ALOGD(__VA_ARGS__)
 #else
     #define RENDERER_LOGD(...)
 #endif
@@ -492,7 +492,7 @@ static void renderText(OpenGLRenderer* renderer, const jchar* text, int count,
 #if USE_TEXT_LAYOUT_CACHE
     value = TextLayoutCache::getInstance().getValue(paint, text, 0, count, count, flags);
     if (value == NULL) {
-        LOGE("Cannot get TextLayoutCache value");
+        ALOGE("Cannot get TextLayoutCache value");
         return ;
     }
 #else
@@ -522,7 +522,7 @@ static void renderTextRun(OpenGLRenderer* renderer, const jchar* text,
 #if USE_TEXT_LAYOUT_CACHE
     value = TextLayoutCache::getInstance().getValue(paint, text, start, count, contextCount, flags);
     if (value == NULL) {
-        LOGE("Cannot get TextLayoutCache value");
+        ALOGE("Cannot get TextLayoutCache value");
         return ;
     }
 #else
@@ -541,7 +541,7 @@ static void renderTextRun(OpenGLRenderer* renderer, const jchar* text,
         if (TextLayout::prepareRtlTextRun(text, start, count, contextCount, shaped)) {
             renderer->drawText((const char*) shaped, count << 1, count, x, y, paint);
         } else {
-            LOGW("drawTextRun error");
+            ALOGW("drawTextRun error");
         }
     } else {
         renderer->drawText((const char*) (text + start), count << 1, count, x, y, paint);

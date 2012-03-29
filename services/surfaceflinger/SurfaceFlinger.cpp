@@ -106,7 +106,7 @@ SurfaceFlinger::SurfaceFlinger()
 
 void SurfaceFlinger::init()
 {
-    LOGI("SurfaceFlinger is starting");
+    ALOGI("SurfaceFlinger is starting");
 
     // debugging stuff...
     char value[PROPERTY_VALUE_MAX];
@@ -123,9 +123,9 @@ void SurfaceFlinger::init()
         DdmConnection::start(getServiceName());
     }
 
-    LOGI_IF(mDebugRegion,       "showupdates enabled");
-    LOGI_IF(mDebugBackground,   "showbackground enabled");
-    LOGI_IF(mDebugDDMS,         "DDMS debugging enabled");
+    ALOGI_IF(mDebugRegion,       "showupdates enabled");
+    ALOGI_IF(mDebugBackground,   "showbackground enabled");
+    ALOGI_IF(mDebugDDMS,         "DDMS debugging enabled");
 }
 
 SurfaceFlinger::~SurfaceFlinger()
@@ -157,7 +157,7 @@ sp<IGraphicBufferAlloc> SurfaceFlinger::createGraphicBufferAlloc()
 
 const GraphicPlane& SurfaceFlinger::graphicPlane(int dpy) const
 {
-    LOGE_IF(uint32_t(dpy) >= DISPLAY_COUNT, "Invalid DisplayID %d", dpy);
+    ALOGE_IF(uint32_t(dpy) >= DISPLAY_COUNT, "Invalid DisplayID %d", dpy);
     const GraphicPlane& plane(mGraphicPlanes[dpy]);
     return plane;
 }
@@ -172,7 +172,7 @@ void SurfaceFlinger::bootFinished()
 {
     const nsecs_t now = systemTime();
     const nsecs_t duration = now - mBootTime;
-    LOGI("Boot is finished (%ld ms)", long(ns2ms(duration)) );
+    ALOGI("Boot is finished (%ld ms)", long(ns2ms(duration)) );
     mBootFinished = true;
 
     // wait patiently for the window manager death
@@ -211,7 +211,7 @@ static inline uint16_t pack565(int r, int g, int b) {
 
 status_t SurfaceFlinger::readyToRun()
 {
-    LOGI(   "SurfaceFlinger's main thread ready to run. "
+    ALOGI(   "SurfaceFlinger's main thread ready to run. "
             "Initializing graphics H/W...");
 
     // we only support one display currently
@@ -227,10 +227,10 @@ status_t SurfaceFlinger::readyToRun()
     // create the shared control-block
     mServerHeap = new MemoryHeapBase(4096,
             MemoryHeapBase::READ_ONLY, "SurfaceFlinger read-only heap");
-    LOGE_IF(mServerHeap==0, "can't create shared memory dealer");
+    ALOGE_IF(mServerHeap==0, "can't create shared memory dealer");
 
     mServerCblk = static_cast<surface_flinger_cblk_t*>(mServerHeap->getBase());
-    LOGE_IF(mServerCblk==0, "can't get to shared control block's address");
+    ALOGE_IF(mServerCblk==0, "can't get to shared control block's address");
 
     new(mServerCblk) surface_flinger_cblk_t;
 
@@ -454,7 +454,7 @@ void SurfaceFlinger::postFramebuffer()
 {
     // this should never happen. we do the flip anyways so we don't
     // risk to cause a deadlock with hwc
-    LOGW_IF(mSwapRegion.isEmpty(), "mSwapRegion is empty");
+    ALOGW_IF(mSwapRegion.isEmpty(), "mSwapRegion is empty");
     const DisplayHardware& hw(graphicPlane(0).displayHardware());
     const nsecs_t now = systemTime();
     mDebugInSwapBuffers = now;
@@ -870,7 +870,7 @@ void SurfaceFlinger::setupHardwareComposer(Region& dirtyInOut)
     const Vector< sp<LayerBase> >& layers(mVisibleLayersSortedByZ);
     size_t count = layers.size();
 
-    LOGE_IF(hwc.getNumLayers() != count,
+    ALOGE_IF(hwc.getNumLayers() != count,
             "HAL number of layers (%d) doesn't match surfaceflinger (%d)",
             hwc.getNumLayers(), count);
 
@@ -889,7 +889,7 @@ void SurfaceFlinger::setupHardwareComposer(Region& dirtyInOut)
     }
     const size_t fbLayerCount = hwc.getLayerCount(HWC_FRAMEBUFFER);
     status_t err = hwc.prepare();
-    LOGE_IF(err, "HWComposer::prepare failed (%s)", strerror(-err));
+    ALOGE_IF(err, "HWComposer::prepare failed (%s)", strerror(-err));
 
     if (err == NO_ERROR) {
         // what's happening here is tricky.
@@ -1216,7 +1216,7 @@ void SurfaceFlinger::setTransactionState(const Vector<ComposerState>& state,
             mCurrentState.orientation = orientation;
             transactionFlags |= eTransactionNeeded;
         } else if (orientation != eOrientationUnchanged) {
-            LOGW("setTransactionState: ignoring unrecognized orientation: %d",
+            ALOGW("setTransactionState: ignoring unrecognized orientation: %d",
                     orientation);
         }
     }
@@ -1242,7 +1242,7 @@ void SurfaceFlinger::setTransactionState(const Vector<ComposerState>& state,
             if (CC_UNLIKELY(err != NO_ERROR)) {
                 // just in case something goes wrong in SF, return to the
                 // called after a few seconds.
-                LOGW_IF(err == TIMED_OUT, "closeGlobalTransaction timed out!");
+                ALOGW_IF(err == TIMED_OUT, "closeGlobalTransaction timed out!");
                 mTransationPending = false;
                 break;
             }
@@ -1281,12 +1281,12 @@ sp<ISurface> SurfaceFlinger::createSurface(
     sp<ISurface> surfaceHandle;
 
     if (int32_t(w|h) < 0) {
-        LOGE("createSurface() failed, w or h is negative (w=%d, h=%d)",
+        ALOGE("createSurface() failed, w or h is negative (w=%d, h=%d)",
                 int(w), int(h));
         return surfaceHandle;
     }
 
-    //LOGD("createSurface for pid %d (%d x %d)", pid, w, h);
+    //ALOGD("createSurface for pid %d (%d x %d)", pid, w, h);
     sp<Layer> normalLayer;
     switch (flags & eFXSurfaceMask) {
         case eFXSurfaceNormal:
@@ -1353,7 +1353,7 @@ sp<Layer> SurfaceFlinger::createNormalSurface(
     sp<Layer> layer = new Layer(this, display, client);
     status_t err = layer->setBuffers(w, h, format, flags);
     if (LIKELY(err != NO_ERROR)) {
-        LOGE("createNormalSurfaceLocked() failed (%s)", strerror(-err));
+        ALOGE("createNormalSurfaceLocked() failed (%s)", strerror(-err));
         layer.clear();
     }
     return layer;
@@ -1411,10 +1411,10 @@ status_t SurfaceFlinger::destroySurface(const wp<LayerBaseClient>& layer)
             // removed already, which means it is in the purgatory,
             // and need to be removed from there.
             ssize_t idx = mLayerPurgatory.remove(l);
-            LOGE_IF(idx < 0,
+            ALOGE_IF(idx < 0,
                     "layer=%p is not in the purgatory list", l.get());
         }
-        LOGE_IF(err<0 && err != NAME_NOT_FOUND,
+        ALOGE_IF(err<0 && err != NAME_NOT_FOUND,
                 "error removing layer=%p (%s)", l.get(), strerror(-err));
     }
     return err;
@@ -1640,7 +1640,7 @@ status_t SurfaceFlinger::onTransact(
             const int uid = ipc->getCallingUid();
             if ((uid != AID_GRAPHICS) &&
                     !PermissionCache::checkPermission(sAccessSurfaceFlinger, pid, uid)) {
-                LOGE("Permission Denial: "
+                ALOGE("Permission Denial: "
                         "can't access SurfaceFlinger pid=%d, uid=%d", pid, uid);
                 return PERMISSION_DENIED;
             }
@@ -1654,7 +1654,7 @@ status_t SurfaceFlinger::onTransact(
             const int uid = ipc->getCallingUid();
             if ((uid != AID_GRAPHICS) &&
                     !PermissionCache::checkPermission(sReadFramebuffer, pid, uid)) {
-                LOGE("Permission Denial: "
+                ALOGE("Permission Denial: "
                         "can't read framebuffer pid=%d, uid=%d", pid, uid);
                 return PERMISSION_DENIED;
             }
@@ -1669,7 +1669,7 @@ status_t SurfaceFlinger::onTransact(
             IPCThreadState* ipc = IPCThreadState::self();
             const int pid = ipc->getCallingPid();
             const int uid = ipc->getCallingUid();
-            LOGE("Permission Denial: "
+            ALOGE("Permission Denial: "
                     "can't access SurfaceFlinger pid=%d, uid=%d", pid, uid);
             return PERMISSION_DENIED;
         }
@@ -2268,7 +2268,7 @@ status_t SurfaceFlinger::captureScreenImplLocked(DisplayID dpy,
     sh = (!sh) ? hw_h : sh;
     const size_t size = sw * sh * 4;
 
-    //LOGD("screenshot: sw=%d, sh=%d, minZ=%d, maxZ=%d",
+    //ALOGD("screenshot: sw=%d, sh=%d, minZ=%d, maxZ=%d",
     //        sw, sh, minLayerZ, maxLayerZ);
 
     // make sure to clear all GL error flags
@@ -2359,7 +2359,7 @@ status_t SurfaceFlinger::captureScreenImplLocked(DisplayID dpy,
 
     hw.compositionComplete();
 
-    // LOGD("screenshot: result = %s", result<0 ? strerror(result) : "OK");
+    // ALOGD("screenshot: result = %s", result<0 ? strerror(result) : "OK");
 
     return result;
 }
@@ -2486,7 +2486,7 @@ sp<LayerBaseClient> Client::getLayerUser(int32_t i) const
     wp<LayerBaseClient> layer(mLayers.valueFor(i));
     if (layer != 0) {
         lbc = layer.promote();
-        LOGE_IF(lbc==0, "getLayerUser(name=%d) is dead", int(i));
+        ALOGE_IF(lbc==0, "getLayerUser(name=%d) is dead", int(i));
     }
     return lbc;
 }
@@ -2504,7 +2504,7 @@ status_t Client::onTransact(
          // we're called from a different process, do the real check
          if (!PermissionCache::checkCallingPermission(sAccessSurfaceFlinger))
          {
-             LOGE("Permission Denial: "
+             ALOGE("Permission Denial: "
                      "can't openGlobalTransaction pid=%d, uid=%d", pid, uid);
              return PERMISSION_DENIED;
          }
@@ -2576,7 +2576,7 @@ sp<GraphicBuffer> GraphicBufferAlloc::createGraphicBuffer(uint32_t w, uint32_t h
         if (err == NO_MEMORY) {
             GraphicBuffer::dumpAllocationsToSystemLog();
         }
-        LOGE("GraphicBufferAlloc::createGraphicBuffer(w=%d, h=%d) "
+        ALOGE("GraphicBufferAlloc::createGraphicBuffer(w=%d, h=%d) "
              "failed (%s), handle=%p",
                 w, h, strerror(-err), graphicBuffer->handle);
         return 0;

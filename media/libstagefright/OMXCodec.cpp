@@ -179,9 +179,9 @@ static const CodecInfo kEncoderInfo[] = {
 
 #undef OPTIONAL
 
-#define CODEC_LOGI(x, ...) LOGI("[%s] "x, mComponentName, ##__VA_ARGS__)
-#define CODEC_LOGV(x, ...) LOGV("[%s] "x, mComponentName, ##__VA_ARGS__)
-#define CODEC_LOGE(x, ...) LOGE("[%s] "x, mComponentName, ##__VA_ARGS__)
+#define CODEC_LOGI(x, ...) ALOGI("[%s] "x, mComponentName, ##__VA_ARGS__)
+#define CODEC_LOGV(x, ...) ALOGV("[%s] "x, mComponentName, ##__VA_ARGS__)
+#define CODEC_LOGE(x, ...) ALOGE("[%s] "x, mComponentName, ##__VA_ARGS__)
 
 struct OMXCodecObserver : public BnOMXObserver {
     OMXCodecObserver() {
@@ -467,13 +467,13 @@ sp<MediaSource> OMXCodec::Create(
                 InstantiateSoftwareEncoder(componentName, source, meta);
 
             if (softwareCodec != NULL) {
-                LOGV("Successfully allocated software codec '%s'", componentName);
+                ALOGV("Successfully allocated software codec '%s'", componentName);
 
                 return softwareCodec;
             }
         }
 
-        LOGV("Attempting to allocate OMX node '%s'", componentName);
+        ALOGV("Attempting to allocate OMX node '%s'", componentName);
 
         uint32_t quirks = getComponentQuirks(componentNameBase, createEncoder);
 
@@ -484,7 +484,7 @@ sp<MediaSource> OMXCodec::Create(
                 // For OMX.SEC.* decoders we can enable a special mode that
                 // gives the client access to the framebuffer contents.
 
-                LOGW("Component '%s' does not give the client access to "
+                ALOGW("Component '%s' does not give the client access to "
                      "the framebuffer contents. Skipping.",
                      componentName);
 
@@ -494,7 +494,7 @@ sp<MediaSource> OMXCodec::Create(
 
         status_t err = omx->allocateNode(componentName, observer, &node);
         if (err == OK) {
-            LOGV("Successfully allocated OMX node '%s'", componentName);
+            ALOGV("Successfully allocated OMX node '%s'", componentName);
 
             sp<OMXCodec> codec = new OMXCodec(
                     omx, node, quirks, flags,
@@ -513,7 +513,7 @@ sp<MediaSource> OMXCodec::Create(
                 return codec;
             }
 
-            LOGV("Failed to configure codec '%s'", componentName);
+            ALOGV("Failed to configure codec '%s'", componentName);
         }
     }
 
@@ -600,7 +600,7 @@ status_t OMXCodec::parseAVCCodecSpecificData(
 }
 
 status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
-    LOGV("configureCodec protected=%d",
+    ALOGV("configureCodec protected=%d",
          (mFlags & kEnableGrallocUsageProtected) ? 1 : 0);
 
     if (!(mFlags & kIgnoreCodecSpecificData)) {
@@ -625,7 +625,7 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
             status_t err;
             if ((err = parseAVCCodecSpecificData(
                             data, size, &profile, &level)) != OK) {
-                LOGE("Malformed AVC codec specific data.");
+                ALOGE("Malformed AVC codec specific data.");
                 return err;
             }
 
@@ -639,7 +639,7 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
                 // does not handle this gracefully and would clobber the heap
                 // and wreak havoc instead...
 
-                LOGE("Profile and/or level exceed the decoder's capabilities.");
+                ALOGE("Profile and/or level exceed the decoder's capabilities.");
                 return ERROR_UNSUPPORTED;
             }
         } else if (meta->findData(kKeyVorbisInfo, &type, &data, &size)) {
@@ -904,7 +904,7 @@ static size_t getFrameSize(
 
 status_t OMXCodec::findTargetColorFormat(
         const sp<MetaData>& meta, OMX_COLOR_FORMATTYPE *colorFormat) {
-    LOGV("findTargetColorFormat");
+    ALOGV("findTargetColorFormat");
     CHECK(mIsEncoder);
 
     *colorFormat = OMX_COLOR_FormatYUV420SemiPlanar;
@@ -924,7 +924,7 @@ status_t OMXCodec::findTargetColorFormat(
 
 status_t OMXCodec::isColorFormatSupported(
         OMX_COLOR_FORMATTYPE colorFormat, int portIndex) {
-    LOGV("isColorFormatSupported: %d", static_cast<int>(colorFormat));
+    ALOGV("isColorFormatSupported: %d", static_cast<int>(colorFormat));
 
     // Enumerate all the color formats supported by
     // the omx component to see whether the given
@@ -981,7 +981,7 @@ void OMXCodec::setVideoInputFormat(
     } else if (!strcasecmp(MEDIA_MIMETYPE_VIDEO_H263, mime)) {
         compressionFormat = OMX_VIDEO_CodingH263;
     } else {
-        LOGE("Not a supported video mime type: %s", mime);
+        ALOGE("Not a supported video mime type: %s", mime);
         CHECK(!"Should not be here. Not a supported video mime type.");
     }
 
@@ -1093,7 +1093,7 @@ status_t OMXCodec::setupErrorCorrectionParameters() {
             mNode, OMX_IndexParamVideoErrorCorrection,
             &errorCorrectionType, sizeof(errorCorrectionType));
     if (err != OK) {
-        LOGW("Error correction param query is not supported");
+        ALOGW("Error correction param query is not supported");
         return OK;  // Optional feature. Ignore this failure
     }
 
@@ -1107,7 +1107,7 @@ status_t OMXCodec::setupErrorCorrectionParameters() {
             mNode, OMX_IndexParamVideoErrorCorrection,
             &errorCorrectionType, sizeof(errorCorrectionType));
     if (err != OK) {
-        LOGW("Error correction param configuration is not supported");
+        ALOGW("Error correction param configuration is not supported");
     }
 
     // Optional feature. Ignore the failure.
@@ -1375,7 +1375,7 @@ status_t OMXCodec::setVideoOutputFormat(
     } else if (!strcasecmp(MEDIA_MIMETYPE_VIDEO_MPEG2, mime)) {
         compressionFormat = OMX_VIDEO_CodingMPEG2;
     } else {
-        LOGE("Not a supported video mime type: %s", mime);
+        ALOGE("Not a supported video mime type: %s", mime);
         CHECK(!"Should not be here. Not a supported video mime type.");
     }
 
@@ -1579,7 +1579,7 @@ void OMXCodec::setComponentRole(
                 &roleParams, sizeof(roleParams));
 
         if (err != OK) {
-            LOGW("Failed to set standard component role '%s'.", role);
+            ALOGW("Failed to set standard component role '%s'.", role);
         }
     }
 }
@@ -1664,7 +1664,7 @@ status_t OMXCodec::allocateBuffersOnPort(OMX_U32 portIndex) {
     }
 
     if ((mFlags & kEnableGrallocUsageProtected) && portIndex == kPortIndexOutput) {
-        LOGE("protected output buffers must be stent to an ANativeWindow");
+        ALOGE("protected output buffers must be stent to an ANativeWindow");
         return PERMISSION_DENIED;
     }
 
@@ -1673,7 +1673,7 @@ status_t OMXCodec::allocateBuffersOnPort(OMX_U32 portIndex) {
             && portIndex == kPortIndexInput) {
         err = mOMX->storeMetaDataInBuffers(mNode, kPortIndexInput, OMX_TRUE);
         if (err != OK) {
-            LOGE("Storing meta data in video buffers is not supported");
+            ALOGE("Storing meta data in video buffers is not supported");
             return err;
         }
     }
@@ -1735,7 +1735,7 @@ status_t OMXCodec::allocateBuffersOnPort(OMX_U32 portIndex) {
         }
 
         if (err != OK) {
-            LOGE("allocate_buffer_with_backup failed");
+            ALOGE("allocate_buffer_with_backup failed");
             return err;
         }
 
@@ -1849,7 +1849,7 @@ status_t OMXCodec::allocateOutputBuffersFromNativeWindow() {
             def.format.video.eColorFormat);
 
     if (err != 0) {
-        LOGE("native_window_set_buffers_geometry failed: %s (%d)",
+        ALOGE("native_window_set_buffers_geometry failed: %s (%d)",
                 strerror(-err), -err);
         return err;
     }
@@ -1863,7 +1863,7 @@ status_t OMXCodec::allocateOutputBuffersFromNativeWindow() {
     OMX_U32 usage = 0;
     err = mOMX->getGraphicBufferUsage(mNode, kPortIndexOutput, &usage);
     if (err != 0) {
-        LOGW("querying usage flags from OMX IL component failed: %d", err);
+        ALOGW("querying usage flags from OMX IL component failed: %d", err);
         // XXX: Currently this error is logged, but not fatal.
         usage = 0;
     }
@@ -1881,20 +1881,20 @@ status_t OMXCodec::allocateOutputBuffersFromNativeWindow() {
                 mNativeWindow.get(), NATIVE_WINDOW_QUEUES_TO_WINDOW_COMPOSER,
                 &queuesToNativeWindow);
         if (err != 0) {
-            LOGE("error authenticating native window: %d", err);
+            ALOGE("error authenticating native window: %d", err);
             return err;
         }
         if (queuesToNativeWindow != 1) {
-            LOGE("native window could not be authenticated");
+            ALOGE("native window could not be authenticated");
             return PERMISSION_DENIED;
         }
     }
 
-    LOGV("native_window_set_usage usage=0x%lx", usage);
+    ALOGV("native_window_set_usage usage=0x%lx", usage);
     err = native_window_set_usage(
             mNativeWindow.get(), usage | GRALLOC_USAGE_HW_TEXTURE | GRALLOC_USAGE_EXTERNAL_DISP);
     if (err != 0) {
-        LOGE("native_window_set_usage failed: %s (%d)", strerror(-err), -err);
+        ALOGE("native_window_set_usage failed: %s (%d)", strerror(-err), -err);
         return err;
     }
 
@@ -1902,7 +1902,7 @@ status_t OMXCodec::allocateOutputBuffersFromNativeWindow() {
     err = mNativeWindow->query(mNativeWindow.get(),
             NATIVE_WINDOW_MIN_UNDEQUEUED_BUFFERS, &minUndequeuedBufs);
     if (err != 0) {
-        LOGE("NATIVE_WINDOW_MIN_UNDEQUEUED_BUFFERS query failed: %s (%d)",
+        ALOGE("NATIVE_WINDOW_MIN_UNDEQUEUED_BUFFERS query failed: %s (%d)",
                 strerror(-err), -err);
         return err;
     }
@@ -1925,7 +1925,7 @@ status_t OMXCodec::allocateOutputBuffersFromNativeWindow() {
     err = native_window_set_buffer_count(
             mNativeWindow.get(), def.nBufferCountActual);
     if (err != 0) {
-        LOGE("native_window_set_buffer_count failed: %s (%d)", strerror(-err),
+        ALOGE("native_window_set_buffer_count failed: %s (%d)", strerror(-err),
                 -err);
         return err;
     }
@@ -1938,7 +1938,7 @@ status_t OMXCodec::allocateOutputBuffersFromNativeWindow() {
         ANativeWindowBuffer* buf;
         err = mNativeWindow->dequeueBuffer(mNativeWindow.get(), &buf);
         if (err != 0) {
-            LOGE("dequeueBuffer failed: %s (%d)", strerror(-err), -err);
+            ALOGE("dequeueBuffer failed: %s (%d)", strerror(-err), -err);
             break;
         }
 
@@ -2052,7 +2052,7 @@ status_t OMXCodec::pushBlankBuffersToNativeWindow() {
     err = native_window_api_disconnect(mNativeWindow.get(),
             NATIVE_WINDOW_API_MEDIA);
     if (err != NO_ERROR) {
-        LOGE("error pushing blank frames: api_disconnect failed: %s (%d)",
+        ALOGE("error pushing blank frames: api_disconnect failed: %s (%d)",
                 strerror(-err), -err);
         return err;
     }
@@ -2060,7 +2060,7 @@ status_t OMXCodec::pushBlankBuffersToNativeWindow() {
     err = native_window_api_connect(mNativeWindow.get(),
             NATIVE_WINDOW_API_CPU);
     if (err != NO_ERROR) {
-        LOGE("error pushing blank frames: api_connect failed: %s (%d)",
+        ALOGE("error pushing blank frames: api_connect failed: %s (%d)",
                 strerror(-err), -err);
         return err;
     }
@@ -2068,7 +2068,7 @@ status_t OMXCodec::pushBlankBuffersToNativeWindow() {
     err = native_window_set_scaling_mode(mNativeWindow.get(),
             NATIVE_WINDOW_SCALING_MODE_SCALE_TO_WINDOW);
     if (err != NO_ERROR) {
-        LOGE("error pushing blank frames: set_buffers_geometry failed: %s (%d)",
+        ALOGE("error pushing blank frames: set_buffers_geometry failed: %s (%d)",
                 strerror(-err), -err);
         goto error;
     }
@@ -2076,7 +2076,7 @@ status_t OMXCodec::pushBlankBuffersToNativeWindow() {
     err = native_window_set_buffers_geometry(mNativeWindow.get(), 1, 1,
             HAL_PIXEL_FORMAT_RGBX_8888);
     if (err != NO_ERROR) {
-        LOGE("error pushing blank frames: set_buffers_geometry failed: %s (%d)",
+        ALOGE("error pushing blank frames: set_buffers_geometry failed: %s (%d)",
                 strerror(-err), -err);
         goto error;
     }
@@ -2084,7 +2084,7 @@ status_t OMXCodec::pushBlankBuffersToNativeWindow() {
     err = native_window_set_usage(mNativeWindow.get(),
             GRALLOC_USAGE_SW_WRITE_OFTEN);
     if (err != NO_ERROR) {
-        LOGE("error pushing blank frames: set_usage failed: %s (%d)",
+        ALOGE("error pushing blank frames: set_usage failed: %s (%d)",
                 strerror(-err), -err);
         goto error;
     }
@@ -2092,7 +2092,7 @@ status_t OMXCodec::pushBlankBuffersToNativeWindow() {
     err = mNativeWindow->query(mNativeWindow.get(),
             NATIVE_WINDOW_MIN_UNDEQUEUED_BUFFERS, &minUndequeuedBufs);
     if (err != NO_ERROR) {
-        LOGE("error pushing blank frames: MIN_UNDEQUEUED_BUFFERS query "
+        ALOGE("error pushing blank frames: MIN_UNDEQUEUED_BUFFERS query "
                 "failed: %s (%d)", strerror(-err), -err);
         goto error;
     }
@@ -2100,7 +2100,7 @@ status_t OMXCodec::pushBlankBuffersToNativeWindow() {
     numBufs = minUndequeuedBufs + 1;
     err = native_window_set_buffer_count(mNativeWindow.get(), numBufs);
     if (err != NO_ERROR) {
-        LOGE("error pushing blank frames: set_buffer_count failed: %s (%d)",
+        ALOGE("error pushing blank frames: set_buffer_count failed: %s (%d)",
                 strerror(-err), -err);
         goto error;
     }
@@ -2112,7 +2112,7 @@ status_t OMXCodec::pushBlankBuffersToNativeWindow() {
     for (int i = 0; i < numBufs + 1; i++) {
         err = mNativeWindow->dequeueBuffer(mNativeWindow.get(), &anb);
         if (err != NO_ERROR) {
-            LOGE("error pushing blank frames: dequeueBuffer failed: %s (%d)",
+            ALOGE("error pushing blank frames: dequeueBuffer failed: %s (%d)",
                     strerror(-err), -err);
             goto error;
         }
@@ -2121,7 +2121,7 @@ status_t OMXCodec::pushBlankBuffersToNativeWindow() {
         err = mNativeWindow->lockBuffer(mNativeWindow.get(),
                 buf->getNativeBuffer());
         if (err != NO_ERROR) {
-            LOGE("error pushing blank frames: lockBuffer failed: %s (%d)",
+            ALOGE("error pushing blank frames: lockBuffer failed: %s (%d)",
                     strerror(-err), -err);
             goto error;
         }
@@ -2130,7 +2130,7 @@ status_t OMXCodec::pushBlankBuffersToNativeWindow() {
         uint32_t* img = NULL;
         err = buf->lock(GRALLOC_USAGE_SW_WRITE_OFTEN, (void**)(&img));
         if (err != NO_ERROR) {
-            LOGE("error pushing blank frames: lock failed: %s (%d)",
+            ALOGE("error pushing blank frames: lock failed: %s (%d)",
                     strerror(-err), -err);
             goto error;
         }
@@ -2139,7 +2139,7 @@ status_t OMXCodec::pushBlankBuffersToNativeWindow() {
 
         err = buf->unlock();
         if (err != NO_ERROR) {
-            LOGE("error pushing blank frames: unlock failed: %s (%d)",
+            ALOGE("error pushing blank frames: unlock failed: %s (%d)",
                     strerror(-err), -err);
             goto error;
         }
@@ -2147,7 +2147,7 @@ status_t OMXCodec::pushBlankBuffersToNativeWindow() {
         err = mNativeWindow->queueBuffer(mNativeWindow.get(),
                 buf->getNativeBuffer());
         if (err != NO_ERROR) {
-            LOGE("error pushing blank frames: queueBuffer failed: %s (%d)",
+            ALOGE("error pushing blank frames: queueBuffer failed: %s (%d)",
                     strerror(-err), -err);
             goto error;
         }
@@ -2174,7 +2174,7 @@ error:
         err = native_window_api_disconnect(mNativeWindow.get(),
                 NATIVE_WINDOW_API_CPU);
         if (err != NO_ERROR) {
-            LOGE("error pushing blank frames: api_disconnect failed: %s (%d)",
+            ALOGE("error pushing blank frames: api_disconnect failed: %s (%d)",
                     strerror(-err), -err);
             return err;
         }
@@ -2182,7 +2182,7 @@ error:
         err = native_window_api_connect(mNativeWindow.get(),
                 NATIVE_WINDOW_API_MEDIA);
         if (err != NO_ERROR) {
-            LOGE("error pushing blank frames: api_connect failed: %s (%d)",
+            ALOGE("error pushing blank frames: api_connect failed: %s (%d)",
                     strerror(-err), -err);
             return err;
         }
@@ -2214,7 +2214,7 @@ int64_t OMXCodec::retrieveDecodingTimeUs(bool isCodecSpecific) {
 
 void OMXCodec::on_message(const omx_message &msg) {
     if (mState == ERROR) {
-        LOGW("Dropping OMX message - we're in ERROR state.");
+        ALOGW("Dropping OMX message - we're in ERROR state.");
         return;
     }
 
@@ -2242,7 +2242,7 @@ void OMXCodec::on_message(const omx_message &msg) {
 
             CHECK(i < buffers->size());
             if ((*buffers)[i].mStatus != OWNED_BY_COMPONENT) {
-                LOGW("We already own input buffer %p, yet received "
+                ALOGW("We already own input buffer %p, yet received "
                      "an EMPTY_BUFFER_DONE.", buffer);
             }
 
@@ -2302,7 +2302,7 @@ void OMXCodec::on_message(const omx_message &msg) {
             BufferInfo *info = &buffers->editItemAt(i);
 
             if (info->mStatus != OWNED_BY_COMPONENT) {
-                LOGW("We already own output buffer %p, yet received "
+                ALOGW("We already own output buffer %p, yet received "
                      "a FILL_BUFFER_DONE.", buffer);
             }
 
@@ -2568,7 +2568,7 @@ void OMXCodec::onEvent(OMX_EVENTTYPE event, OMX_U32 data1, OMX_U32 data2) {
                         // The scale is in 16.16 format.
                         // scale 1.0 = 0x010000. When there is no
                         // need to change the display, skip it.
-                        LOGV("Get OMX_IndexConfigScale: 0x%lx/0x%lx",
+                        ALOGV("Get OMX_IndexConfigScale: 0x%lx/0x%lx",
                                 scale.xWidth, scale.xHeight);
 
                         if (scale.xWidth != 0x010000) {
@@ -3296,7 +3296,7 @@ bool OMXCodec::drainInputBuffer(BufferInfo *info) {
     }
 
     if (n > 1) {
-        LOGV("coalesced %d frames into one input buffer", n);
+        ALOGV("coalesced %d frames into one input buffer", n);
     }
 
     OMX_U32 flags = OMX_BUFFERFLAG_ENDOFFRAME;
@@ -3556,7 +3556,7 @@ void OMXCodec::setAMRFormat(bool isWAMR, int32_t bitRate) {
 
 status_t OMXCodec::setAACFormat(int32_t numChannels, int32_t sampleRate, int32_t bitRate) {
     if (numChannels > 2)
-        LOGW("Number of channels: (%d) \n", numChannels);
+        ALOGW("Number of channels: (%d) \n", numChannels);
 
     if (mIsEncoder) {
         //////////////// input port ////////////////////
@@ -4466,14 +4466,14 @@ void OMXCodec::initOutputFormat(const sp<MetaData> &inputFormat) {
                 inputFormat->findInt32(kKeySampleRate, &sampleRate);
 
                 if ((OMX_U32)numChannels != params.nChannels) {
-                    LOGV("Codec outputs a different number of channels than "
+                    ALOGV("Codec outputs a different number of channels than "
                          "the input stream contains (contains %d channels, "
                          "codec outputs %ld channels).",
                          numChannels, params.nChannels);
                 }
 
                 if (sampleRate != (int32_t)params.nSamplingRate) {
-                    LOGV("Codec outputs at different sampling rate than "
+                    ALOGV("Codec outputs at different sampling rate than "
                          "what the input stream contains (contains data at "
                          "%d Hz, codec outputs %lu Hz)",
                          sampleRate, params.nSamplingRate);

@@ -1,18 +1,18 @@
 /*
-* Copyright (C) 2011 The Android Open Source Project
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright (C) 2011 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package com.android.internal.widget.multiwaveview;
 
@@ -43,9 +43,9 @@ import com.android.internal.R;
 import java.util.ArrayList;
 
 /**
-* A special widget containing a center and outer ring. Moving the center ring to the outer ring
-* causes an event that can be caught by implementing OnTriggerListener.
-*/
+ * A special widget containing a center and outer ring. Moving the center ring to the outer ring
+ * causes an event that can be caught by implementing OnTriggerListener.
+ */
 public class MultiWaveView extends View {
     private static final String TAG = "MultiWaveView";
     private static final boolean DEBUG = false;
@@ -298,22 +298,22 @@ public class MultiWaveView extends View {
     }
 
     /**
-* Animation used to attract user's attention to the target button.
-* Assumes mChevronDrawables is an a list with an even number of chevrons filled with
-* mFeedbackCount items in the order: left, right, top, bottom.
-*/
+     * Animation used to attract user's attention to the target button.
+     * Assumes mChevronDrawables is an a list with an even number of chevrons filled with
+     * mFeedbackCount items in the order: left, right, top, bottom.
+     */
     private void startChevronAnimation() {
         final float r = mHandleDrawable.getWidth() * 0.4f;
         final float chevronAnimationDistance = mOuterRadius * 0.9f;
         final float from[][] = {
-                {mWaveCenterX - r, mWaveCenterY}, // left
-                {mWaveCenterX + r, mWaveCenterY}, // right
-                {mWaveCenterX, mWaveCenterY - r}, // top
+                {mWaveCenterX - r, mWaveCenterY},  // left
+                {mWaveCenterX + r, mWaveCenterY},  // right
+                {mWaveCenterX, mWaveCenterY - r},  // top
                 {mWaveCenterX, mWaveCenterY + r} }; // bottom
         final float to[][] = {
-                {mWaveCenterX - chevronAnimationDistance, mWaveCenterY}, // left
-                {mWaveCenterX + chevronAnimationDistance, mWaveCenterY}, // right
-                {mWaveCenterX, mWaveCenterY - chevronAnimationDistance}, // top
+                {mWaveCenterX - chevronAnimationDistance, mWaveCenterY},  // left
+                {mWaveCenterX + chevronAnimationDistance, mWaveCenterY},  // right
+                {mWaveCenterX, mWaveCenterY - chevronAnimationDistance},  // top
                 {mWaveCenterX, mWaveCenterY + chevronAnimationDistance} }; // bottom
 
         mChevronAnimations.clear();
@@ -377,9 +377,9 @@ public class MultiWaveView extends View {
     }
 
     /**
-* Dispatches a trigger event to listener. Ignored if a listener is not set.
-* @param whichHandle the handle that triggered the event.
-*/
+     * Dispatches a trigger event to listener. Ignored if a listener is not set.
+     * @param whichHandle the handle that triggered the event.
+     */
     private void dispatchTriggerEvent(int whichHandle) {
         vibrate();
         if (mOnTriggerListener != null) {
@@ -396,7 +396,7 @@ public class MultiWaveView extends View {
 
     private void doFinish() {
         final int activeTarget = mActiveTarget;
-        boolean targetHit = activeTarget != -1;
+        boolean targetHit =  activeTarget != -1;
 
         // Hide unselected targets
         hideTargets(true);
@@ -408,7 +408,7 @@ public class MultiWaveView extends View {
 
             hideUnselected(activeTarget);
 
-            // Inform listener of any active targets. Typically only one will be active.
+            // Inform listener of any active targets.  Typically only one will be active.
             if (DEBUG) Log.v(TAG, "Finish with target hit = " + targetHit);
             dispatchTriggerEvent(mActiveTarget);
             mHandleAnimation = Tweener.to(mHandleDrawable, 0,
@@ -529,10 +529,10 @@ public class MultiWaveView extends View {
     }
 
     /**
-* Loads an array of drawables from the given resourceId.
-*
-* @param resourceId
-*/
+     * Loads an array of drawables from the given resourceId.
+     *
+     * @param resourceId
+     */
     public void setTargetResources(int resourceId) {
         if (mAnimatingTargets) {
             // postpone this change until we return to the initial state
@@ -547,10 +547,10 @@ public class MultiWaveView extends View {
     }
 
     /**
-* Sets the resource id specifying the target descriptions for accessibility.
-*
-* @param resourceId The resource id.
-*/
+     * Sets the resource id specifying the target descriptions for accessibility.
+     *
+     * @param resourceId The resource id.
+     */
     public void setTargetDescriptionsResourceId(int resourceId) {
         mTargetDescriptionsResourceId = resourceId;
         if (mTargetDescriptions != null) {
@@ -559,19 +559,19 @@ public class MultiWaveView extends View {
     }
 
     /**
-* Gets the resource id specifying the target descriptions for accessibility.
-*
-* @return The resource id.
-*/
+     * Gets the resource id specifying the target descriptions for accessibility.
+     *
+     * @return The resource id.
+     */
     public int getTargetDescriptionsResourceId() {
         return mTargetDescriptionsResourceId;
     }
 
     /**
-* Sets the resource id specifying the target direction descriptions for accessibility.
-*
-* @param resourceId The resource id.
-*/
+     * Sets the resource id specifying the target direction descriptions for accessibility.
+     *
+     * @param resourceId The resource id.
+     */
     public void setDirectionDescriptionsResourceId(int resourceId) {
         mDirectionDescriptionsResourceId = resourceId;
         if (mDirectionDescriptions != null) {
@@ -580,19 +580,19 @@ public class MultiWaveView extends View {
     }
 
     /**
-* Gets the resource id specifying the target direction descriptions.
-*
-* @return The resource id.
-*/
+     * Gets the resource id specifying the target direction descriptions.
+     *
+     * @return The resource id.
+     */
     public int getDirectionDescriptionsResourceId() {
         return mDirectionDescriptionsResourceId;
     }
 
     /**
-* Enable or disable vibrate on touch.
-*
-* @param enabled
-*/
+     * Enable or disable vibrate on touch.
+     *
+     * @param enabled
+     */
     public void setVibrateEnabled(boolean enabled) {
         if (enabled && mVibrator == null) {
             mVibrator = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
@@ -602,21 +602,21 @@ public class MultiWaveView extends View {
     }
 
     /**
-* Starts chevron animation. Example use case: show chevron animation whenever the phone rings
-* or the user touches the screen.
-*
-*/
+     * Starts chevron animation. Example use case: show chevron animation whenever the phone rings
+     * or the user touches the screen.
+     *
+     */
     public void ping() {
         stopChevronAnimation();
         startChevronAnimation();
     }
 
     /**
-* Resets the widget to default state and cancels all animation. If animate is 'true', will
-* animate objects into place. Otherwise, objects will snap back to place.
-*
-* @param animate
-*/
+     * Resets the widget to default state and cancels all animation. If animate is 'true', will
+     * animate objects into place. Otherwise, objects will snap back to place.
+     *
+     * @param animate
+     */
     public void reset(boolean animate) {
         stopChevronAnimation();
         stopHandleAnimation();
@@ -776,9 +776,9 @@ public class MultiWaveView extends View {
     }
 
     /**
-* Sets the current grabbed state, and dispatches a grabbed state change
-* event to our listener.
-*/
+     * Sets the current grabbed state, and dispatches a grabbed state change
+     * event to our listener.
+     */
     private void setGrabbedState(int newState) {
         if (newState != mGrabbedState) {
             if (newState != OnTriggerListener.NO_HANDLE) {
@@ -935,12 +935,7 @@ public class MultiWaveView extends View {
                 return null;
             }
         }
-        String s = "";
-        try {
-            s = mTargetDescriptions.get(index);
-        } catch (Exception e) {
-        }
-        return s;
+        return mTargetDescriptions.get(index);
     }
 
     private String getDirectionDescription(int index) {
@@ -952,13 +947,7 @@ public class MultiWaveView extends View {
                 return null;
             }
         }
-
-        try {
-            String desc = mDirectionDescriptions.get(index);
-            return desc;
-        } catch (Exception e) {
-            return "";
-        }
+        return mDirectionDescriptions.get(index);
     }
 
     private ArrayList<String> loadDescriptions(int resourceId) {
@@ -973,4 +962,3 @@ public class MultiWaveView extends View {
         return targetContentDescriptions;
     }
 }
-

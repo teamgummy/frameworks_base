@@ -869,6 +869,7 @@ class BrowserFrame extends Handler {
         loader.setCacheMode(headers.containsKey("If-Modified-Since")
                 || headers.containsKey("If-None-Match") ? 
                         WebSettings.LOAD_NO_CACHE : cacheMode);
+        loader.executeLoad();
         // Set referrer to current URL?
         return !synchronous ? loadListener : null;
     }
@@ -941,6 +942,13 @@ class BrowserFrame extends Handler {
         if (androidResource != null) {
             return new WebResourceResponse(null, null, androidResource);
         }
+
+        // Note that we check this after looking for an android_asset or
+        // android_res URL, as we allow those even if file access is disabled.
+        if (!mSettings.getAllowFileAccess() && url.startsWith("file://")) {
+            return new WebResourceResponse(null, null, null);
+        }
+
         WebResourceResponse response = mCallbackProxy.shouldInterceptRequest(url);
         if (response == null && "browser:incognito".equals(url)) {
             try {
@@ -1180,11 +1188,19 @@ class BrowserFrame extends Handler {
             @Override
             public void proceed() {
                 SslCertLookupTable.getInstance().setIsAllowed(sslError);
-                nativeSslCertErrorProceed(handle);
+                post(new Runnable() {
+                        public void run() {
+                            nativeSslCertErrorProceed(handle);
+                        }
+                    });
             }
             @Override
             public void cancel() {
-                nativeSslCertErrorCancel(handle, certError);
+                post(new Runnable() {
+                        public void run() {
+                            nativeSslCertErrorCancel(handle, certError);
+                        }
+                    });
             }
         };
         mCallbackProxy.onReceivedSslError(handler, sslError);

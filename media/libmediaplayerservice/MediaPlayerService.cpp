@@ -112,14 +112,14 @@ bool unmarshallFilter(const Parcel& p,
     int32_t val;
     if (p.readInt32(&val) != OK)
     {
-        LOGE("Failed to read filter's length");
+        ALOGE("Failed to read filter's length");
         *status = NOT_ENOUGH_DATA;
         return false;
     }
 
     if( val > kMaxFilterSize || val < 0)
     {
-        LOGE("Invalid filter len %d", val);
+        ALOGE("Invalid filter len %d", val);
         *status = BAD_VALUE;
         return false;
     }
@@ -134,7 +134,7 @@ bool unmarshallFilter(const Parcel& p,
 
     if (p.dataAvail() < size)
     {
-        LOGE("Filter too short expected %d but got %d", size, p.dataAvail());
+        ALOGE("Filter too short expected %d but got %d", size, p.dataAvail());
         *status = NOT_ENOUGH_DATA;
         return false;
     }
@@ -144,7 +144,7 @@ bool unmarshallFilter(const Parcel& p,
 
     if (NULL == data)
     {
-        LOGE("Filter had no data");
+        ALOGE("Filter had no data");
         *status = BAD_VALUE;
         return false;
     }
@@ -184,7 +184,7 @@ static bool checkPermission(const char* permissionString) {
 #endif
     if (getpid() == IPCThreadState::self()->getCallingPid()) return true;
     bool ok = checkCallingPermission(String16(permissionString));
-    if (!ok) LOGE("Request requires %s", permissionString);
+    if (!ok) ALOGE("Request requires %s", permissionString);
     return ok;
 }
 
@@ -215,7 +215,7 @@ void MediaPlayerService::instantiate() {
 
 MediaPlayerService::MediaPlayerService()
 {
-    LOGV("MediaPlayerService created");
+    ALOGV("MediaPlayerService created");
     mNextConnId = 1;
 
     mBatteryAudio.refCount = 0;
@@ -230,7 +230,7 @@ MediaPlayerService::MediaPlayerService()
 
 MediaPlayerService::~MediaPlayerService()
 {
-    LOGV("MediaPlayerService destroyed");
+    ALOGV("MediaPlayerService destroyed");
 }
 
 sp<IMediaRecorder> MediaPlayerService::createMediaRecorder(pid_t pid)
@@ -239,7 +239,7 @@ sp<IMediaRecorder> MediaPlayerService::createMediaRecorder(pid_t pid)
     wp<MediaRecorderClient> w = recorder;
     Mutex::Autolock lock(mLock);
     mMediaRecorderClients.add(w);
-    LOGV("Create new media recorder client from pid %d", pid);
+    ALOGV("Create new media recorder client from pid %d", pid);
     return recorder;
 }
 
@@ -247,13 +247,13 @@ void MediaPlayerService::removeMediaRecorderClient(wp<MediaRecorderClient> clien
 {
     Mutex::Autolock lock(mLock);
     mMediaRecorderClients.remove(client);
-    LOGV("Delete media recorder client");
+    ALOGV("Delete media recorder client");
 }
 
 sp<IMediaMetadataRetriever> MediaPlayerService::createMetadataRetriever(pid_t pid)
 {
     sp<MetadataRetrieverClient> retriever = new MetadataRetrieverClient(pid);
-    LOGV("Create new media retriever from pid %d", pid);
+    ALOGV("Create new media retriever from pid %d", pid);
     return retriever;
 }
 
@@ -266,7 +266,7 @@ sp<IMediaPlayer> MediaPlayerService::create(pid_t pid, const sp<IMediaPlayerClie
             this, pid, connId, client, audioSessionId,
             IPCThreadState::self()->getCallingUid());
 
-    LOGV("Create new client(%d) from pid %d, uid %d, ", connId, pid,
+    ALOGV("Create new client(%d) from pid %d, uid %d, ", connId, pid,
          IPCThreadState::self()->getCallingUid());
 
     wp<Client> w = c;
@@ -320,7 +320,7 @@ status_t MediaPlayerService::AudioOutput::dump(int fd, const Vector<String16>& a
             mStreamType, mLeftVolume, mRightVolume);
     result.append(buffer);
     snprintf(buffer, 255, "  msec per frame(%f), latency (%d)\n",
-            mMsecsPerFrame, mLatency);
+            mMsecsPerFrame, (mTrack != 0) ? mTrack->latency() : -1);
     result.append(buffer);
     snprintf(buffer, 255, "  aux effect id(%d), send level (%f)\n",
             mAuxEffectId, mSendLevel);
@@ -478,7 +478,7 @@ MediaPlayerService::Client::Client(
         int32_t connId, const sp<IMediaPlayerClient>& client,
         int audioSessionId, uid_t uid)
 {
-    LOGV("Client(%d) constructor", connId);
+    ALOGV("Client(%d) constructor", connId);
     mPid = pid;
     mConnId = connId;
     mService = service;
@@ -489,14 +489,14 @@ MediaPlayerService::Client::Client(
     mUID = uid;
 
 #if CALLBACK_ANTAGONIZER
-    LOGD("create Antagonizer");
+    ALOGD("create Antagonizer");
     mAntagonizer = new Antagonizer(notify, this);
 #endif
 }
 
 MediaPlayerService::Client::~Client()
 {
-    LOGV("Client(%d) destructor pid = %d", mConnId, mPid);
+    ALOGV("Client(%d) destructor pid = %d", mConnId, mPid);
     mAudioOutput.clear();
     wp<Client> client(this);
     disconnect();
@@ -505,7 +505,7 @@ MediaPlayerService::Client::~Client()
 
 void MediaPlayerService::Client::disconnect()
 {
-    LOGV("disconnect(%d) from pid %d", mConnId, mPid);
+    ALOGV("disconnect(%d) from pid %d", mConnId, mPid);
     // grab local reference and clear main reference to prevent future
     // access to object
     sp<MediaPlayerBase> p;
@@ -523,7 +523,7 @@ void MediaPlayerService::Client::disconnect()
     if (p != 0) {
         p->setNotifyCallback(0, 0);
 #if CALLBACK_ANTAGONIZER
-        LOGD("kill Antagonizer");
+        ALOGD("kill Antagonizer");
         mAntagonizer->kill();
 #endif
         p->reset();
@@ -614,23 +614,23 @@ static sp<MediaPlayerBase> createPlayer(player_type playerType, void* cookie,
     sp<MediaPlayerBase> p;
     switch (playerType) {
         case SONIVOX_PLAYER:
-            LOGV(" create MidiFile");
+            ALOGV(" create MidiFile");
             p = new MidiFile();
             break;
         case STAGEFRIGHT_PLAYER:
-            LOGV(" create StagefrightPlayer");
+            ALOGV(" create StagefrightPlayer");
             p = new StagefrightPlayer;
             break;
         case NU_PLAYER:
-            LOGV(" create NuPlayer");
+            ALOGV(" create NuPlayer");
             p = new NuPlayerDriver;
             break;
         case TEST_PLAYER:
-            LOGV("Create Test Player stub");
+            ALOGV("Create Test Player stub");
             p = new TestPlayerStub();
             break;
         default:
-            LOGE("Unknown player type: %d", playerType);
+            ALOGE("Unknown player type: %d", playerType);
             return NULL;
     }
     if (p != NULL) {
@@ -641,7 +641,7 @@ static sp<MediaPlayerBase> createPlayer(player_type playerType, void* cookie,
         }
     }
     if (p == NULL) {
-        LOGE("Failed to create player object");
+        ALOGE("Failed to create player object");
     }
     return p;
 }
@@ -651,7 +651,7 @@ sp<MediaPlayerBase> MediaPlayerService::Client::createPlayer(player_type playerT
     // determine if we have the right player type
     sp<MediaPlayerBase> p = mPlayer;
     if ((p != NULL) && (p->playerType() != playerType)) {
-        LOGV("delete player");
+        ALOGV("delete player");
         p.clear();
     }
     if (p == NULL) {
@@ -668,7 +668,7 @@ sp<MediaPlayerBase> MediaPlayerService::Client::createPlayer(player_type playerT
 status_t MediaPlayerService::Client::setDataSource(
         const char *url, const KeyedVector<String8, String8> *headers)
 {
-    LOGV("setDataSource(%s)", url);
+    ALOGV("setDataSource(%s)", url);
     if (url == NULL)
         return UNKNOWN_ERROR;
 
@@ -688,7 +688,7 @@ status_t MediaPlayerService::Client::setDataSource(
         int fd = android::openContentProviderFile(url16);
         if (fd < 0)
         {
-            LOGE("Couldn't open fd for %s", url);
+            ALOGE("Couldn't open fd for %s", url);
             return UNKNOWN_ERROR;
         }
         setDataSource(fd, 0, 0x7fffffffffLL); // this sets mStatus
@@ -696,7 +696,7 @@ status_t MediaPlayerService::Client::setDataSource(
         return mStatus;
     } else {
         player_type playerType = getPlayerType(url);
-        LOGV("player type = %d", playerType);
+        ALOGV("player type = %d", playerType);
 
         // create the right type of player
         sp<MediaPlayerBase> p = createPlayer(playerType);
@@ -708,12 +708,12 @@ status_t MediaPlayerService::Client::setDataSource(
         }
 
         // now set data source
-        LOGV(" setDataSource");
+        ALOGV(" setDataSource");
         mStatus = p->setDataSource(url, headers);
         if (mStatus == NO_ERROR) {
             mPlayer = p;
         } else {
-            LOGE("  error: %d", mStatus);
+            ALOGE("  error: %d", mStatus);
         }
         return mStatus;
     }
@@ -721,32 +721,32 @@ status_t MediaPlayerService::Client::setDataSource(
 
 status_t MediaPlayerService::Client::setDataSource(int fd, int64_t offset, int64_t length)
 {
-    LOGV("setDataSource fd=%d, offset=%lld, length=%lld", fd, offset, length);
+    ALOGV("setDataSource fd=%d, offset=%lld, length=%lld", fd, offset, length);
     struct stat sb;
     int ret = fstat(fd, &sb);
     if (ret != 0) {
-        LOGE("fstat(%d) failed: %d, %s", fd, ret, strerror(errno));
+        ALOGE("fstat(%d) failed: %d, %s", fd, ret, strerror(errno));
         return UNKNOWN_ERROR;
     }
 
-    LOGV("st_dev  = %llu", sb.st_dev);
-    LOGV("st_mode = %u", sb.st_mode);
-    LOGV("st_uid  = %lu", sb.st_uid);
-    LOGV("st_gid  = %lu", sb.st_gid);
-    LOGV("st_size = %llu", sb.st_size);
+    ALOGV("st_dev  = %llu", sb.st_dev);
+    ALOGV("st_mode = %u", sb.st_mode);
+    ALOGV("st_uid  = %lu", sb.st_uid);
+    ALOGV("st_gid  = %lu", sb.st_gid);
+    ALOGV("st_size = %llu", sb.st_size);
 
     if (offset >= sb.st_size) {
-        LOGE("offset error");
+        ALOGE("offset error");
         ::close(fd);
         return UNKNOWN_ERROR;
     }
     if (offset + length > sb.st_size) {
         length = sb.st_size - offset;
-        LOGV("calculated length = %lld", length);
+        ALOGV("calculated length = %lld", length);
     }
 
     player_type playerType = getPlayerType(fd, offset, length);
-    LOGV("player type = %d", playerType);
+    ALOGV("player type = %d", playerType);
 
     // create the right type of player
     sp<MediaPlayerBase> p = createPlayer(playerType);
@@ -794,7 +794,7 @@ void MediaPlayerService::Client::disconnectNativeWindow() {
                 NATIVE_WINDOW_API_MEDIA);
 
         if (err != OK) {
-            LOGW("native_window_api_disconnect returned an error: %s (%d)",
+            ALOGW("native_window_api_disconnect returned an error: %s (%d)",
                     strerror(-err), err);
         }
     }
@@ -804,7 +804,7 @@ void MediaPlayerService::Client::disconnectNativeWindow() {
 status_t MediaPlayerService::Client::setVideoSurfaceTexture(
         const sp<ISurfaceTexture>& surfaceTexture)
 {
-    LOGV("[%d] setVideoSurfaceTexture(%p)", mConnId, surfaceTexture.get());
+    ALOGV("[%d] setVideoSurfaceTexture(%p)", mConnId, surfaceTexture.get());
     sp<MediaPlayerBase> p = getPlayer();
     if (p == 0) return UNKNOWN_ERROR;
 
@@ -821,7 +821,7 @@ status_t MediaPlayerService::Client::setVideoSurfaceTexture(
                 NATIVE_WINDOW_API_MEDIA);
 
         if (err != OK) {
-            LOGE("setVideoSurfaceTexture failed: %d", err);
+            ALOGE("setVideoSurfaceTexture failed: %d", err);
             // Note that we must do the reset before disconnecting from the ANW.
             // Otherwise queue/dequeue calls could be made on the disconnected
             // ANW, which may result in errors.
@@ -905,7 +905,7 @@ status_t MediaPlayerService::Client::getMetadata(
 
     if (status != OK) {
         metadata.resetParcel();
-        LOGE("getMetadata failed %d", status);
+        ALOGE("getMetadata failed %d", status);
         return status;
     }
 
@@ -920,12 +920,12 @@ status_t MediaPlayerService::Client::getMetadata(
 
 status_t MediaPlayerService::Client::prepareAsync()
 {
-    LOGV("[%d] prepareAsync", mConnId);
+    ALOGV("[%d] prepareAsync", mConnId);
     sp<MediaPlayerBase> p = getPlayer();
     if (p == 0) return UNKNOWN_ERROR;
     status_t ret = p->prepareAsync();
 #if CALLBACK_ANTAGONIZER
-    LOGD("start Antagonizer");
+    ALOGD("start Antagonizer");
     if (ret == NO_ERROR) mAntagonizer->start();
 #endif
     return ret;
@@ -933,7 +933,7 @@ status_t MediaPlayerService::Client::prepareAsync()
 
 status_t MediaPlayerService::Client::start()
 {
-    LOGV("[%d] start", mConnId);
+    ALOGV("[%d] start", mConnId);
     sp<MediaPlayerBase> p = getPlayer();
     if (p == 0) return UNKNOWN_ERROR;
     p->setLooping(mLoop);
@@ -942,7 +942,7 @@ status_t MediaPlayerService::Client::start()
 
 status_t MediaPlayerService::Client::stop()
 {
-    LOGV("[%d] stop", mConnId);
+    ALOGV("[%d] stop", mConnId);
     sp<MediaPlayerBase> p = getPlayer();
     if (p == 0) return UNKNOWN_ERROR;
     return p->stop();
@@ -950,7 +950,7 @@ status_t MediaPlayerService::Client::stop()
 
 status_t MediaPlayerService::Client::pause()
 {
-    LOGV("[%d] pause", mConnId);
+    ALOGV("[%d] pause", mConnId);
     sp<MediaPlayerBase> p = getPlayer();
     if (p == 0) return UNKNOWN_ERROR;
     return p->pause();
@@ -962,41 +962,41 @@ status_t MediaPlayerService::Client::isPlaying(bool* state)
     sp<MediaPlayerBase> p = getPlayer();
     if (p == 0) return UNKNOWN_ERROR;
     *state = p->isPlaying();
-    LOGV("[%d] isPlaying: %d", mConnId, *state);
+    ALOGV("[%d] isPlaying: %d", mConnId, *state);
     return NO_ERROR;
 }
 
 status_t MediaPlayerService::Client::getCurrentPosition(int *msec)
 {
-    LOGV("getCurrentPosition");
+    ALOGV("getCurrentPosition");
     sp<MediaPlayerBase> p = getPlayer();
     if (p == 0) return UNKNOWN_ERROR;
     status_t ret = p->getCurrentPosition(msec);
     if (ret == NO_ERROR) {
-        LOGV("[%d] getCurrentPosition = %d", mConnId, *msec);
+        ALOGV("[%d] getCurrentPosition = %d", mConnId, *msec);
     } else {
-        LOGE("getCurrentPosition returned %d", ret);
+        ALOGE("getCurrentPosition returned %d", ret);
     }
     return ret;
 }
 
 status_t MediaPlayerService::Client::getDuration(int *msec)
 {
-    LOGV("getDuration");
+    ALOGV("getDuration");
     sp<MediaPlayerBase> p = getPlayer();
     if (p == 0) return UNKNOWN_ERROR;
     status_t ret = p->getDuration(msec);
     if (ret == NO_ERROR) {
-        LOGV("[%d] getDuration = %d", mConnId, *msec);
+        ALOGV("[%d] getDuration = %d", mConnId, *msec);
     } else {
-        LOGE("getDuration returned %d", ret);
+        ALOGE("getDuration returned %d", ret);
     }
     return ret;
 }
 
 status_t MediaPlayerService::Client::seekTo(int msec)
 {
-    LOGV("[%d] seekTo(%d)", mConnId, msec);
+    ALOGV("[%d] seekTo(%d)", mConnId, msec);
     sp<MediaPlayerBase> p = getPlayer();
     if (p == 0) return UNKNOWN_ERROR;
     return p->seekTo(msec);
@@ -1004,7 +1004,7 @@ status_t MediaPlayerService::Client::seekTo(int msec)
 
 status_t MediaPlayerService::Client::reset()
 {
-    LOGV("[%d] reset", mConnId);
+    ALOGV("[%d] reset", mConnId);
     sp<MediaPlayerBase> p = getPlayer();
     if (p == 0) return UNKNOWN_ERROR;
     return p->reset();
@@ -1012,7 +1012,7 @@ status_t MediaPlayerService::Client::reset()
 
 status_t MediaPlayerService::Client::setAudioStreamType(int type)
 {
-    LOGV("[%d] setAudioStreamType(%d)", mConnId, type);
+    ALOGV("[%d] setAudioStreamType(%d)", mConnId, type);
     // TODO: for hardware output, call player instead
     Mutex::Autolock l(mLock);
     if (mAudioOutput != 0) mAudioOutput->setAudioStreamType(type);
@@ -1021,7 +1021,7 @@ status_t MediaPlayerService::Client::setAudioStreamType(int type)
 
 status_t MediaPlayerService::Client::setLooping(int loop)
 {
-    LOGV("[%d] setLooping(%d)", mConnId, loop);
+    ALOGV("[%d] setLooping(%d)", mConnId, loop);
     mLoop = loop;
     sp<MediaPlayerBase> p = getPlayer();
     if (p != 0) return p->setLooping(loop);
@@ -1030,7 +1030,7 @@ status_t MediaPlayerService::Client::setLooping(int loop)
 
 status_t MediaPlayerService::Client::setVolume(float leftVolume, float rightVolume)
 {
-    LOGV("[%d] setVolume(%f, %f)", mConnId, leftVolume, rightVolume);
+    ALOGV("[%d] setVolume(%f, %f)", mConnId, leftVolume, rightVolume);
     // TODO: for hardware output, call player instead
     Mutex::Autolock l(mLock);
     if (mAudioOutput != 0) mAudioOutput->setVolume(leftVolume, rightVolume);
@@ -1039,7 +1039,7 @@ status_t MediaPlayerService::Client::setVolume(float leftVolume, float rightVolu
 
 status_t MediaPlayerService::Client::setAuxEffectSendLevel(float level)
 {
-    LOGV("[%d] setAuxEffectSendLevel(%f)", mConnId, level);
+    ALOGV("[%d] setAuxEffectSendLevel(%f)", mConnId, level);
     Mutex::Autolock l(mLock);
     if (mAudioOutput != 0) return mAudioOutput->setAuxEffectSendLevel(level);
     return NO_ERROR;
@@ -1047,21 +1047,21 @@ status_t MediaPlayerService::Client::setAuxEffectSendLevel(float level)
 
 status_t MediaPlayerService::Client::attachAuxEffect(int effectId)
 {
-    LOGV("[%d] attachAuxEffect(%d)", mConnId, effectId);
+    ALOGV("[%d] attachAuxEffect(%d)", mConnId, effectId);
     Mutex::Autolock l(mLock);
     if (mAudioOutput != 0) return mAudioOutput->attachAuxEffect(effectId);
     return NO_ERROR;
 }
 
 status_t MediaPlayerService::Client::setParameter(int key, const Parcel &request) {
-    LOGV("[%d] setParameter(%d)", mConnId, key);
+    ALOGV("[%d] setParameter(%d)", mConnId, key);
     sp<MediaPlayerBase> p = getPlayer();
     if (p == 0) return UNKNOWN_ERROR;
     return p->setParameter(key, request);
 }
 
 status_t MediaPlayerService::Client::getParameter(int key, Parcel *reply) {
-    LOGV("[%d] getParameter(%d)", mConnId, key);
+    ALOGV("[%d] getParameter(%d)", mConnId, key);
     sp<MediaPlayerBase> p = getPlayer();
     if (p == 0) return UNKNOWN_ERROR;
     return p->getParameter(key, reply);
@@ -1084,7 +1084,7 @@ void MediaPlayerService::Client::notify(
         // also access mMetadataUpdated and clears it.
         client->addNewMetadataUpdate(metadata_type);
     }
-    LOGV("[%d] notify (%p, %d, %d, %d)", client->mConnId, cookie, msg, ext1, ext2);
+    ALOGV("[%d] notify (%p, %d, %d, %d)", client->mConnId, cookie, msg, ext1, ext2);
     client->mClient->notify(msg, ext1, ext2, obj);
 }
 
@@ -1131,18 +1131,18 @@ void Antagonizer::kill()
 
 int Antagonizer::callbackThread(void* user)
 {
-    LOGD("Antagonizer started");
+    ALOGD("Antagonizer started");
     Antagonizer* p = reinterpret_cast<Antagonizer*>(user);
     while (!p->mExit) {
         if (p->mActive) {
-            LOGV("send event");
+            ALOGV("send event");
             p->mCb(p->mClient, 0, 0, 0);
         }
         usleep(interval);
     }
     Mutex::Autolock _l(p->mLock);
     p->mCondition.signal();
-    LOGD("Antagonizer stopped");
+    ALOGD("Antagonizer stopped");
     return 0;
 }
 #endif
@@ -1151,7 +1151,7 @@ static size_t kDefaultHeapSize = 1024 * 1024; // 1MB
 
 sp<IMemory> MediaPlayerService::decode(const char* url, uint32_t *pSampleRate, int* pNumChannels, int* pFormat)
 {
-    LOGV("decode(%s)", url);
+    ALOGV("decode(%s)", url);
     sp<MemoryBase> mem;
     sp<MediaPlayerBase> player;
 
@@ -1160,12 +1160,12 @@ sp<IMemory> MediaPlayerService::decode(const char* url, uint32_t *pSampleRate, i
     // If the application wants to decode those, it should open a
     // filedescriptor for them and use that.
     if (url != NULL && strncmp(url, "http://", 7) != 0) {
-        LOGD("Can't decode %s by path, use filedescriptor instead", url);
+        ALOGD("Can't decode %s by path, use filedescriptor instead", url);
         return mem;
     }
 
     player_type playerType = getPlayerType(url);
-    LOGV("player type = %d", playerType);
+    ALOGV("player type = %d", playerType);
 
     // create the right type of player
     sp<AudioCache> cache = new AudioCache(url);
@@ -1178,16 +1178,16 @@ sp<IMemory> MediaPlayerService::decode(const char* url, uint32_t *pSampleRate, i
     // set data source
     if (player->setDataSource(url) != NO_ERROR) goto Exit;
 
-    LOGV("prepare");
+    ALOGV("prepare");
     player->prepareAsync();
 
-    LOGV("wait for prepare");
+    ALOGV("wait for prepare");
     if (cache->wait() != NO_ERROR) goto Exit;
 
-    LOGV("start");
+    ALOGV("start");
     player->start();
 
-    LOGV("wait for playback complete");
+    ALOGV("wait for playback complete");
     cache->wait();
     // in case of error, return what was successfully decoded.
     if (cache->size() == 0) {
@@ -1198,7 +1198,7 @@ sp<IMemory> MediaPlayerService::decode(const char* url, uint32_t *pSampleRate, i
     *pSampleRate = cache->sampleRate();
     *pNumChannels = cache->channelCount();
     *pFormat = (int)cache->format();
-    LOGV("return memory @ %p, sampleRate=%u, channelCount = %d, format = %d", mem->pointer(), *pSampleRate, *pNumChannels, *pFormat);
+    ALOGV("return memory @ %p, sampleRate=%u, channelCount = %d, format = %d", mem->pointer(), *pSampleRate, *pNumChannels, *pFormat);
 
 Exit:
     if (player != 0) player->reset();
@@ -1207,12 +1207,12 @@ Exit:
 
 sp<IMemory> MediaPlayerService::decode(int fd, int64_t offset, int64_t length, uint32_t *pSampleRate, int* pNumChannels, int* pFormat)
 {
-    LOGV("decode(%d, %lld, %lld)", fd, offset, length);
+    ALOGV("decode(%d, %lld, %lld)", fd, offset, length);
     sp<MemoryBase> mem;
     sp<MediaPlayerBase> player;
 
     player_type playerType = getPlayerType(fd, offset, length);
-    LOGV("player type = %d", playerType);
+    ALOGV("player type = %d", playerType);
 
     // create the right type of player
     sp<AudioCache> cache = new AudioCache("decode_fd");
@@ -1225,16 +1225,16 @@ sp<IMemory> MediaPlayerService::decode(int fd, int64_t offset, int64_t length, u
     // set data source
     if (player->setDataSource(fd, offset, length) != NO_ERROR) goto Exit;
 
-    LOGV("prepare");
+    ALOGV("prepare");
     player->prepareAsync();
 
-    LOGV("wait for prepare");
+    ALOGV("wait for prepare");
     if (cache->wait() != NO_ERROR) goto Exit;
 
-    LOGV("start");
+    ALOGV("start");
     player->start();
 
-    LOGV("wait for playback complete");
+    ALOGV("wait for playback complete");
     cache->wait();
     // in case of error, return what was successfully decoded.
     if (cache->size() == 0) {
@@ -1245,7 +1245,7 @@ sp<IMemory> MediaPlayerService::decode(int fd, int64_t offset, int64_t length, u
     *pSampleRate = cache->sampleRate();
     *pNumChannels = cache->channelCount();
     *pFormat = cache->format();
-    LOGV("return memory @ %p, sampleRate=%u, channelCount = %d, format = %d", mem->pointer(), *pSampleRate, *pNumChannels, *pFormat);
+    ALOGV("return memory @ %p, sampleRate=%u, channelCount = %d, format = %d", mem->pointer(), *pSampleRate, *pNumChannels, *pFormat);
 
 Exit:
     if (player != 0) player->reset();
@@ -1260,12 +1260,11 @@ MediaPlayerService::AudioOutput::AudioOutput(int sessionId)
     : mCallback(NULL),
       mCallbackCookie(NULL),
       mSessionId(sessionId) {
-    LOGV("AudioOutput(%d)", sessionId);
+    ALOGV("AudioOutput(%d)", sessionId);
     mTrack = 0;
     mStreamType = AUDIO_STREAM_MUSIC;
     mLeftVolume = 1.0;
     mRightVolume = 1.0;
-    mLatency = 0;
     mMsecsPerFrame = 0;
     mAuxEffectId = 0;
     mSendLevel = 0.0;
@@ -1324,7 +1323,8 @@ ssize_t MediaPlayerService::AudioOutput::frameSize() const
 
 uint32_t MediaPlayerService::AudioOutput::latency () const
 {
-    return mLatency;
+    if (mTrack == 0) return 0;
+    return mTrack->latency();
 }
 
 float MediaPlayerService::AudioOutput::msecsPerFrame() const
@@ -1347,11 +1347,11 @@ status_t MediaPlayerService::AudioOutput::open(
 
     // Check argument "bufferCount" against the mininum buffer count
     if (bufferCount < mMinBufferCount) {
-        LOGD("bufferCount (%d) is too small and increased to %d", bufferCount, mMinBufferCount);
+        ALOGD("bufferCount (%d) is too small and increased to %d", bufferCount, mMinBufferCount);
         bufferCount = mMinBufferCount;
 
     }
-    LOGV("open(%u, %d, %d, %d, %d)", sampleRate, channelCount, format, bufferCount,mSessionId);
+    ALOGV("open(%u, %d, %d, %d, %d)", sampleRate, channelCount, format, bufferCount,mSessionId);
     if (mTrack) close();
     int afSampleRate;
     int afFrameCount;
@@ -1394,16 +1394,15 @@ status_t MediaPlayerService::AudioOutput::open(
     }
 
     if ((t == 0) || (t->initCheck() != NO_ERROR)) {
-        LOGE("Unable to create audio track");
+        ALOGE("Unable to create audio track");
         delete t;
         return NO_INIT;
     }
 
-    LOGV("setVolume");
+    ALOGV("setVolume");
     t->setVolume(mLeftVolume, mRightVolume);
 
     mMsecsPerFrame = 1.e3 / (float) sampleRate;
-    mLatency = t->latency();
     mTrack = t;
 
     t->setAuxEffectSendLevel(mSendLevel);
@@ -1412,7 +1411,7 @@ status_t MediaPlayerService::AudioOutput::open(
 
 void MediaPlayerService::AudioOutput::start()
 {
-    LOGV("start");
+    ALOGV("start");
     if (mTrack) {
         mTrack->setVolume(mLeftVolume, mRightVolume);
         mTrack->setAuxEffectSendLevel(mSendLevel);
@@ -1426,7 +1425,7 @@ ssize_t MediaPlayerService::AudioOutput::write(const void* buffer, size_t size)
 {
     LOG_FATAL_IF(mCallback != NULL, "Don't call write if supplying a callback.");
 
-    //LOGV("write(%p, %u)", buffer, size);
+    //ALOGV("write(%p, %u)", buffer, size);
     if (mTrack) {
         ssize_t ret = mTrack->write(buffer, size);
         return ret;
@@ -1436,32 +1435,32 @@ ssize_t MediaPlayerService::AudioOutput::write(const void* buffer, size_t size)
 
 void MediaPlayerService::AudioOutput::stop()
 {
-    LOGV("stop");
+    ALOGV("stop");
     if (mTrack) mTrack->stop();
 }
 
 void MediaPlayerService::AudioOutput::flush()
 {
-    LOGV("flush");
+    ALOGV("flush");
     if (mTrack) mTrack->flush();
 }
 
 void MediaPlayerService::AudioOutput::pause()
 {
-    LOGV("pause");
+    ALOGV("pause");
     if (mTrack) mTrack->pause();
 }
 
 void MediaPlayerService::AudioOutput::close()
 {
-    LOGV("close");
+    ALOGV("close");
     delete mTrack;
     mTrack = 0;
 }
 
 void MediaPlayerService::AudioOutput::setVolume(float left, float right)
 {
-    LOGV("setVolume(%f, %f)", left, right);
+    ALOGV("setVolume(%f, %f)", left, right);
     mLeftVolume = left;
     mRightVolume = right;
     if (mTrack) {
@@ -1471,7 +1470,7 @@ void MediaPlayerService::AudioOutput::setVolume(float left, float right)
 
 status_t MediaPlayerService::AudioOutput::setAuxEffectSendLevel(float level)
 {
-    LOGV("setAuxEffectSendLevel(%f)", level);
+    ALOGV("setAuxEffectSendLevel(%f)", level);
     mSendLevel = level;
     if (mTrack) {
         return mTrack->setAuxEffectSendLevel(level);
@@ -1481,7 +1480,7 @@ status_t MediaPlayerService::AudioOutput::setAuxEffectSendLevel(float level)
 
 status_t MediaPlayerService::AudioOutput::attachAuxEffect(int effectId)
 {
-    LOGV("attachAuxEffect(%d)", effectId);
+    ALOGV("attachAuxEffect(%d)", effectId);
     mAuxEffectId = effectId;
     if (mTrack) {
         return mTrack->attachAuxEffect(effectId);
@@ -1492,7 +1491,7 @@ status_t MediaPlayerService::AudioOutput::attachAuxEffect(int effectId)
 // static
 void MediaPlayerService::AudioOutput::CallbackWrapper(
         int event, void *cookie, void *info) {
-    //LOGV("callbackwrapper");
+    //ALOGV("callbackwrapper");
     if (event != AudioTrack::EVENT_MORE_DATA) {
         return;
     }
@@ -1614,7 +1613,7 @@ status_t MediaPlayerService::AudioCache::open(
         uint32_t sampleRate, int channelCount, int format, int bufferCount,
         AudioCallback cb, void *cookie)
 {
-    LOGV("open(%u, %d, %d, %d)", sampleRate, channelCount, format, bufferCount);
+    ALOGV("open(%u, %d, %d, %d)", sampleRate, channelCount, format, bufferCount);
     if (mHeap->getHeapID() < 0) {
         return NO_INIT;
     }
@@ -1644,15 +1643,15 @@ void MediaPlayerService::AudioCache::stop() {
 
 ssize_t MediaPlayerService::AudioCache::write(const void* buffer, size_t size)
 {
-    LOGV("write(%p, %u)", buffer, size);
+    ALOGV("write(%p, %u)", buffer, size);
     if ((buffer == 0) || (size == 0)) return size;
 
     uint8_t* p = static_cast<uint8_t*>(mHeap->getBase());
     if (p == NULL) return NO_INIT;
     p += mSize;
-    LOGV("memcpy(%p, %p, %u)", p, buffer, size);
+    ALOGV("memcpy(%p, %p, %u)", p, buffer, size);
     if (mSize + size > mHeap->getSize()) {
-        LOGE("Heap size overflow! req size: %d, max size: %d", (mSize + size), mHeap->getSize());
+        ALOGE("Heap size overflow! req size: %d, max size: %d", (mSize + size), mHeap->getSize());
         size = mHeap->getSize() - mSize;
     }
     memcpy(p, buffer, size);
@@ -1670,9 +1669,9 @@ status_t MediaPlayerService::AudioCache::wait()
     mCommandComplete = false;
 
     if (mError == NO_ERROR) {
-        LOGV("wait - success");
+        ALOGV("wait - success");
     } else {
-        LOGV("wait - error");
+        ALOGV("wait - error");
     }
     return mError;
 }
@@ -1680,24 +1679,24 @@ status_t MediaPlayerService::AudioCache::wait()
 void MediaPlayerService::AudioCache::notify(
         void* cookie, int msg, int ext1, int ext2, const Parcel *obj)
 {
-    LOGV("notify(%p, %d, %d, %d)", cookie, msg, ext1, ext2);
+    ALOGV("notify(%p, %d, %d, %d)", cookie, msg, ext1, ext2);
     AudioCache* p = static_cast<AudioCache*>(cookie);
 
     // ignore buffering messages
     switch (msg)
     {
     case MEDIA_ERROR:
-        LOGE("Error %d, %d occurred", ext1, ext2);
+        ALOGE("Error %d, %d occurred", ext1, ext2);
         p->mError = ext1;
         break;
     case MEDIA_PREPARED:
-        LOGV("prepared");
+        ALOGV("prepared");
         break;
     case MEDIA_PLAYBACK_COMPLETE:
-        LOGV("playback complete");
+        ALOGV("playback complete");
         break;
     default:
-        LOGV("ignored");
+        ALOGV("ignored");
         return;
     }
 
@@ -1772,7 +1771,7 @@ void MediaPlayerService::addBatteryData(uint32_t params)
 
     } else if (params & kBatteryDataAudioFlingerStop) {
         if (mBatteryAudio.refCount <= 0) {
-            LOGW("Battery track warning: refCount is <= 0");
+            ALOGW("Battery track warning: refCount is <= 0");
             return;
         }
 
@@ -1807,7 +1806,7 @@ void MediaPlayerService::addBatteryData(uint32_t params)
         info.refCount = 0;
 
         if (mBatteryData.add(uid, info) == NO_MEMORY) {
-            LOGE("Battery track error: no memory for new app");
+            ALOGE("Battery track error: no memory for new app");
             return;
         }
     }
@@ -1825,10 +1824,10 @@ void MediaPlayerService::addBatteryData(uint32_t params)
         }
     } else {
         if (info.refCount == 0) {
-            LOGW("Battery track warning: refCount is already 0");
+            ALOGW("Battery track warning: refCount is already 0");
             return;
         } else if (info.refCount < 0) {
-            LOGE("Battery track error: refCount < 0");
+            ALOGE("Battery track error: refCount < 0");
             mBatteryData.removeItem(uid);
             return;
         }
