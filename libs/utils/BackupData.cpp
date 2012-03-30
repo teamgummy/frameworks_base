@@ -112,8 +112,8 @@ BackupDataWriter::WriteEntityHeader(const String8& key, size_t dataSize)
         k = key;
     }
     if (DEBUG) {
-        LOGD("Writing header: prefix='%s' key='%s' dataSize=%d", m_keyPrefix.string(), key.string(),
-                dataSize);
+        LOGD("Writing header: prefix='%s' key='%s' dataSize=%d", m_keyPrefix.string(),
+                key.string(), dataSize);
     }
 
     entity_header_v1 header;

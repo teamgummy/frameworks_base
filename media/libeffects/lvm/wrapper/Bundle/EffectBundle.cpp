@@ -3078,20 +3078,20 @@ int Effect_command(effect_handle_t  self,
 
                     if (pContext->pBundledContext->bBassEnabled == LVM_TRUE) {
                         LOGV("\tEFFECT_CMD_SET_DEVICE disable LVM_BASS_BOOST %d",
-                             *(int32_t *)pCmdData);
+                              *(int32_t *)pCmdData);
                         android::LvmEffect_disable(pContext);
                     }
                     pContext->pBundledContext->bBassTempDisabled = LVM_TRUE;
                 } else {
                     LOGV("\tEFFECT_CMD_SET_DEVICE device is valid for LVM_BASS_BOOST %d",
-                         *(int32_t *)pCmdData);
+                          *(int32_t *)pCmdData);
 
                     // If a device supports bassboost and the effect has been temporarily disabled
                     // previously then re-enable it
 
                     if (pContext->pBundledContext->bBassEnabled == LVM_TRUE) {
                         LOGV("\tEFFECT_CMD_SET_DEVICE re-enable LVM_BASS_BOOST %d",
-                             *(int32_t *)pCmdData);
+                              *(int32_t *)pCmdData);
                         android::LvmEffect_enable(pContext);
                     }
                     pContext->pBundledContext->bBassTempDisabled = LVM_FALSE;

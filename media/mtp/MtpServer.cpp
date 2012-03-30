@@ -878,7 +878,7 @@ MtpResponseCode MtpServer::doSendObjectInfo() {
             return MTP_RESPONSE_OBJECT_TOO_LARGE;
     }
 
-LOGD("path: %s parent: %d storageID: %08X", (const char*)path, parent, storageID);
+    LOGD("path: %s parent: %d storageID: %08X", (const char*)path, parent, storageID);
     MtpObjectHandle handle = mDatabase->beginSendObject((const char*)path,
             format, parent, storageID, mSendObjectFileSize, modifiedTime);
     if (handle == kInvalidObjectHandle) {

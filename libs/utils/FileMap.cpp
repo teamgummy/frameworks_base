@@ -69,7 +69,7 @@ FileMap::~FileMap(void)
 #endif
 #ifdef HAVE_WIN32_FILEMAP
     if (mBasePtr && UnmapViewOfFile(mBasePtr) == 0) {
-        LOGD("UnmapViewOfFile(%p) failed, error = %ld\n", mBasePtr, 
+        LOGD("UnmapViewOfFile(%p) failed, error = %ld\n", mBasePtr,
               GetLastError() );
     }
     if (mFileMapping != INVALID_HANDLE_VALUE) {

@@ -690,7 +690,7 @@ status_t NuPlayer::feedDecoderInputData(bool audio, const sp<AMessage> &msg) {
                 bool timeChange = (type & ATSParser::DISCONTINUITY_TIME) != 0;
 
                 LOGI("%s discontinuity (formatChange=%d, time=%d)",
-                     audio ? "audio" : "video", formatChange, timeChange);
+                      audio ? "audio" : "video", formatChange, timeChange);
 
                 if (audio) {
                     mSkipRenderingAudioUntilMediaTimeUs = -1;

@@ -272,7 +272,7 @@ public:
     }
     
     virtual void operator()(const Rect& rect) {
-        //LOGD(">>> %3d, %3d, %3d, %3d", 
+        //LOGD(">>> %3d, %3d, %3d, %3d",
         //        rect.left, rect.top, rect.right, rect.bottom);
         if (span.size()) {
             if (cur->top != rect.top) {
