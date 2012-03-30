@@ -84,10 +84,6 @@ public final class GsmCallTracker extends CallTracker {
 
     Phone.State state = Phone.State.IDLE;
 
-    /* BEGIN: MOTOROLA */
-    private boolean mIsSwitchedToCdma = false;
-    private int mOwnerModemId;
-    /* END: MOTOROLA */
 
 
     //***** Events
@@ -95,44 +91,14 @@ public final class GsmCallTracker extends CallTracker {
 
     //***** Constructors
 
-    GsmCallTracker(int ownerModemId, GSMPhone gsmphone) {
-        mIsSwitchedToCdma = false;
-        mOwnerModemId = ownerModemId;
-        this.phone = gsmphone;
-        cm = gsmphone.mCM;
-    }
-
     GsmCallTracker (GSMPhone phone) {
         this.phone = phone;
         cm = phone.mCM;
-        activateMe();
-    }
 
-    GsmCallTracker(boolean worldPhoneFlag, boolean switchToCDMAFlag, GSMPhone gsmphone) {
-        if (!worldPhoneFlag) {
-            Log.e(LOG_TAG, "this shouldn't be called by normal phone");
-            return;
-        }
-        this.phone = gsmphone;
-        cm = phone.mCM;
-        if (!switchToCDMAFlag) {
-            mIsSwitchedToCdma = true;
-            switchToGsm();
-        }
-        else {
-            mIsSwitchedToCdma = true;
-        }
-    }
-
-
-    private void activateMe() {
         cm.registerForCallStateChanged(this, EVENT_CALL_STATE_CHANGE, null);
+
         cm.registerForOn(this, EVENT_RADIO_AVAILABLE, null);
         cm.registerForNotAvailable(this, EVENT_RADIO_NOT_AVAILABLE, null);
-    }
-
-    public void activate() {
-        activateMe();
     }
 
     public void dispose() {
@@ -158,10 +124,6 @@ public final class GsmCallTracker extends CallTracker {
         clearDisconnected();
     }
 
-    public void deactivate() {
-        dispose();
-    }
-
     protected void finalize() {
         Log.d(LOG_TAG, "GsmCallTracker finalized");
     }
@@ -169,20 +131,6 @@ public final class GsmCallTracker extends CallTracker {
     //***** Instance Methods
 
     //***** Public Methods
-    public void switchToCdma() {
-        if (!mIsSwitchedToCdma) {
-            mIsSwitchedToCdma = true;
-            dispose();
-        }
-    }
-
-    public void switchToGsm() {
-        if(mIsSwitchedToCdma) {
-            mIsSwitchedToCdma = false;
-            activateMe();
-        }
-    }
-
     public void registerForVoiceCallStarted(Handler h, int what, Object obj) {
         Registrant r = new Registrant(h, what, obj);
         voiceCallStartedRegistrants.add(r);

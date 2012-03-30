@@ -2858,12 +2858,6 @@ public final class Settings {
         @Deprecated
         public static final String WIFI_WATCHDOG_PING_TIMEOUT_MS =
                 Secure.WIFI_WATCHDOG_PING_TIMEOUT_MS;
-
-        /**
-        * Whether national data Roming should be used.
-        */
-        public static final String MVNO_ROAMING = "mvno_roaming";
-
     }
 
     /**
