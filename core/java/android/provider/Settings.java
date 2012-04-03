@@ -2518,7 +2518,17 @@ public final class Settings {
         */
         public static final String EXPANDED_FLASH_MODE = "expanded_flash_mode";
 
+        /**
+        * Notification Power Widget - Custom Torch Mode
+        * @hide
+        */
+        public static final String TOP_CARRIER_LABEL = "top_carrier_label";
 
+        /**
+        * Notification Power Widget - Custom Torch Mode
+        * @hide
+        */
+        public static final String TOP_CARRIER_LABEL_COLOR = "top_carrier_label_color";
 
         /**
          * Settings to backup. This is here so that it's in the same place as
