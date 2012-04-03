@@ -1198,7 +1198,9 @@ public class PhoneStatusBar extends StatusBar {
 
         if (mShowCarrierTop1 && show && !hasData || mShowCarrierTop2 && show && !hasData) {
         	mCarrier.setVisibility(View.VISIBLE);
-        } else if (mShowCarrierTop1 && hasData || mShowCarrierTop2 && hasData) {
+        } else if (mShowCarrierTop1 && show && hasData  || mShowCarrierTop2 && show && hasData) {
+        	mCarrier.setVisibility(View.GONE);
+        } else if (mShowCarrierTop1 || mShowCarrierTop2) {
         	mCarrier.setVisibility(View.GONE);
         }
     }
