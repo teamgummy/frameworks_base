@@ -2519,13 +2519,14 @@ public final class Settings {
         public static final String EXPANDED_FLASH_MODE = "expanded_flash_mode";
 
         /**
-        * Notification Power Widget - Custom Torch Mode
+        * Carrier Text MIUI Styles
+        * 0 = off, 1 = stock carrier, 2 = custom carrier
         * @hide
         */
         public static final String TOP_CARRIER_LABEL = "top_carrier_label";
 
         /**
-        * Notification Power Widget - Custom Torch Mode
+        * Carrier Text MIUI Styles Color
         * @hide
         */
         public static final String TOP_CARRIER_LABEL_COLOR = "top_carrier_label_color";
