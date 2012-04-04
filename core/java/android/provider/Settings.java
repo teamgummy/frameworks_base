@@ -2532,6 +2532,19 @@ public final class Settings {
         public static final String TOP_CARRIER_LABEL_COLOR = "top_carrier_label_color";
 
         /**
+        * Carrier Text Toggle
+        * 0 = off, 1 = stock carrier, 2 = custom carrier
+        * @hide
+        */
+        public static final String USE_CUSTOM_CARRIER = "use_custom_carrier";
+
+        /**
+        * Carrier Text Color
+        * @hide
+        */
+        public static final String USE_CUSTOM_CARRIER_COLOR = "use_custom_carrier_color";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as
          * the settings keys and easy to update. NOTE: Settings are backed up
          * and restored in the order they appear in this array. If you have one
