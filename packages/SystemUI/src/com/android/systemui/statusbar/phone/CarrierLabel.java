@@ -18,9 +18,12 @@
 package com.android.systemui.statusbar.phone;
 
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.ContentObserver;
+import android.os.Handler;
 import android.provider.Settings;
 import android.provider.Telephony;
 import android.util.AttributeSet;
@@ -40,6 +43,8 @@ import com.android.internal.R;
  */
 public class CarrierLabel extends TextView {
     private boolean mAttached;
+    
+    private Handler mHandler;
 
     public CarrierLabel(Context context) {
         this(context, null);
@@ -52,6 +57,12 @@ public class CarrierLabel extends TextView {
     public CarrierLabel(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         updateNetworkName(false, null, false, null);
+        
+        mHandler = new Handler();
+        SettingsObserver settingsObserver = new SettingsObserver(mHandler);
+        settingsObserver.observe();
+
+        updateSettings();
     }
 
     @Override
@@ -94,11 +105,35 @@ public class CarrierLabel extends TextView {
                     + " showPlmn=" + showPlmn + " plmn=" + plmn);
         }
 
-        String customCarrier = null;
-        customCarrier = Settings.System.getString(mContext.getContentResolver(), Settings.System.CUSTOM_CARRIER_TEXT);
+        boolean mCustomCarrier = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.USE_CUSTOM_CARRIER, 1) == 2);
+        if (mCustomCarrier) {
+        	String customCarrier = null;
+            customCarrier = Settings.System.getString(mContext.getContentResolver(), Settings.System.CUSTOM_CARRIER_TEXT);
 
-        if (customCarrier == null) {
-            StringBuilder str = new StringBuilder();
+            if (customCarrier == null) {
+                StringBuilder str = new StringBuilder();
+                boolean something = false;
+                if (showPlmn && plmn != null) {
+                    str.append(plmn);
+                    something = true;
+                }
+                if (showSpn && spn != null) {
+                    if (something) {
+                        str.append('\n');
+                    }
+                    str.append(spn);
+                    something = true;
+                }
+                if (something) {
+                    setText(str.toString());
+                } else {
+                    setText(com.android.internal.R.string.lockscreen_carrier_default);
+                }
+            } else {
+                setText(customCarrier);
+            }
+        } else {
+        	StringBuilder str = new StringBuilder();
             boolean something = false;
             if (showPlmn && plmn != null) {
                 str.append(plmn);
@@ -116,12 +151,44 @@ public class CarrierLabel extends TextView {
             } else {
                 setText(com.android.internal.R.string.lockscreen_carrier_default);
             }
-        } else {
-            setText(customCarrier);
+        }
+        
+    }
+    
+    class SettingsObserver extends ContentObserver {
+        SettingsObserver(Handler handler) {
+            super(handler);
+        }
+
+        void observe() {
+            ContentResolver resolver = mContext.getContentResolver();
+            resolver.registerContentObserver(
+                Settings.System.getUriFor(Settings.System.USE_CUSTOM_CARRIER), false, this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.USE_CUSTOM_CARRIER_COLOR), false, this);
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            updateSettings();
         }
     }
-
     
+    private void updateSettings() {
+    	ContentResolver resolver = mContext.getContentResolver();
+    	
+    	int mColorChanger = Settings.System.getInt(resolver,
+                Settings.System.USE_CUSTOM_CARRIER_COLOR, 0xFF33B5E5);
+
+        setTextColor(mColorChanger);
+        
+        boolean mDontShow = (Settings.System.getInt(resolver, Settings.System.USE_CUSTOM_CARRIER, 1) == 0);
+        if (mDontShow) {
+            setVisibility(View.GONE);
+        } else {
+            setVisibility(View.VISIBLE);
+        }
+    }    
 }
 
 

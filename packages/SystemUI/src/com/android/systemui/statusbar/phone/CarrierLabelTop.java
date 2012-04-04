@@ -36,11 +36,8 @@ import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.TimeZone;
-import java.util.Observable;
-import java.util.Observer;
 
 import com.android.internal.R;
-import com.android.systemui.statusbar.NotificationData;
 
 
 /**
