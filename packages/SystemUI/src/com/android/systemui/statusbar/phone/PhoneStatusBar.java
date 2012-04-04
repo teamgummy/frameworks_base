@@ -92,6 +92,7 @@ import com.android.systemui.statusbar.NotificationData;
 import com.android.systemui.statusbar.StatusBar;
 import com.android.systemui.statusbar.StatusBarIconView;
 import com.android.systemui.statusbar.SignalClusterView;
+import com.android.systemui.statusbar.phone.CarrierLabelTop;
 import com.android.systemui.statusbar.policy.BatteryController;
 import com.android.systemui.statusbar.policy.BatteryText;
 import com.android.systemui.statusbar.policy.DateView;
@@ -169,6 +170,8 @@ public class PhoneStatusBar extends StatusBar {
     // icons
     LinearLayout mIcons;
     LinearLayout mClock;
+    LinearLayout mCarrierSpace;
+    CarrierLabelTop mCarrier;
     IconMerger mNotificationIcons;
     View mMoreIcon;
     LinearLayout mStatusIcons;
@@ -247,6 +250,8 @@ public class PhoneStatusBar extends StatusBar {
 
     private boolean mShowClock;
     private boolean mShowCenterClock;
+    private boolean mShowCarrierTop1;
+    private boolean mShowCarrierTop2;
 
     // tracking calls to View.setSystemUiVisibility()
     int mSystemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE;
@@ -349,6 +354,8 @@ public class PhoneStatusBar extends StatusBar {
         mNotificationIcons.setOverflowIndicator(mMoreIcon);
         mIcons = (LinearLayout) sb.findViewById(R.id.icons);
         mClock = (LinearLayout) sb.findViewById(R.id.center);
+        mCarrier = (CarrierLabelTop) sb.findViewById(R.id.carriertop);
+        mCarrierSpace = (LinearLayout) sb.findViewById(R.id.carriertopspace);
 
         mTickerView = sb.findViewById(R.id.ticker);
 
@@ -1018,6 +1025,7 @@ public class PhoneStatusBar extends StatusBar {
                 mNotificationIcons.addView(v, i, params);
             }
         }
+
     }
 
     private boolean inflateViews(NotificationData.Entry entry, ViewGroup parent) {
@@ -1124,6 +1132,7 @@ public class PhoneStatusBar extends StatusBar {
         final boolean any = mNotificationData.size() > 0;
 
         final boolean clearable = any && mNotificationData.hasClearableItems();
+        boolean hasData = mNotificationData.hasVisibleItems();
 
         if (DEBUG) {
             Slog.d(TAG, "setAreThereNotifications: N=" + mNotificationData.size()
@@ -1141,7 +1150,20 @@ public class PhoneStatusBar extends StatusBar {
             mClearButton.setAlpha(clearable ? 1.0f : 0.0f);
         }
         mClearButton.setEnabled(clearable);
-
+        
+        mShowCarrierTop1 = (Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.TOP_CARRIER_LABEL, 0) == 1);
+        mShowCarrierTop2 =  (Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.TOP_CARRIER_LABEL, 0) == 2);
+        
+        if (mShowCarrierTop1 || mShowCarrierTop2) {
+            if (hasData) {
+            	mCarrier.setVisibility(View.GONE);
+            } else {
+            	mCarrier.setVisibility(View.VISIBLE);
+            }
+        }
+        
         /*
          * if (mNoNotificationsTitle.isShown()) { if (any !=
          * (mNoNotificationsTitle.getAlpha() == 0.0f)) { ObjectAnimator a =
@@ -1159,15 +1181,28 @@ public class PhoneStatusBar extends StatusBar {
                 Settings.System.STATUS_BAR_CLOCK, 1) == 1);
         mShowCenterClock = (Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.STATUS_BAR_CLOCK, 1) == 2);
+        mShowCarrierTop1 = (Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.TOP_CARRIER_LABEL, 0) == 1);
+        mShowCarrierTop2 =  (Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.TOP_CARRIER_LABEL, 0) == 2);
+        boolean hasData = mNotificationData.hasVisibleItems();
+        
         if (mShowClock && show) {
             clock.setVisibility(View.VISIBLE);
         } else if (mShowCenterClock && show) {
-            cclock.setVisibility(View.VISIBLE);
+            cclock.setVisibility(View.VISIBLE);            
         } else {
             clock.setVisibility(View.GONE);
             cclock.setVisibility(View.GONE);
         }
 
+        if (mShowCarrierTop1 && show && !hasData || mShowCarrierTop2 && show && !hasData) {
+        	mCarrier.setVisibility(View.VISIBLE);
+        } else if (mShowCarrierTop1 && show && hasData  || mShowCarrierTop2 && show && hasData) {
+        	mCarrier.setVisibility(View.GONE);
+        } else if (mShowCarrierTop1 || mShowCarrierTop2) {
+        	mCarrier.setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -1901,9 +1936,11 @@ public class PhoneStatusBar extends StatusBar {
             mIcons.setVisibility(View.GONE);
             mTickerView.setVisibility(View.VISIBLE);
             mClock.setVisibility(View.GONE);
+            mCarrierSpace.setVisibility(View.GONE);
             mTickerView.startAnimation(loadAnim(com.android.internal.R.anim.push_up_in, null));
             mIcons.startAnimation(loadAnim(com.android.internal.R.anim.push_up_out, null));
             mClock.startAnimation(loadAnim(com.android.internal.R.anim.push_up_out, null));
+            mCarrierSpace.startAnimation(loadAnim(com.android.internal.R.anim.push_up_out, null));
         }
 
         @Override
@@ -1911,8 +1948,10 @@ public class PhoneStatusBar extends StatusBar {
             mIcons.setVisibility(View.VISIBLE);
             mTickerView.setVisibility(View.GONE);
             mClock.setVisibility(View.VISIBLE);
+            mCarrierSpace.setVisibility(View.VISIBLE);
             mIcons.startAnimation(loadAnim(com.android.internal.R.anim.push_down_in, null));
             mClock.startAnimation(loadAnim(com.android.internal.R.anim.push_down_in, null));
+            mCarrierSpace.startAnimation(loadAnim(com.android.internal.R.anim.push_down_in, null));
             mTickerView.startAnimation(loadAnim(com.android.internal.R.anim.push_down_out,
                     mTickingDoneListener));
         }
@@ -1921,8 +1960,10 @@ public class PhoneStatusBar extends StatusBar {
             mIcons.setVisibility(View.VISIBLE);
             mTickerView.setVisibility(View.GONE);
             mClock.setVisibility(View.VISIBLE);
+            mCarrierSpace.setVisibility(View.VISIBLE);
             mIcons.startAnimation(loadAnim(com.android.internal.R.anim.fade_in, null));
             mClock.startAnimation(loadAnim(com.android.internal.R.anim.fade_in, null));
+            mCarrierSpace.startAnimation(loadAnim(com.android.internal.R.anim.fade_in, null));
             mTickerView.startAnimation(loadAnim(com.android.internal.R.anim.fade_out,
                     mTickingDoneListener));
         }

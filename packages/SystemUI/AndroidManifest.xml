@@ -120,7 +120,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.android.systemui.statusbar.powerwidget.Torch">
+            android:name="com.android.systemui.statusbar.powerwidget.Torch"
+android:theme="@android:style/Theme.Translucent.NoTitleBar">
         </activity>
     </application>
 </manifest>
