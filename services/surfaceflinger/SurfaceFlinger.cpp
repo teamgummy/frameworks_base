@@ -1469,6 +1469,11 @@ uint32_t SurfaceFlinger::setClientStateLocked(
 
 void SurfaceFlinger::screenReleased(int dpy)
 {
+#ifdef SURFACEFLINGER_FORCE_SCREEN_RELEASE
+    const DisplayHardware& hw = graphicPlane(0).displayHardware();
+    hw.releaseScreen();
+#endif
+
     // this may be called by a signal handler, we can't do too much in here
     android_atomic_or(eConsoleReleased, &mConsoleSignals);
     signalEvent();
@@ -1988,6 +1993,11 @@ status_t SurfaceFlinger::electronBeamOffAnimationImplLocked()
     glDeleteTextures(1, &tname);
     glDisable(GL_TEXTURE_2D);
     glDisable(GL_BLEND);
+
+#ifdef SURFACEFLINGER_FORCE_SCREEN_RELEASE
+    hw.releaseScreen();
+#endif
+
     return NO_ERROR;
 }
 
