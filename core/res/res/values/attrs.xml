@@ -1497,6 +1497,8 @@
         <enum name="KEYCODE_CALENDAR" value="208" />
         <enum name="KEYCODE_MUSIC" value="209" />
         <enum name="KEYCODE_CALCULATOR" value="210" />
+        <enum name="KEYCODE_ALT_LOCK" value="211" />
+        <enum name="KEYCODE_VOICE" value="212" />
     </attr>
 
     <!-- ***************************************************************** -->

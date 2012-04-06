@@ -594,6 +594,9 @@ public class KeyEvent extends InputEvent implements Parcelable {
 
     private static final int LAST_KEYCODE           = KEYCODE_CALCULATOR;
 
+    public static final int KEYCODE_ALT_LOCK      = 211;
+    public static final int KEYCODE_VOICE      = 212;
+
     // NOTE: If you add a new keycode here you must also add it to:
     //  isSystem()
     //  native/include/android/keycodes.h
@@ -825,6 +828,8 @@ public class KeyEvent extends InputEvent implements Parcelable {
         names.append(KEYCODE_CALENDAR, "KEYCODE_CALENDAR");
         names.append(KEYCODE_MUSIC, "KEYCODE_MUSIC");
         names.append(KEYCODE_CALCULATOR, "KEYCODE_CALCULATOR");
+        names.append(KEYCODE_ALT_LOCK, "KEYCODE_ALT_LOCK");
+        names.append(KEYCODE_VOICE, "KEYCODE_VOICE");
     };
 
     // Symbolic names of all metakeys in bit order from least significant to most significant.
