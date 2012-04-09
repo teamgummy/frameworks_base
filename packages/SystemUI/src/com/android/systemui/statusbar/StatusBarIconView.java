@@ -17,13 +17,18 @@
 package com.android.systemui.statusbar;
 
 import android.app.Notification;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.database.ContentObserver;
 import android.graphics.drawable.Drawable;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.PorterDuff.Mode;
 import android.graphics.Rect;
+import android.os.Handler;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Slog;
@@ -49,6 +54,10 @@ public class StatusBarIconView extends AnimatedImageView {
     private int mNumberY;
     private String mNumberText;
     private Notification mNotification;
+    
+    private Handler mHandler;
+    
+    private static final Mode SCREEN_MODE = Mode.MULTIPLY;
 
     public StatusBarIconView(Context context, String slot, Notification notification) {
         super(context);
@@ -69,11 +78,17 @@ public class StatusBarIconView extends AnimatedImageView {
             final float scale = (float)imageBounds / (float)outerBounds;
             setScaleX(scale);
             setScaleY(scale);
-            final float alpha = res.getFraction(R.dimen.status_bar_icon_drawing_alpha, 1, 1);
+            float alpha = Settings.System.getFloat(context.getContentResolver(), Settings.System.STATUSBAR_NOTIFICATION_ALPHA, 0.55f);
             setAlpha(alpha);
         }
 
         setScaleType(ImageView.ScaleType.CENTER);
+        
+        mHandler = new Handler();
+        SettingsObserver settingsObserver = new SettingsObserver(mHandler);
+        settingsObserver.observe();
+
+        updateSettings();
     }
 
     public StatusBarIconView(Context context, AttributeSet attrs) {
@@ -84,7 +99,7 @@ public class StatusBarIconView extends AnimatedImageView {
         final float scale = (float)imageBounds / (float)outerBounds;
         setScaleX(scale);
         setScaleY(scale);
-        final float alpha = res.getFraction(R.dimen.status_bar_icon_drawing_alpha, 1, 1);
+        float alpha = Settings.System.getFloat(context.getContentResolver(), Settings.System.STATUSBAR_NOTIFICATION_ALPHA, 0.55f);
         setAlpha(alpha);
     }
 
@@ -271,5 +286,34 @@ public class StatusBarIconView extends AnimatedImageView {
     public String toString() {
         return "StatusBarIconView(slot=" + mSlot + " icon=" + mIcon 
             + " notification=" + mNotification + ")";
+    }
+    
+    class SettingsObserver extends ContentObserver {
+        SettingsObserver(Handler handler) {
+            super(handler);
+        }
+
+        void observe() {
+            ContentResolver resolver = mContext.getContentResolver();
+            resolver.registerContentObserver(
+                Settings.System.getUriFor(Settings.System.STATUSBAR_NOTIFICATION_ALPHA), false, this);
+            resolver.registerContentObserver(
+                Settings.System.getUriFor(Settings.System.STATUSBAR_NOTIFICATION_COLOR), false, this);
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            updateSettings();
+        }
+    }    
+    
+    private void updateSettings() {
+    	ContentResolver resolver = mContext.getContentResolver();
+    	
+    	float alpha = Settings.System.getFloat(resolver, Settings.System.STATUSBAR_NOTIFICATION_ALPHA, 0.55f);
+    	int color = Settings.System.getInt(resolver, Settings.System.STATUSBAR_NOTIFICATION_COLOR, 0xFFFFFFFF);
+    	
+    	setAlpha(alpha);
+    	setColorFilter(color, SCREEN_MODE);
     }
 }
