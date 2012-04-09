@@ -2543,6 +2543,48 @@ public final class Settings {
         * @hide
         */
         public static final String USE_CUSTOM_CARRIER_COLOR = "use_custom_carrier_color";
+        
+        /**
+         * Whether to enable quiet hours.
+         * @hide
+         */
+        public static final String QUIET_HOURS_ENABLED = "quiet_hours_enabled";
+
+        /**
+         * Sets when quiet hours starts. This is stored in minutes from the start of the day.
+         * @hide
+         */
+        public static final String QUIET_HOURS_START = "quiet_hours_start";
+
+        /**
+         * Sets when quiet hours end. This is stored in minutes from the start of the day.
+         * @hide
+         */
+        public static final String QUIET_HOURS_END = "quiet_hours_end";
+
+        /**
+         * Whether to remove the sound from outgoing notifications during quiet hours.
+         * @hide
+         */
+        public static final String QUIET_HOURS_MUTE = "quiet_hours_mute";
+
+        /**
+         * Whether to disable haptic feedback during quiet hours.
+         * @hide
+         */
+        public static final String QUIET_HOURS_HAPTIC = "quiet_hours_haptic";
+
+        /**
+         * Whether to remove the vibration from outgoing notifications during quiet hours.
+         * @hide
+         */
+        public static final String QUIET_HOURS_STILL = "quiet_hours_still";
+
+        /**
+         * Whether to attempt to dim the LED color during quiet hours.
+         * @hide
+         */
+        public static final String QUIET_HOURS_DIM = "quiet_hours_dim";
 
         /**
          * Settings to backup. This is here so that it's in the same place as
@@ -2612,6 +2654,12 @@ public final class Settings {
                 SIP_CALL_OPTIONS,
                 SIP_RECEIVE_CALLS,
                 POINTER_SPEED,
+                QUIET_HOURS_ENABLED,
+                QUIET_HOURS_START,
+                QUIET_HOURS_END,
+                QUIET_HOURS_MUTE,
+                QUIET_HOURS_STILL,
+                QUIET_HOURS_DIM,
         };
 
         // Settings moved to Settings.Secure
