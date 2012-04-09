@@ -367,8 +367,10 @@ uint32_t OMXCodec::getComponentQuirks(
 
         quirks |= kRequiresAllocateBufferOnInputPorts;
         quirks |= kRequiresAllocateBufferOnOutputPorts;
-        if (!strncmp(componentName, "OMX.TI.Video.encoder", 20)) {
-            quirks |= kAvoidMemcopyInputRecordingFrames;
+
+        if (!strncmp(componentName, "OMX.TI.Video.encoder", 20) ||
+            !strncmp(componentName, "OMX.TI.720P.Encoder", 19)) {
+            //quirks |= kAvoidMemcopyInputRecordingFrames;
         }
     }
 
@@ -702,6 +704,20 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
     int32_t bitRate = 0;
     if (mIsEncoder) {
         CHECK(meta->findInt32(kKeyBitRate, &bitRate));
+
+#if defined(OMAP_ENHANCEMENT) && defined(TARGET_OMAP3)
+        if (!strcmp(mComponentName, "OMX.TI.Video.encoder")) {
+            int32_t width, height;
+            bool success = meta->findInt32(kKeyWidth, &width);
+            success = success && meta->findInt32(kKeyHeight, &height);
+            CHECK(success);
+            if (width*height > MAX_RESOLUTION) {
+                // need OMX.TI.720P.Encoder
+                return ERROR_UNSUPPORTED;
+            }
+        }
+#endif
+
     }
     if (!strcasecmp(MEDIA_MIMETYPE_AUDIO_AMR_NB, mMIME)) {
         setAMRFormat(false /* isWAMR */, bitRate);
@@ -883,7 +899,8 @@ status_t OMXCodec::setVideoPortFormatType(
              index, format.eCompressionFormat, format.eColorFormat);
 #endif
 
-        if (!strcmp("OMX.TI.Video.encoder", mComponentName)) {
+        if (!strcmp("OMX.TI.Video.encoder", mComponentName) ||
+            !strcmp("OMX.TI.720P.Encoder", mComponentName)) {
             if (portIndex == kPortIndexInput
                     && colorFormat == format.eColorFormat) {
                 // eCompressionFormat does not seem right.
@@ -961,7 +978,8 @@ status_t OMXCodec::findTargetColorFormat(
     if (meta->findInt32(kKeyColorFormat, &targetColorFormat)) {
         *colorFormat = (OMX_COLOR_FORMATTYPE) targetColorFormat;
     } else {
-        if (!strcasecmp("OMX.TI.Video.encoder", mComponentName)) {
+        if (!strcasecmp("OMX.TI.Video.encoder", mComponentName) ||
+            !strcasecmp("OMX.TI.720P.Encoder", mComponentName)) {
             *colorFormat = OMX_COLOR_FormatYCbYCr;
         }
     }
@@ -3555,7 +3573,8 @@ bool OMXCodec::drainInputBuffer(BufferInfo *info) {
 
     // This component does not ever signal the EOS flag on output buffers,
     // Thanks for nothing.
-    if (mSignalledEOS && !strcmp(mComponentName, "OMX.TI.Video.encoder")) {
+    if ((mSignalledEOS && !strcmp(mComponentName, "OMX.TI.Video.encoder")) ||
+        (mSignalledEOS && !strcmp(mComponentName, "OMX.TI.720P.Encoder"))) {
         mNoMoreOutputData = true;
         mBufferFilled.signal();
     }
