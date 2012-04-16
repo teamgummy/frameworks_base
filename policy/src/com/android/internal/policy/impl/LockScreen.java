@@ -133,8 +133,12 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 	private String mCustomTwo = (Settings.System.getString(
 			mContext.getContentResolver(),
 			Settings.System.LOCKSCREEN_CUSTOM_TWO));
+	private String mCustomThree = (Settings.System.getString(
+			mContext.getContentResolver(),
+			Settings.System.LOCKSCREEN_CUSTOM_THREE));
 	private Drawable customAppIcon1;
 	private Drawable customAppIcon2;
+	private Drawable customAppIcon3;
 
 	// hide rotary arrows
 	private boolean mHideArrows = (Settings.System.getInt(
@@ -477,18 +481,11 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 			if (mLockscreenCustom) {
 				if (target == 0) { // 0 = unlock on the right
 					mCallback.goToUnlockScreen();
-				} else if (target == 1) { // 1 = Custom App, default mms
+				} else if (target == 1) { // 1 = Custom App, no need for default since null = blank icon
 					String isCustom = Settings.System.getString(
 							mContext.getContentResolver(),
 							Settings.System.LOCKSCREEN_CUSTOM_ONE);
-					if (isCustom == null) {
-						Intent customMms = new Intent(Intent.ACTION_MAIN);
-						customMms.setClassName("com.android.mms",
-								"com.android.mms.ui.ConversationList");
-						customMms.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-						mContext.startActivity(customMms);
-						mCallback.goToUnlockScreen();
-					} else {
+					if (isCustom != null) {
 						Intent customOne;
 						try {
 							customOne = Intent.parseUri(isCustom, 0);
@@ -498,19 +495,11 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 						} catch (URISyntaxException e) {
 						}
 					}
-				} else if (target == 2) { // 2 = Custom App, default to phone
+				} else if (target == 2) { // 2 = Custom App, no need for default since null = blank icon
 					String isCustom = Settings.System.getString(
 							mContext.getContentResolver(),
 							Settings.System.LOCKSCREEN_CUSTOM_TWO);
-					if (isCustom == null) {
-						Intent customPhone = new Intent(Intent.ACTION_MAIN);
-						customPhone
-								.setClassName("com.android.contacts",
-										"com.android.contacts.activities.DialtactsActivity");
-						customPhone.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-						mContext.startActivity(customPhone);
-						mCallback.goToUnlockScreen();
-					} else {
+					if (isCustom != null) {
 						Intent customTwo;
 						try {
 							customTwo = Intent.parseUri(isCustom, 0);
@@ -520,7 +509,21 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 						} catch (URISyntaxException e) {
 						}
 					}
-				} else if (target == 3) {
+				} else if (target == 3) { // 3 = Custom App, no default, shows blank when not used
+					String isCustom = Settings.System.getString(
+							mContext.getContentResolver(),
+							Settings.System.LOCKSCREEN_CUSTOM_THREE);
+					if (isCustom != null) {
+						Intent customThree;
+						try {
+							customThree = Intent.parseUri(isCustom, 0);
+							customThree.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+							mContext.startActivity(customThree);
+							mCallback.goToUnlockScreen();
+						} catch (URISyntaxException e) {
+						}
+					}
+				} else if (target == 4) { //4 = Camera/Sound toggle
 					if (!mCameraDisabled) {
 						// Start the Camera
 						Intent intent = new Intent(
@@ -925,7 +928,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 	private Drawable[] getDrawIcons(int resId) {
 		Resources res = getContext().getResources();
 		TypedArray array = res.obtainTypedArray(resId);
-		Drawable[] icons = new Drawable[6];
+		Drawable[] icons = new Drawable[8];
 		// i really need to make this better one day....
 		Drawable d0 = array.getDrawable(0);
 		icons[0] = d0;
@@ -942,7 +945,14 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 			Drawable d2 = array.getDrawable(2);
 			icons[2] = d2;
 		}
-		for (int i = 3; i < 6; i++) {
+		
+		if (customAppIcon3 != null) {
+			icons[3] = customAppIcon3;
+		} else {
+			Drawable d3 = array.getDrawable(3);
+			icons[3] = d3;
+		}
+		for (int i = 4; i < 8; i++) {
 			Drawable d = array.getDrawable(i);
 			icons[i] = d;
 		}
@@ -1140,6 +1150,23 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 				    	Log.e(TAG, "NameNotFoundException: " + mCustomTwo);
 				    } catch (URISyntaxException e) {
 				    	Log.e(TAG, "URISyntaxException: " + mCustomTwo);
+				    }
+				}
+				
+				if (mCustomThree != null) {
+					try {
+						Intent i = Intent.parseUri(mCustomThree, 0);
+						Drawable d = pm.getActivityIcon(i);
+						Bitmap bit = ((BitmapDrawable) d).getBitmap();
+						Bitmap bitIcon = Bitmap.createScaledBitmap(bit,
+								(int) (density * iconSize),
+								(int) (density * iconSize), true);
+						customAppIcon3 = new BitmapDrawable(context.getResources(),
+								bitIcon);
+				    } catch (PackageManager.NameNotFoundException e) {
+				    	Log.e(TAG, "NameNotFoundException: " + mCustomThree);
+				    } catch (URISyntaxException e) {
+				    	Log.e(TAG, "URISyntaxException: " + mCustomThree);
 				    }
 				}
 			}
