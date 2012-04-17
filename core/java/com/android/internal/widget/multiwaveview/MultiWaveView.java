@@ -966,7 +966,7 @@ public class MultiWaveView extends View {
         try {
         	s = mTargetDescriptions.get(index);
         } catch (IndexOutOfBoundsException e) {
-        	
+        } catch (Exception e) {
         }
         return s;
     }
