@@ -41,6 +41,7 @@ import android.view.accessibility.AccessibilityManager;
 import com.android.internal.R;
 
 import java.util.ArrayList;
+import java.lang.IndexOutOfBoundsException;
 
 /**
  * A special widget containing a center and outer ring. Moving the center ring to the outer ring
@@ -964,7 +965,7 @@ public class MultiWaveView extends View {
         String s = "";
         try {
         	s = mTargetDescriptions.get(index);
-        } catch {
+        } catch (IndexOutOfBoundsException e) {
         }
         return s;
     }
@@ -978,12 +979,7 @@ public class MultiWaveView extends View {
                 return null;
             }
         }
-        try {
-        	String desc = mDirectionDescriptions.get(index);
-        	return desc;
-        } catch (Exception e) {
-        	return "";
-        }
+        return mDirectionDescriptions.get(index);
     }
 
     private ArrayList<String> loadDescriptions(int resourceId) {
