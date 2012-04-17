@@ -482,46 +482,16 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 				if (target == 0) { // 0 = unlock on the right
 					mCallback.goToUnlockScreen();
 				} else if (target == 1) { // 1 = Custom App, no need for default since null = blank icon
-					String isCustom = Settings.System.getString(
-							mContext.getContentResolver(),
-							Settings.System.LOCKSCREEN_CUSTOM_ONE);
-					if (isCustom != null) {
-						Intent customOne;
-						try {
-							customOne = Intent.parseUri(isCustom, 0);
-							customOne.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-							mContext.startActivity(customOne);
-							mCallback.goToUnlockScreen();
-						} catch (URISyntaxException e) {
-						}
+					if (mCustomOne != null) {
+						runActivity(mCustomOne);
 					}
 				} else if (target == 2) { // 2 = Custom App, no need for default since null = blank icon
-					String isCustom = Settings.System.getString(
-							mContext.getContentResolver(),
-							Settings.System.LOCKSCREEN_CUSTOM_TWO);
-					if (isCustom != null) {
-						Intent customTwo;
-						try {
-							customTwo = Intent.parseUri(isCustom, 0);
-							customTwo.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-							mContext.startActivity(customTwo);
-							mCallback.goToUnlockScreen();
-						} catch (URISyntaxException e) {
-						}
+					if (mCustomTwo != null) {
+						runActivity(mCustomTwo);
 					}
 				} else if (target == 3) { // 3 = Custom App, no default, shows blank when not used
-					String isCustom = Settings.System.getString(
-							mContext.getContentResolver(),
-							Settings.System.LOCKSCREEN_CUSTOM_THREE);
-					if (isCustom != null) {
-						Intent customThree;
-						try {
-							customThree = Intent.parseUri(isCustom, 0);
-							customThree.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-							mContext.startActivity(customThree);
-							mCallback.goToUnlockScreen();
-						} catch (URISyntaxException e) {
-						}
+					if (mCustomThree != null) {
+						runActivity(mCustomThree);
 					}
 				} else if (target == 4) { //4 = Camera/Sound toggle
 					if (!mCameraDisabled) {
