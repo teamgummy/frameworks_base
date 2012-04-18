@@ -41,6 +41,7 @@ import android.view.accessibility.AccessibilityManager;
 import com.android.internal.R;
 
 import java.util.ArrayList;
+import java.lang.IndexOutOfBoundsException;
 
 /**
  * A special widget containing a center and outer ring. Moving the center ring to the outer ring
@@ -142,6 +143,7 @@ public class MultiWaveView extends View {
     private int mTargetResourceId;
     private int mTargetDescriptionsResourceId;
     private int mDirectionDescriptionsResourceId;
+    private Drawable[] mTargetDrawableArray;
 
     public MultiWaveView(Context context) {
         this(context, null);
@@ -527,6 +529,18 @@ public class MultiWaveView extends View {
         mTargetDrawables = targetDrawables;
         updateTargetPositions();
     }
+    
+    private void internalSetTargetResources(Drawable[] drawable) {
+        Resources res = getContext().getResources();
+        int count = drawable.length;
+        ArrayList<TargetDrawable> targetDrawables = new ArrayList<TargetDrawable>(count);
+        for (int i = 0; i < count; i++) {
+        	targetDrawables.add(new TargetDrawable(res, drawable[i]));
+        }
+        mTargetDrawableArray = drawable;
+        mTargetDrawables = targetDrawables;
+        updateTargetPositions();
+    }
 
     /**
      * Loads an array of drawables from the given resourceId.
@@ -542,8 +556,21 @@ public class MultiWaveView extends View {
         }
     }
 
+    public void setTargetResources(Drawable[] drawable) {
+        if (mAnimatingTargets) {
+            // postpone this change until we return to the initial state
+            //mNewTargetResources = resourceId;
+        } else {
+            internalSetTargetResources(drawable);
+        }
+    }
+    
     public int getTargetResourceId() {
         return mTargetResourceId;
+    }
+    
+    public Drawable[] getTargetDrawableArray() {
+        return mTargetDrawableArray;
     }
 
     /**
@@ -935,7 +962,13 @@ public class MultiWaveView extends View {
                 return null;
             }
         }
-        return mTargetDescriptions.get(index);
+        String s = "";
+        try {
+        	s = mTargetDescriptions.get(index);
+        } catch (IndexOutOfBoundsException e) {
+        } catch (Exception e) {
+        }
+        return s;
     }
 
     private String getDirectionDescription(int index) {
@@ -947,7 +980,12 @@ public class MultiWaveView extends View {
                 return null;
             }
         }
-        return mDirectionDescriptions.get(index);
+        try {
+        	String desc = mDirectionDescriptions.get(index);
+        	return desc;
+        } catch (Exception e) {
+        	return "";
+        }
     }
 
     private ArrayList<String> loadDescriptions(int resourceId) {

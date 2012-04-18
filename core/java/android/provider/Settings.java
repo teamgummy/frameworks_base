@@ -2191,6 +2191,13 @@ public final class Settings {
         public static final String LOCKSCREEN_CUSTOM_TWO = "lockscreen_custom_two";
 
         /**
+         * Lockscreen custom app three
+         * 
+         * @hide
+         */
+        public static final String LOCKSCREEN_CUSTOM_THREE = "lockscreen_custom_three";
+
+        /**
          * MIUI battery bar color
          * 
          * @hide
