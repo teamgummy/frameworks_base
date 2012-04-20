@@ -143,7 +143,7 @@
 
     <!-- Column 2 -->
     <com.android.internal.widget.SlidingTab
-        android:id="@+id/unlock_widget"
+        android:id="@+id/unlock_widget2"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
