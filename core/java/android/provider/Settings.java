@@ -2604,6 +2604,12 @@ public final class Settings {
          * @hide
          */
         public static final String STATUSBAR_NOTIFICATION_COLOR = "statusbar_notification_color";
+        
+        /**
+         * Colorfilter for the statusbar notifications.
+         * @hide
+         */
+        public static final String LOCKSCREEN_SHOW_TEXTS = "lockscreen_show_texts";        
 
         /**
          * Settings to backup. This is here so that it's in the same place as

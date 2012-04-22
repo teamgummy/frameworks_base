@@ -78,6 +78,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 	private LockPatternUtils mLockPatternUtils;
 	private KeyguardUpdateMonitor mUpdateMonitor;
 	private KeyguardScreenCallback mCallback;
+	private LockTextSMS mLockSMS;
 
 	// current configuration state of keyboard and display
 	private int mKeyboardHidden;
@@ -461,6 +462,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 			} else {
 				resId = R.array.lockscreen_targets_with_camera;
 			}
+			
 			if (mLockscreenCustom) {
 				mMultiWaveView.setTargetResources(getDrawIcons(resId));
 			} else {
@@ -1012,6 +1014,19 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 						this, true);
 		}
 
+		mLockSMS = (LockTextSMS) findViewById(R.id.locksms);
+		final OnClickListener openSMS = new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            	Intent i = new Intent(Intent.ACTION_MAIN);
+            	i.setClassName("com.android.mms", "com.android.mms.ui.ConversationList");
+            	i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            	mContext.startActivity(i);
+            	mCallback.goToUnlockScreen();
+            }
+        };	
+        mLockSMS.setOnClickListener(openSMS);
+		
 		mStatusViewManager = new KeyguardStatusViewManager(this,
 				mUpdateMonitor, mLockPatternUtils, mCallback, false);
 
