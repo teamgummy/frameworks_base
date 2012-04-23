@@ -122,6 +122,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/status1"
+            android:layout_centerHorizontal="true"
             android:singleLine="true"
             android:ellipsize="marquee"
             android:textAppearance="?android:attr/textAppearanceMedium"

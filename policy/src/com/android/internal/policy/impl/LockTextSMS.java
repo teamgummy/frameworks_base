@@ -51,6 +51,9 @@ public class LockTextSMS extends TextView {
     private static final String SMS_RECEIVED = "android.provider.Telephony.SMS_RECEIVED";
     private static final String TAG = "LockTextSMS";
     
+    private String body;
+    private String caller;
+    private String findName;    
 
     public LockTextSMS(Context context) {
         this(context, null);
@@ -62,12 +65,14 @@ public class LockTextSMS extends TextView {
 
     public LockTextSMS(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-
+        
         mHandler = new Handler();
         SettingsObserver settingsObserver = new SettingsObserver(mHandler);
         settingsObserver.observe();
 
         updateSettings();
+        
+        keepMyBoxUp();
     }
 
     @Override
@@ -100,36 +105,39 @@ public class LockTextSMS extends TextView {
             if (intent.getAction() == SMS_RECEIVED) {
                 Bundle bundle = intent.getExtras();
                 if (bundle != null) {
-                	try {
-                		Object[] pdus = (Object[])bundle.get("pdus");
-                        final SmsMessage[] messages = new SmsMessage[pdus.length];
-                        for (int i = 0; i < pdus.length; i++) {
-                            messages[i] = SmsMessage.createFromPdu((byte[])pdus[i]);
-                        }
-                        if (messages.length > -1) {
-                        	for (int i = 0; i< pdus.length; i++) {
-                            	String body = messages[i].getDisplayMessageBody();
-                            	String findName = messages[i].getOriginatingAddress();
-                            	String caller = null;
-                            	Uri personUri = Uri.withAppendedPath( ContactsContract.PhoneLookup.CONTENT_FILTER_URI, findName);
-                            	Cursor cur = mContext.getContentResolver().query(personUri, new String[] { ContactsContract.PhoneLookup.DISPLAY_NAME }, null, null, null );
-                            	if (cur.moveToFirst()) {
-                            		int nameIndex = cur.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME);
-                            		caller = cur.getString(nameIndex);
-                            	}
-                                updateCurrentText(body, caller);
-                                setBackgroundResource(R.drawable.ic_lockscreen_player_background_old);
-                        	}
-                        } else {
-                        	updateCurrentText(null, null);
-                        	setBackgroundResource(0);
-                        }
-                	} catch (IllegalArgumentException e) {
-                	}
+                	getYourText(bundle);
                 }
             }
         }
     };
+    
+    private void keepMyBoxUp() {
+    	boolean showTexts = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_SMS_CROSS, 1) == 0);
+    	if (showTexts) {
+    		String name = null;
+        	String msg = null;
+        	Uri uri = Uri.parse("content://sms/inbox");
+        	Cursor cursor1 = mContext.getContentResolver().query(uri,new String[] { "_id", "thread_id", "address", "person", "date","body", "type" }, null, null, null);
+        	String[] columns = new String[] { "address", "body"};
+        	if (cursor1.getCount() > 0) {
+        	   if (cursor1.moveToFirst()){
+        	       name = cursor1.getString(cursor1.getColumnIndex(columns[0]));
+        	       msg = cursor1.getString(cursor1.getColumnIndex(columns[1]));
+        	    }
+        	}
+        	if (msg != null && name != null) {
+            	Uri personUri = Uri.withAppendedPath( ContactsContract.PhoneLookup.CONTENT_FILTER_URI, name);
+            	Cursor cur = mContext.getContentResolver().query(personUri, new String[] { ContactsContract.PhoneLookup.DISPLAY_NAME }, null, null, null );
+            	if (cur.moveToFirst()) {
+            		int nameIndex = cur.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME);
+            		caller = cur.getString(nameIndex);
+            	}
+            	body = msg;
+            	updateCurrentText(body, caller);
+            	setBackgroundResource(R.drawable.ic_lockscreen_player_background_old);
+        	}
+    	}
+    }
     
     private void updateCurrentText(String textBody, String callerID) {
     	String newewstText = callerID + ": " + textBody;
@@ -141,7 +149,37 @@ public class LockTextSMS extends TextView {
     	}
     	
     	setText(SMSText);
-    	
+    }
+    
+    private void getYourText(Bundle bundle) {
+    	boolean showTexts = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_SHOW_TEXTS, 0) == 1);
+    	Handler handler = new Handler();
+    	if (showTexts) {
+        	try {
+        		Object[] pdus = (Object[])bundle.get("pdus");
+                final SmsMessage[] messages = new SmsMessage[pdus.length];
+                for (int i = 0; i < pdus.length; i++) {
+                    messages[i] = SmsMessage.createFromPdu((byte[])pdus[i]);
+                }
+                if (messages.length > -1) {
+                	for (int i = 0; i< pdus.length; i++) {
+                    	body = messages[i].getDisplayMessageBody();
+                    	findName = messages[i].getOriginatingAddress();
+                    	Uri personUri = Uri.withAppendedPath( ContactsContract.PhoneLookup.CONTENT_FILTER_URI, findName);
+                    	Cursor cur = mContext.getContentResolver().query(personUri, new String[] { ContactsContract.PhoneLookup.DISPLAY_NAME }, null, null, null );
+                    	if (cur.moveToFirst()) {
+                    		int nameIndex = cur.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME);
+                    		caller = cur.getString(nameIndex);
+                    	}
+                        updateCurrentText(body, caller);
+                        setBackgroundResource(R.drawable.ic_lockscreen_player_background_old);
+                        Settings.System.putInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_SMS_CROSS, 0);
+                        setVisibility(View.VISIBLE);
+                	}
+                }
+        	} catch (IllegalArgumentException e) {
+        	}
+        }
     }
 
     class SettingsObserver extends ContentObserver {
@@ -162,6 +200,8 @@ public class LockTextSMS extends TextView {
 
     private void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
+        
+        setBackgroundResource(0);
         
         boolean showTexts = (Settings.System.getInt(resolver, Settings.System.LOCKSCREEN_SHOW_TEXTS, 0) == 1);
         
