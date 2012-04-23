@@ -2604,6 +2604,21 @@ public final class Settings {
          * @hide
          */
         public static final String STATUSBAR_NOTIFICATION_COLOR = "statusbar_notification_color";
+        
+        /**
+         * Show/Hide Lock Screen SMS Popup
+         * @hide
+         */
+        public static final String LOCKSCREEN_SHOW_TEXTS = "lockscreen_show_texts";       
+        
+        /**
+         * When using SMS popups needed a crossover to hide/show current popups with
+         * the lock screen rebuilding each time
+         *  1 = has been viewed
+         *  0 = will show popup
+         * @hide
+         */
+        public static final String LOCKSCREEN_SMS_CROSS = "lockscreen_sms_cross";
 
         /**
          * Settings to backup. This is here so that it's in the same place as

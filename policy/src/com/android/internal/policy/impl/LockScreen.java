@@ -44,6 +44,9 @@ import android.graphics.ColorFilter;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.PixelFormat;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
+import android.view.animation.AnimationUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -78,6 +81,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 	private LockPatternUtils mLockPatternUtils;
 	private KeyguardUpdateMonitor mUpdateMonitor;
 	private KeyguardScreenCallback mCallback;
+	private LockTextSMS mLockSMS;
 
 	// current configuration state of keyboard and display
 	private int mKeyboardHidden;
@@ -461,6 +465,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 			} else {
 				resId = R.array.lockscreen_targets_with_camera;
 			}
+			
 			if (mLockscreenCustom) {
 				mMultiWaveView.setTargetResources(getDrawIcons(resId));
 			} else {
@@ -1012,6 +1017,49 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 						this, true);
 		}
 
+		mLockSMS = (LockTextSMS) findViewById(R.id.locksms);
+		
+		final OnClickListener openSMS = new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            	Intent i = new Intent(Intent.ACTION_MAIN);
+            	i.setClassName("com.android.mms", "com.android.mms.ui.ConversationList");
+            	i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            	mContext.startActivity(i);
+            	mCallback.goToUnlockScreen();
+            	mLockSMS.setVisibility(View.GONE);
+            	Settings.System.putInt(getContext().getContentResolver(), Settings.System.LOCKSCREEN_SMS_CROSS, 1);
+            }
+        };
+        
+        final OnLongClickListener closeSMS = new OnLongClickListener() {
+        	@Override
+            public boolean onLongClick(View v) {            	
+            	Animation anim = AnimationUtils.makeOutAnimation(getContext(), false);
+        		anim.setDuration(300);
+        		anim.setAnimationListener(new AnimationListener() {
+        			@Override
+        			public void onAnimationEnd(Animation animation) {
+        				mLockSMS.setVisibility(View.GONE);
+        				Settings.System.putInt(getContext().getContentResolver(), Settings.System.LOCKSCREEN_SMS_CROSS, 1);
+        			}
+        			@Override
+        			public void onAnimationStart(Animation animation) {
+        				
+        			}
+        			@Override
+        			public void onAnimationRepeat(Animation animation) {
+        				
+        			}
+        		});
+        		mLockSMS.startAnimation(anim);
+        		return true;
+        	}
+        };
+        
+        mLockSMS.setOnClickListener(openSMS);
+        mLockSMS.setOnLongClickListener(closeSMS);
+		
 		mStatusViewManager = new KeyguardStatusViewManager(this,
 				mUpdateMonitor, mLockPatternUtils, mCallback, false);
 
