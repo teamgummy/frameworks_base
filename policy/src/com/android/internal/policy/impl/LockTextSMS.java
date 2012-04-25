@@ -132,6 +132,9 @@ public class LockTextSMS extends TextView {
             		int nameIndex = cur.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME);
             		caller = cur.getString(nameIndex);
             	}
+            	if (caller == null) {
+            		caller = name;
+            	}
             	body = msg;
             	updateCurrentText(body, caller);
             	setBackgroundResource(R.drawable.ic_lockscreen_player_background_old);
@@ -153,7 +156,6 @@ public class LockTextSMS extends TextView {
     
     private void getYourText(Bundle bundle) {
     	boolean showTexts = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_SHOW_TEXTS, 0) == 1);
-    	Handler handler = new Handler();
     	if (showTexts) {
         	try {
         		Object[] pdus = (Object[])bundle.get("pdus");
@@ -170,6 +172,9 @@ public class LockTextSMS extends TextView {
                     	if (cur.moveToFirst()) {
                     		int nameIndex = cur.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME);
                     		caller = cur.getString(nameIndex);
+                    	}
+                    	if (caller == null){
+                    		caller = findName;
                     	}
                         updateCurrentText(body, caller);
                         setBackgroundResource(R.drawable.ic_lockscreen_player_background_old);
