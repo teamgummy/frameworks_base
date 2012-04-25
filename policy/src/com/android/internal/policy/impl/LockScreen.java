@@ -47,8 +47,11 @@ import android.graphics.PixelFormat;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
+import android.view.GestureDetector;
+import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
@@ -83,6 +86,12 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 	private KeyguardScreenCallback mCallback;
 	private LockTextSMS mLockSMS;
 
+	//lets add fling!
+	private static final int SWIPE_MIN_DISTANCE = 120;
+    private static final int SWIPE_MAX_OFF_PATH = 250;
+    private static final int SWIPE_THRESHOLD_VELOCITY = 200;
+    private final GestureDetector gestureDetector = new GestureDetector(new GestureListener());
+    
 	// current configuration state of keyboard and display
 	private int mKeyboardHidden;
 	private int mCreationOrientation;
@@ -1018,47 +1027,16 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 		}
 
 		mLockSMS = (LockTextSMS) findViewById(R.id.locksms);
-		
-		final OnClickListener openSMS = new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            	Intent i = new Intent(Intent.ACTION_MAIN);
-            	i.setClassName("com.android.mms", "com.android.mms.ui.ConversationList");
-            	i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            	mContext.startActivity(i);
-            	mCallback.goToUnlockScreen();
-            	mLockSMS.setVisibility(View.GONE);
-            	Settings.System.putInt(getContext().getContentResolver(), Settings.System.LOCKSCREEN_SMS_CROSS, 1);
-            }
-        };
         
-        final OnLongClickListener closeSMS = new OnLongClickListener() {
+        final OnTouchListener flingSMS = new OnTouchListener() {
         	@Override
-            public boolean onLongClick(View v) {            	
-            	Animation anim = AnimationUtils.makeOutAnimation(getContext(), false);
-        		anim.setDuration(300);
-        		anim.setAnimationListener(new AnimationListener() {
-        			@Override
-        			public void onAnimationEnd(Animation animation) {
-        				mLockSMS.setVisibility(View.GONE);
-        				Settings.System.putInt(getContext().getContentResolver(), Settings.System.LOCKSCREEN_SMS_CROSS, 1);
-        			}
-        			@Override
-        			public void onAnimationStart(Animation animation) {
-        				
-        			}
-        			@Override
-        			public void onAnimationRepeat(Animation animation) {
-        				
-        			}
-        		});
-        		mLockSMS.startAnimation(anim);
-        		return true;
-        	}
+            public boolean onTouch(final View view, final MotionEvent event) {
+        		gestureDetector.onTouchEvent(event);
+                return true;
+            }        	
         };
-        
-        mLockSMS.setOnClickListener(openSMS);
-        mLockSMS.setOnLongClickListener(closeSMS);
+
+        mLockSMS.setOnTouchListener(flingSMS);
 		
 		mStatusViewManager = new KeyguardStatusViewManager(this,
 				mUpdateMonitor, mLockPatternUtils, mCallback, false);
@@ -1417,5 +1395,69 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 			return mBitmap;
 		}
 	}
+	
+    class GestureListener extends SimpleOnGestureListener {
+    	@Override  
+		public boolean onSingleTapConfirmed(MotionEvent e) {
+    		Intent i = new Intent(Intent.ACTION_MAIN);
+        	i.setClassName("com.android.mms", "com.android.mms.ui.ConversationList");
+        	i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        	mContext.startActivity(i);
+        	mCallback.goToUnlockScreen();
+        	mLockSMS.setVisibility(View.GONE);
+        	Settings.System.putInt(getContext().getContentResolver(), Settings.System.LOCKSCREEN_SMS_CROSS, 1);
+			return true;  
+		}
+    	
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            try {
+                if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH)
+                    return false;
+                // right to left swipe
+                if(e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+                	Animation anim = AnimationUtils.makeOutAnimation(getContext(), false);
+            		anim.setDuration(300);
+            		anim.setAnimationListener(new AnimationListener() {
+            			@Override
+            			public void onAnimationEnd(Animation animation) {
+            				mLockSMS.setVisibility(View.GONE);
+            				Settings.System.putInt(getContext().getContentResolver(), Settings.System.LOCKSCREEN_SMS_CROSS, 1);
+            			}
+            			@Override
+            			public void onAnimationStart(Animation animation) {
+            				
+            			}
+            			@Override
+            			public void onAnimationRepeat(Animation animation) {
+            				
+            			}
+            		});
+            		mLockSMS.startAnimation(anim);
+                }  else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+                	Animation anim = AnimationUtils.makeOutAnimation(getContext(), true);
+            		anim.setDuration(300);
+            		anim.setAnimationListener(new AnimationListener() {
+            			@Override
+            			public void onAnimationEnd(Animation animation) {
+            				mLockSMS.setVisibility(View.GONE);
+            				Settings.System.putInt(getContext().getContentResolver(), Settings.System.LOCKSCREEN_SMS_CROSS, 1);
+            			}
+            			@Override
+            			public void onAnimationStart(Animation animation) {
+            				
+            			}
+            			@Override
+            			public void onAnimationRepeat(Animation animation) {
+            				
+            			}
+            		});
+            		mLockSMS.startAnimation(anim);
+                }
+            } catch (Exception e) {
+            }
+            return false;
+        }
+}
 
 }
