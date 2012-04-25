@@ -152,6 +152,11 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 	private Drawable customAppIcon1;
 	private Drawable customAppIcon2;
 	private Drawable customAppIcon3;
+	
+	//custom app picker for SMS popup
+	private String mSMSApp = (Settings.System.getString(
+			mContext.getContentResolver(),
+			Settings.System.LOCKSCREEN_SMS_APP));
 
 	// hide rotary arrows
 	private boolean mHideArrows = (Settings.System.getInt(
@@ -1399,13 +1404,17 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     class GestureListener extends SimpleOnGestureListener {
     	@Override  
 		public boolean onSingleTapConfirmed(MotionEvent e) {
-    		Intent i = new Intent(Intent.ACTION_MAIN);
-        	i.setClassName("com.android.mms", "com.android.mms.ui.ConversationList");
-        	i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        	mContext.startActivity(i);
-        	mCallback.goToUnlockScreen();
-        	mLockSMS.setVisibility(View.GONE);
-        	Settings.System.putInt(getContext().getContentResolver(), Settings.System.LOCKSCREEN_SMS_CROSS, 1);
+    		if (mSMSApp == null) {
+    			Intent i = new Intent(Intent.ACTION_MAIN);
+            	i.setClassName("com.android.mms", "com.android.mms.ui.ConversationList");
+            	i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            	mContext.startActivity(i);
+            	mCallback.goToUnlockScreen();
+            	mLockSMS.setVisibility(View.GONE);
+            	Settings.System.putInt(getContext().getContentResolver(), Settings.System.LOCKSCREEN_SMS_CROSS, 1);
+    		} else {
+    			runActivity(mSMSApp);
+    		}
 			return true;  
 		}
     	

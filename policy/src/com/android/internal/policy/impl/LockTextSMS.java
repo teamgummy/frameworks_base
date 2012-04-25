@@ -38,6 +38,7 @@ import android.telephony.SmsMessage;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 import android.util.Log;
 
 import java.lang.IllegalArgumentException;
@@ -91,9 +92,14 @@ public class LockTextSMS extends TextView {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        if (mIsAttached) {
-            getContext().unregisterReceiver(mIntentReceiver);
-            mIsAttached = false;
+        //do not allow to detach or unregister receiver
+        //only allow this when the user has selected to not use it
+        boolean showTexts = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_SHOW_TEXTS, 0) == 0);
+        if (showTexts) {
+        	if (mIsAttached) {
+                getContext().unregisterReceiver(mIntentReceiver);
+                mIsAttached = false;
+            }
         }
     }
 
@@ -113,10 +119,16 @@ public class LockTextSMS extends TextView {
     
     private void keepMyBoxUp() {
     	boolean showTexts = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_SMS_CROSS, 1) == 0);
-    	if (showTexts) {
+    	
+    	Uri uri = Uri.parse("content://sms/inbox");
+
+    	Cursor c = mContext.getContentResolver().query(uri, null, "read = 0", null, null);
+    	int unreadSMSCount = c.getCount();
+    	c.deactivate();
+    	
+    	if (unreadSMSCount > 0 && showTexts) {
     		String name = null;
         	String msg = null;
-        	Uri uri = Uri.parse("content://sms/inbox");
         	Cursor cursor1 = mContext.getContentResolver().query(uri,new String[] { "_id", "thread_id", "address", "person", "date","body", "type" }, null, null, null);
         	String[] columns = new String[] { "address", "body"};
         	if (cursor1.getCount() > 0) {
@@ -146,8 +158,9 @@ public class LockTextSMS extends TextView {
     	String newewstText = callerID + ": " + textBody;
     	
     	SpannableStringBuilder SMSText = new SpannableStringBuilder(newewstText);
+    	StyleSpan boldMe = new StyleSpan(android.graphics.Typeface.BOLD);
     	if (textBody != null && callerID != null) {
-    		SMSText.setSpan(new ForegroundColorSpan(0xffffffff), 0, newewstText.length(),
+    		SMSText.setSpan(boldMe, 0, callerID.length()+1,
                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
     	}
     	
@@ -205,6 +218,9 @@ public class LockTextSMS extends TextView {
 
     private void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
+        
+    	int textColor = Settings.System.getInt(resolver, Settings.System.LOCKSCREEN_SMS_COLOR, 0xFFFFFFFF);
+    	setTextColor(textColor);
         
         setBackgroundResource(0);
         
