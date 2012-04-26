@@ -119,6 +119,7 @@ public class LockTextSMS extends TextView {
     
     private void keepMyBoxUp() {
     	boolean showTexts = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_SMS_CROSS, 1) == 0);
+    	boolean musicPlaying = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_SMS_MUSIC, 0) == 1);
     	
     	Uri uri = Uri.parse("content://sms/inbox");
 
@@ -126,7 +127,7 @@ public class LockTextSMS extends TextView {
     	int unreadSMSCount = c.getCount();
     	c.deactivate();
     	
-    	if (unreadSMSCount > 0 && showTexts) {
+    	if (unreadSMSCount > 0 && showTexts && !musicPlaying) {
     		String name = null;
         	String msg = null;
         	Cursor cursor1 = mContext.getContentResolver().query(uri,new String[] { "_id", "thread_id", "address", "person", "date","body", "type" }, null, null, null);
@@ -169,7 +170,9 @@ public class LockTextSMS extends TextView {
     
     private void getYourText(Bundle bundle) {
     	boolean showTexts = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_SHOW_TEXTS, 0) == 1);
-    	if (showTexts) {
+    	boolean musicPlaying = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_SMS_MUSIC, 0) == 1);
+    	
+    	if (showTexts && !musicPlaying) {
         	try {
         		Object[] pdus = (Object[])bundle.get("pdus");
                 final SmsMessage[] messages = new SmsMessage[pdus.length];
