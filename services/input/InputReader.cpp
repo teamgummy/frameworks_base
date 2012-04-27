@@ -645,7 +645,7 @@ int32_t InputReader::getStateLocked(int32_t deviceId, uint32_t sourceMask, int32
             InputDevice* device = mDevices.valueAt(i);
             if (! device->isIgnored() && sourcesMatchMask(device->getSources(), sourceMask)) {
                 result = (device->*getStateFunc)(sourceMask, code);
-                if (result >= AKEY_STATE_up) {
+                if (result >= AKEY_STATE_UP) {
                     return result;
                 }
             }
@@ -1001,7 +1001,7 @@ int32_t InputDevice::getState(uint32_t sourceMask, int32_t code, GetStateFunc ge
         InputMapper* mapper = mMappers[i];
         if (sourcesMatchMask(mapper->getSources(), sourceMask)) {
             result = (mapper->*getStateFunc)(sourceMask, code);
-            if (result >= AKEY_STATE_up) {
+            if (result >= AKEY_STATE_UP) {
                 return result;
             }
         }
@@ -2192,13 +2192,6 @@ void CursorInputMapper::process(const RawEvent* rawEvent) {
     if (rawEvent->type == EV_SYN && rawEvent->scanCode == SYN_REPORT) {
         sync(rawEvent->when);
     }
-#ifdef LEGACY_TRACKPAD
-    // sync now since BTN_MOUSE is not necessarily followed by SYN_REPORT and
-    // we need to ensure that we report the up/down promptly.
-    else if (rawEvent->type == EV_KEY && rawEvent->scanCode == BTN_MOUSE) {
-        sync(rawEvent->when);
-    }
-#endif
 }
 
 void CursorInputMapper::sync(nsecs_t when) {
