@@ -60,8 +60,8 @@
                 android:layout_rowSpan="3"
                 android:layout_columnSpan="1"
                 android:layout_gravity="fill"
-                android:layout_width="wrap_parent"
-                android:layout_height="fill_parent"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
                 />
 
             <include layout="@layout/keyguard_screen_status_port"
