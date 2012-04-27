@@ -1429,8 +1429,8 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
     			}
     			mContext.startActivity(i);
     			mCallback.goToUnlockScreen();
-            	mLockSMS.setVisibility(View.GONE);
-            	Settings.System.putInt(getContext().getContentResolver(), Settings.System.LOCKSCREEN_SMS_CROSS, 1);
+                mLockSMS.setVisibility(View.GONE);
+                Settings.System.putInt(getContext().getContentResolver(), Settings.System.LOCKSCREEN_SMS_CROSS, 1);
     		} else {
     			runActivity(mSMSApp);
     		}
