@@ -52,6 +52,18 @@
                 android:layout_height="512dip"
                 />
 
+            <!-- Music transport control -->
+            <include android:id="@+id/transport2"
+                layout="@layout/keyguard_transport_control"
+                android:layout_row="0"
+                android:layout_column="0"
+                android:layout_rowSpan="3"
+                android:layout_columnSpan="1"
+                android:layout_gravity="fill"
+                android:layout_width="wrap_parent"
+                android:layout_height="fill_parent"
+                />
+
             <include layout="@layout/keyguard_screen_status_port"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
