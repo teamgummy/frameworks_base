@@ -50,6 +50,7 @@ public class LockTextSMS extends TextView {
     private Handler mHandler;
     
     private static final String SMS_RECEIVED = "android.provider.Telephony.SMS_RECEIVED";
+    private static final String ACTION_SHUTDOWN = "android.intent.action.ACTION_SHUTDOWN";
     private static final String TAG = "LockTextSMS";
     
     private String body;
@@ -82,10 +83,14 @@ public class LockTextSMS extends TextView {
 
         if (!mIsAttached) {
             mIsAttached = true;
+            
             IntentFilter filter = new IntentFilter();
-
+            IntentFilter filter2 = new IntentFilter();
+            
             filter.addAction(SMS_RECEIVED);
+            filter2.addAction(ACTION_SHUTDOWN);
             getContext().registerReceiver(mIntentReceiver, filter, null, getHandler());
+            getContext().registerReceiver(mShutDownReceiver, filter2, null, getHandler());
         }
     }
 
@@ -98,6 +103,7 @@ public class LockTextSMS extends TextView {
         if (showTexts) {
         	if (mIsAttached) {
                 getContext().unregisterReceiver(mIntentReceiver);
+                getContext().unregisterReceiver(mShutDownReceiver);
                 mIsAttached = false;
             }
         }
@@ -113,6 +119,18 @@ public class LockTextSMS extends TextView {
                 if (bundle != null) {
                 	getYourText(bundle);
                 }
+            }
+        }
+    };
+    
+    private final BroadcastReceiver mShutDownReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.i(TAG, "Intent recieved: " + intent.getAction());
+            //needed to search for shutdown to prevent hotboots upon reboots with 
+            //SMS popup visible
+            if (intent.getAction() == ACTION_SHUTDOWN) {
+            	Settings.System.putInt(getContext().getContentResolver(), Settings.System.LOCKSCREEN_SMS_CROSS, 1);
             }
         }
     };
