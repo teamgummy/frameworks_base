@@ -2615,7 +2615,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 		        // If the lid is opening and we don't have to keep the
 			    // keyguard up, then we can turn on the screen
 			    // immediately.
-			    mKeyguardMediator.pokeWakelock()
+			    mKeyguardMediator.pokeWakelock();
 		    } else if (keyguardIsShowingTq()) {
 		        if (lidOpen) {
 			        // If we are opening the lid and not hiding the
@@ -2646,7 +2646,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 		    if((mKeyboardDockFeature) && (mDockMode != Intent.EXTRA_DOCK_STATE_TF101_KB))
 			    mLidOpen = LID_ABSENT;
 			else
-			    flag = false
+			    flag = false;
 		}
 		return flag;
 	}
