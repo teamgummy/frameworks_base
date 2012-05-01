@@ -50,6 +50,7 @@ public class LockTextSMS extends TextView {
     private Handler mHandler;
     
     private static final String SMS_RECEIVED = "android.provider.Telephony.SMS_RECEIVED";
+    private static final String ACTION_SHUTDOWN = "android.intent.action.ACTION_SHUTDOWN";
     private static final String TAG = "LockTextSMS";
     
     private String body;
@@ -82,10 +83,14 @@ public class LockTextSMS extends TextView {
 
         if (!mIsAttached) {
             mIsAttached = true;
+            
             IntentFilter filter = new IntentFilter();
-
+            IntentFilter filter2 = new IntentFilter();
+            
             filter.addAction(SMS_RECEIVED);
+            filter2.addAction(ACTION_SHUTDOWN);
             getContext().registerReceiver(mIntentReceiver, filter, null, getHandler());
+            getContext().registerReceiver(mShutDownReceiver, filter2, null, getHandler());
         }
     }
 
@@ -98,6 +103,7 @@ public class LockTextSMS extends TextView {
         if (showTexts) {
         	if (mIsAttached) {
                 getContext().unregisterReceiver(mIntentReceiver);
+                getContext().unregisterReceiver(mShutDownReceiver);
                 mIsAttached = false;
             }
         }
@@ -117,8 +123,21 @@ public class LockTextSMS extends TextView {
         }
     };
     
+    private final BroadcastReceiver mShutDownReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.i(TAG, "Intent recieved: " + intent.getAction());
+            //needed to search for shutdown to prevent hotboots upon reboots with 
+            //SMS popup visible
+            if (intent.getAction() == ACTION_SHUTDOWN) {
+            	Settings.System.putInt(getContext().getContentResolver(), Settings.System.LOCKSCREEN_SMS_CROSS, 1);
+            }
+        }
+    };
+    
     private void keepMyBoxUp() {
     	boolean showTexts = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_SMS_CROSS, 1) == 0);
+    	boolean musicPlaying = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_SMS_MUSIC, 0) == 1);
     	
     	Uri uri = Uri.parse("content://sms/inbox");
 
@@ -126,7 +145,7 @@ public class LockTextSMS extends TextView {
     	int unreadSMSCount = c.getCount();
     	c.deactivate();
     	
-    	if (unreadSMSCount > 0 && showTexts) {
+    	if (unreadSMSCount > 0 && showTexts && !musicPlaying) {
     		String name = null;
         	String msg = null;
         	Cursor cursor1 = mContext.getContentResolver().query(uri,new String[] { "_id", "thread_id", "address", "person", "date","body", "type" }, null, null, null);
@@ -169,7 +188,9 @@ public class LockTextSMS extends TextView {
     
     private void getYourText(Bundle bundle) {
     	boolean showTexts = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_SHOW_TEXTS, 0) == 1);
-    	if (showTexts) {
+    	boolean musicPlaying = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_SMS_MUSIC, 0) == 1);
+    	
+    	if (showTexts && !musicPlaying) {
         	try {
         		Object[] pdus = (Object[])bundle.get("pdus");
                 final SmsMessage[] messages = new SmsMessage[pdus.length];

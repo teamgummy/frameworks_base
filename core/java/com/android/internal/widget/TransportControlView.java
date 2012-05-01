@@ -38,6 +38,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.RemoteException;
 import android.os.SystemClock;
+import android.provider.Settings;
 import android.text.Spannable;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
@@ -197,6 +198,7 @@ public class TransportControlView extends FrameLayout implements OnClickListener
         mAudioManager = new AudioManager(mContext);
         mCurrentPlayState = RemoteControlClient.PLAYSTATE_NONE; // until we get a callback
         mIRCD = new IRemoteControlDisplayWeak(mHandler);
+        isMusicPlaying(false);
     }
 
     private void updateTransportControls(int transportControlFlags) {
@@ -333,6 +335,7 @@ public class TransportControlView extends FrameLayout implements OnClickListener
     }
 
     private void updatePlayPauseState(int state) {
+    	isMusicPlaying(state);
         if (DEBUG) Log.v(TAG,
                 "updatePlayPauseState(), old=" + mCurrentPlayState + ", state=" + state);
         if (state == mCurrentPlayState) {
@@ -512,5 +515,39 @@ public class TransportControlView extends FrameLayout implements OnClickListener
                 Log.e(TAG, "Unknown playback state " + state + " in wasPlayingRecently()");
                 return false;
         }
+    }
+    
+    //thanks google for letting me copy paste this from above LOL
+    private void isMusicPlaying(int state) {
+        switch (state) {
+            case RemoteControlClient.PLAYSTATE_PLAYING:
+            case RemoteControlClient.PLAYSTATE_FAST_FORWARDING:
+            case RemoteControlClient.PLAYSTATE_REWINDING:
+            case RemoteControlClient.PLAYSTATE_SKIPPING_FORWARDS:
+            case RemoteControlClient.PLAYSTATE_SKIPPING_BACKWARDS:
+            case RemoteControlClient.PLAYSTATE_BUFFERING:
+            	// actively playing or about to play
+            	isMusicPlaying(true);
+                break;
+            case RemoteControlClient.PLAYSTATE_NONE:
+            	// music is no longer playing or about to
+            	isMusicPlaying(false);
+                break;
+            case RemoteControlClient.PLAYSTATE_STOPPED:
+            case RemoteControlClient.PLAYSTATE_PAUSED:
+            case RemoteControlClient.PLAYSTATE_ERROR:
+            default:
+            	// defaulted music is not playing so make sure the crossover is that way
+            	isMusicPlaying(false);
+                break;
+        }
+    }
+
+    private void isMusicPlaying(boolean musicPlaying) {
+    	if (musicPlaying) {
+    		Settings.System.putInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_SMS_MUSIC, 1);
+    	} else {
+    		Settings.System.putInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_SMS_MUSIC, 0);
+    	}
     }
 }

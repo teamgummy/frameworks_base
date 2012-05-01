@@ -1133,7 +1133,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         }
     }
     
-    void readLidState() {
+     void readLidState() {
         try {
             int sw = mWindowManager.getSwitchState(SW_LID);
             if (sw > 0) {
