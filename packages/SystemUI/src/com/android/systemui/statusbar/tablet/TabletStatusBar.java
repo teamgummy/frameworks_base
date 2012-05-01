@@ -80,6 +80,7 @@ import com.android.systemui.statusbar.SignalClusterView;
 import com.android.systemui.statusbar.StatusBar;
 import com.android.systemui.statusbar.StatusBarIconView;
 import com.android.systemui.statusbar.policy.BatteryController;
+import com.android.systemui.statusbar.policy.BatteryText;
 import com.android.systemui.statusbar.policy.BluetoothController;
 import com.android.systemui.statusbar.policy.CompatModeButton;
 import com.android.systemui.statusbar.policy.DockBatteryController;
@@ -164,6 +165,7 @@ public class TabletStatusBar extends StatusBar implements
 
     HeightReceiver mHeightReceiver;
     BatteryController mBatteryController;
+    BatteryText mBatteryText;
     BluetoothController mBluetoothController;
     DockBatteryController mDockBatteryController;
     LocationController mLocationController;
@@ -213,8 +215,10 @@ public class TabletStatusBar extends StatusBar implements
 
         // the battery icon
         mBatteryController.addIconView((ImageView)mNotificationPanel.findViewById(R.id.battery));
-        mBatteryController.addLabelView(
-                (TextView)mNotificationPanel.findViewById(R.id.battery_text));
+        mBatteryText = (BatteryText)mNotificationPanel.findViewById(R.id.batterytext);
+        
+        //remove this because we use our own battery text!
+        //mBatteryController.addLabelView((TextView)mNotificationPanel.findViewById(R.id.battery_text));
 
         if (mHasDockBattery) {
             mDockBatteryController.addIconView((ImageView)mNotificationPanel.findViewById(R.id.dock_battery));
@@ -498,6 +502,7 @@ public class TabletStatusBar extends StatusBar implements
 
         mBatteryController = new BatteryController(mContext);
         mBatteryController.addIconView((ImageView)sb.findViewById(R.id.battery));
+        mBatteryText = (BatteryText)sb.findViewById(R.id.batterytext);
 
         if (mHasDockBattery) {
             mDockBatteryController = new DockBatteryController(mContext);

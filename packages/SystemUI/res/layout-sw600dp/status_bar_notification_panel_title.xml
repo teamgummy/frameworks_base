@@ -151,7 +151,7 @@
                 android:contentDescription="@null"
                 />
 
-            <TextView
+            <!--<TextView
                 android:id="@+id/battery_text"
                 style="@style/StatusBarNotificationText"
                 android:layout_width="wrap_content"
@@ -160,7 +160,19 @@
                 android:paddingRight="2dp"
                 android:singleLine="true"
                 android:text="@string/status_bar_settings_settings_button"
-                />
+                />-->
+
+            <com.android.systemui.statusbar.policy.BatteryText
+                android:id="@+id/batterytext"
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:singleLine="true"
+	        android:paddingRight="6dip"
+                android:gravity="left|center_vertical"
+                android:layout_alignBaseline="@id/wifi_signal"
+                android:contentDescription="@null"
+            />  
 
             <!-- this will stretch to eat up available space -->
             <View
