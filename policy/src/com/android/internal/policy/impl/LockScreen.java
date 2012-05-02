@@ -968,13 +968,13 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 			icons[3] = d3;
 		}
 
-		Drawable d4 = array.getDrawable(0);
+		Drawable d4 = array.getDrawable(4);
 		icons[4] = d4;
 		
 		if (customAppIcon4 != null) {
 			icons[5] = customAppIcon4;
 		} else {
-			Drawable d5 = array.getDrawable(3);
+			Drawable d5 = array.getDrawable(5);
 			icons[5] = d5;
 		}
 		
