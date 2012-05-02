@@ -151,9 +151,21 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 	private String mCustomThree = (Settings.System.getString(
 			mContext.getContentResolver(),
 			Settings.System.LOCKSCREEN_CUSTOM_THREE));
+	private String mCustomFour = (Settings.System.getString(
+			mContext.getContentResolver(),
+			Settings.System.LOCKSCREEN_CUSTOM_FOUR));
+	private String mCustomFive = (Settings.System.getString(
+			mContext.getContentResolver(),
+			Settings.System.LOCKSCREEN_CUSTOM_FIVE));
+	private String mCustomSix = (Settings.System.getString(
+			mContext.getContentResolver(),
+			Settings.System.LOCKSCREEN_CUSTOM_SIX));
 	private Drawable customAppIcon1;
 	private Drawable customAppIcon2;
 	private Drawable customAppIcon3;
+	private Drawable customAppIcon4;
+	private Drawable customAppIcon5;
+	private Drawable customAppIcon6;
 	
 	//custom app picker for SMS popup
 	private String mSMSApp = (Settings.System.getString(
@@ -526,6 +538,18 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 						toggleRingMode();
 						mUnlockWidgetMethods.updateResources();
 						mCallback.pokeWakelock();
+					}
+				} else if (target == 5) {
+					if (mCustomFour != null) {
+						runActivity(mCustomFour);
+					}
+				} else if (target == 6) {
+					if (mCustomFive != null) {
+						runActivity(mCustomFive);
+					}
+				} else if (target == 7) {
+					if (mCustomSix != null) {
+						runActivity(mCustomSix);
 					}
 				}
 			} else {
@@ -943,9 +967,29 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 			Drawable d3 = array.getDrawable(3);
 			icons[3] = d3;
 		}
-		for (int i = 4; i < 8; i++) {
-			Drawable d = array.getDrawable(i);
-			icons[i] = d;
+
+		Drawable d4 = array.getDrawable(4);
+		icons[4] = d4;
+		
+		if (customAppIcon4 != null) {
+			icons[5] = customAppIcon4;
+		} else {
+			Drawable d5 = array.getDrawable(5);
+			icons[5] = d5;
+		}
+		
+		if (customAppIcon5 != null) {
+			icons[6] = customAppIcon5;
+		} else {
+			Drawable d6 = array.getDrawable(6);
+			icons[6] = d6;
+		}
+		
+		if (customAppIcon6 != null) {
+			icons[7] = customAppIcon6;
+		} else {
+			Drawable d7 = array.getDrawable(7);
+			icons[7] = d7;
 		}
 
 		return icons;
@@ -1170,6 +1214,57 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 				    	Log.e(TAG, "NameNotFoundException: " + mCustomThree);
 				    } catch (URISyntaxException e) {
 				    	Log.e(TAG, "URISyntaxException: " + mCustomThree);
+				    }
+				}
+				
+				if (mCustomFour != null) {
+					try {
+						Intent i = Intent.parseUri(mCustomFour, 0);
+						Drawable d = pm.getActivityIcon(i);
+						Bitmap bit = ((BitmapDrawable) d).getBitmap();
+						Bitmap bitIcon = Bitmap.createScaledBitmap(bit,
+								(int) (density * iconSize),
+								(int) (density * iconSize), true);
+						customAppIcon4 = new BitmapDrawable(context.getResources(),
+								bitIcon);
+				    } catch (PackageManager.NameNotFoundException e) {
+				    	Log.e(TAG, "NameNotFoundException: " + mCustomFour);
+				    } catch (URISyntaxException e) {
+				    	Log.e(TAG, "URISyntaxException: " + mCustomFour);
+				    }
+				}
+				
+				if (mCustomFive != null) {
+					try {
+						Intent i = Intent.parseUri(mCustomFive, 0);
+						Drawable d = pm.getActivityIcon(i);
+						Bitmap bit = ((BitmapDrawable) d).getBitmap();
+						Bitmap bitIcon = Bitmap.createScaledBitmap(bit,
+								(int) (density * iconSize),
+								(int) (density * iconSize), true);
+						customAppIcon5 = new BitmapDrawable(context.getResources(),
+								bitIcon);
+				    } catch (PackageManager.NameNotFoundException e) {
+				    	Log.e(TAG, "NameNotFoundException: " + mCustomFive);
+				    } catch (URISyntaxException e) {
+				    	Log.e(TAG, "URISyntaxException: " + mCustomFive);
+				    }
+				}
+				
+				if (mCustomSix != null) {
+					try {
+						Intent i = Intent.parseUri(mCustomSix, 0);
+						Drawable d = pm.getActivityIcon(i);
+						Bitmap bit = ((BitmapDrawable) d).getBitmap();
+						Bitmap bitIcon = Bitmap.createScaledBitmap(bit,
+								(int) (density * iconSize),
+								(int) (density * iconSize), true);
+						customAppIcon6 = new BitmapDrawable(context.getResources(),
+								bitIcon);
+				    } catch (PackageManager.NameNotFoundException e) {
+				    	Log.e(TAG, "NameNotFoundException: " + mCustomSix);
+				    } catch (URISyntaxException e) {
+				    	Log.e(TAG, "URISyntaxException: " + mCustomSix);
 				    }
 				}
 			}
