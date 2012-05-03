@@ -41,7 +41,7 @@
             android:gravity="center">
 
             <!-- Music transport control -->
-            <include android:id="@+id/transport"
+            <include android:id="@+id/transport2"
                 layout="@layout/keyguard_transport_control"
                 android:layout_row="0"
                 android:layout_column="0"
@@ -53,7 +53,7 @@
                 />
 
             <!-- Music transport control -->
-            <include android:id="@+id/transport2"
+            <include android:id="@+id/transport"
                 layout="@layout/keyguard_transport_control"
                 android:layout_row="0"
                 android:layout_column="0"

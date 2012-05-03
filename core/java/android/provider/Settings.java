@@ -2662,6 +2662,12 @@ public final class Settings {
          * @hide
          */
         public static final String LOCKSCREEN_SMS_MUSIC = "lockscreen_sms_music"; 
+        
+        /**
+         * Whether or not volume button music controls should be enabled to seek media tracks
+         * @hide
+         */
+        public static final String VOLBTN_MUSIC_CONTROLS = "volbtn_music_controls";
 
         /**
          * Settings to backup. This is here so that it's in the same place as
