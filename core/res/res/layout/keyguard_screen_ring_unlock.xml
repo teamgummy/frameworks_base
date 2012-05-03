@@ -212,18 +212,6 @@
     </LinearLayout>
 
     <!-- Music transport control -->
-    <include android:id="@+id/transport"
-        layout="@layout/keyguard_transport_control"
-        android:layout_row="0"
-        android:layout_column="0"
-        android:layout_rowSpan="4"
-        android:layout_columnSpan="1"
-        android:layout_gravity="top"
-        android:layout_width="fill_parent"
-        android:layout_height="265dp"
-        />
-
-    <!-- Music transport control -->
     <include android:id="@+id/transport2"
         layout="@layout/keyguard_transport_control_old"
         android:layout_row="0"
@@ -234,6 +222,18 @@
         android:layout_below="@id/zzstatus2"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        />
+
+    <!-- Music transport control -->
+    <include android:id="@+id/transport"
+        layout="@layout/keyguard_transport_control"
+        android:layout_row="0"
+        android:layout_column="0"
+        android:layout_rowSpan="4"
+        android:layout_columnSpan="1"
+        android:layout_gravity="top"
+        android:layout_width="fill_parent"
+        android:layout_height="265dp"
         />
 
     </RelativeLayout>

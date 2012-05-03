@@ -122,7 +122,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/status1"
-            android:layout_alignParentRight="true"
+            android:layout_centerHorizontal="true"
             android:singleLine="true"
             android:ellipsize="marquee"
             android:textAppearance="?android:attr/textAppearanceMedium"
@@ -136,7 +136,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/zzstatus2"
-            android:layout_centerHorizontal="true"
+            android:layout_alignParentRight="true"
             android:lines="2"
             android:ellipsize="end"
             android:gravity="center"
@@ -166,12 +166,22 @@
         android:visibility="gone"
         />
 
-        <com.android.internal.widget.SenseLikeLock
-            android:id="@+id/unlock_widget"
-            android:orientation="vertical"
+        <com.android.internal.widget.SlidingTab
+            android:id="@+id/unlock_widget2"
+            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentBottom="true"
+            android:layout_marginBottom="155dip"
+            />
+
+        <com.android.internal.widget.SlidingTab
+            android:id="@+id/unlock_widget"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="60dip"
             />
 
         <TextView
@@ -212,6 +222,18 @@
     </LinearLayout>
 
     <!-- Music transport control -->
+    <include android:id="@+id/transport"
+        layout="@layout/keyguard_transport_control"
+        android:layout_row="0"
+        android:layout_column="0"
+        android:layout_rowSpan="4"
+        android:layout_columnSpan="1"
+        android:layout_gravity="top"
+        android:layout_width="fill_parent"
+        android:layout_height="265dp"
+        />
+
+    <!-- Music transport control -->
     <include android:id="@+id/transport2"
         layout="@layout/keyguard_transport_control_old"
         android:layout_row="0"
@@ -222,18 +244,6 @@
         android:layout_below="@id/zzstatus2"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        />
-
-    <!-- Music transport control -->
-    <include android:id="@+id/transport"
-        layout="@layout/keyguard_transport_control"
-        android:layout_row="0"
-        android:layout_column="0"
-        android:layout_rowSpan="4"
-        android:layout_columnSpan="1"
-        android:layout_gravity="top"
-        android:layout_width="fill_parent"
-        android:layout_height="265dp"
         />
 
     </RelativeLayout>
