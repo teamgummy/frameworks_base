@@ -139,38 +139,40 @@ public class LockTextSMS extends TextView {
     	boolean showTexts = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_SMS_CROSS, 1) == 0);
     	boolean musicPlaying = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_SMS_MUSIC, 0) == 1);
     	
-    	Uri uri = Uri.parse("content://sms/inbox");
+    	if (showTexts) {
+    		Uri uri = Uri.parse("content://sms/inbox");
 
-    	Cursor c = mContext.getContentResolver().query(uri, null, "read = 0", null, null);
-    	int unreadSMSCount = c.getCount();
-    	c.deactivate();
-    	
-    	if (unreadSMSCount > 0 && showTexts && !musicPlaying) {
-    		String name = null;
-        	String msg = null;
-        	Cursor cursor1 = mContext.getContentResolver().query(uri,new String[] { "_id", "thread_id", "address", "person", "date","body", "type" }, null, null, null);
-        	String[] columns = new String[] { "address", "body"};
-        	if (cursor1.getCount() > 0) {
-        	   if (cursor1.moveToFirst()){
-        	       name = cursor1.getString(cursor1.getColumnIndex(columns[0]));
-        	       msg = cursor1.getString(cursor1.getColumnIndex(columns[1]));
-        	    }
-        	}
-        	if (msg != null && name != null) {
-            	Uri personUri = Uri.withAppendedPath( ContactsContract.PhoneLookup.CONTENT_FILTER_URI, name);
-            	Cursor cur = mContext.getContentResolver().query(personUri, new String[] { ContactsContract.PhoneLookup.DISPLAY_NAME }, null, null, null );
-            	if (cur.moveToFirst()) {
-            		int nameIndex = cur.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME);
-            		caller = cur.getString(nameIndex);
+        	Cursor c = mContext.getContentResolver().query(uri, null, "read = 0", null, null);
+        	int unreadSMSCount = c.getCount();
+        	c.deactivate();
+        	
+        	if (unreadSMSCount > 0 && !musicPlaying) {
+        		String name = null;
+            	String msg = null;
+            	Cursor cursor1 = mContext.getContentResolver().query(uri,new String[] { "_id", "thread_id", "address", "person", "date","body", "type" }, null, null, null);
+            	String[] columns = new String[] { "address", "body"};
+            	if (cursor1.getCount() > 0) {
+            	   if (cursor1.moveToFirst()){
+            	       name = cursor1.getString(cursor1.getColumnIndex(columns[0]));
+            	       msg = cursor1.getString(cursor1.getColumnIndex(columns[1]));
+            	    }
             	}
-            	if (caller == null) {
-            		caller = name;
+            	if (msg != null && name != null) {
+                	Uri personUri = Uri.withAppendedPath( ContactsContract.PhoneLookup.CONTENT_FILTER_URI, name);
+                	Cursor cur = mContext.getContentResolver().query(personUri, new String[] { ContactsContract.PhoneLookup.DISPLAY_NAME }, null, null, null );
+                	if (cur.moveToFirst()) {
+                		int nameIndex = cur.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME);
+                		caller = cur.getString(nameIndex);
+                	}
+                	if (caller == null) {
+                		caller = name;
+                	}
+                	body = msg;
+                	updateCurrentText(body, caller);
+                	setBackgroundResource(R.drawable.ic_lockscreen_player_background_old);
             	}
-            	body = msg;
-            	updateCurrentText(body, caller);
-            	setBackgroundResource(R.drawable.ic_lockscreen_player_background_old);
         	}
-    	}
+    	}	
     }
     
     private void updateCurrentText(String textBody, String callerID) {
