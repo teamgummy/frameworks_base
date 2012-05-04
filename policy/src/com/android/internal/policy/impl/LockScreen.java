@@ -107,6 +107,9 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 	private UnlockWidgetCommonMethods mUnlockWidgetMethods2;
 	private View mUnlockWidget;
 	private View mUnlockWidget2;
+	
+	//stupid duct tape fix till i can make the layout see who is boss
+    private boolean stupidFix = Settings.System.getInt(mContext.getContentResolver(), Settings.System.MUSIC_WIDGET_TYPE, 0) == 1;
 
 	// lockscreen toggles
 	private boolean mLockscreenCustom = (Settings.System.getInt(
@@ -1038,23 +1041,47 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 			Log.v(TAG, "Creation orientation = " + mCreationOrientation);
 		if (mCreationOrientation != Configuration.ORIENTATION_LANDSCAPE) {
 			if (mUseSlider)
-				inflater.inflate(R.layout.keyguard_screen_slider_unlock, this,
+				if (stupidFix)
+				inflater.inflate(R.layout.keyguard_screen_slider_unlock_new, this,
 						true);
+				else
+					inflater.inflate(R.layout.keyguard_screen_slider_unlock, this,
+							true);
 			else if (mUseRotary || mRotaryRevamp)
-				inflater.inflate(R.layout.keyguard_screen_rotary_unlock, this,
-						true);
+				if (stupidFix)
+				    inflater.inflate(R.layout.keyguard_screen_rotary_unlock_new, this,
+						    true);
+				else
+					inflater.inflate(R.layout.keyguard_screen_rotary_unlock, this,
+						    true);
 			else if (mUseHoneyComb)
-				inflater.inflate(R.layout.keyguard_screen_honeycomb_unlock,
-						this, true);
+				if (stupidFix)
+				    inflater.inflate(R.layout.keyguard_screen_honeycomb_unlock_new,
+						    this, true);
+				else
+					inflater.inflate(R.layout.keyguard_screen_honeycomb_unlock,
+							this, true);
 			else if (mUseRings)
-				inflater.inflate(R.layout.keyguard_screen_ring_unlock, this,
-						true);
+				if (stupidFix)
+				    inflater.inflate(R.layout.keyguard_screen_ring_unlock_new, this,
+						    true);
+				else
+					inflater.inflate(R.layout.keyguard_screen_ring_unlock, this,
+						    true);
 			else if (mUseSense)
-				inflater.inflate(R.layout.keyguard_screen_sense_unlock, this,
-						true);
+				if (stupidFix)
+				    inflater.inflate(R.layout.keyguard_screen_sense_unlock_new, this,
+						    true);
+				else
+					inflater.inflate(R.layout.keyguard_screen_sense_unlock, this,
+							true);
 			else
-				inflater.inflate(R.layout.keyguard_screen_tab_unlock, this,
-						true);
+				if (stupidFix)
+				    inflater.inflate(R.layout.keyguard_screen_tab_unlock_new, this,
+						    true);
+				else
+					inflater.inflate(R.layout.keyguard_screen_tab_unlock, this,
+							true);
 		} else {
 			if (mUseSlider)
 				inflater.inflate(R.layout.keyguard_screen_slider_unlock_land,
