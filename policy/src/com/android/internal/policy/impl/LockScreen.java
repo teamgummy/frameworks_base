@@ -163,6 +163,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 	private String mCustomSix = (Settings.System.getString(
 			mContext.getContentResolver(),
 			Settings.System.LOCKSCREEN_CUSTOM_SIX));
+	
 	private Drawable customAppIcon1;
 	private Drawable customAppIcon2;
 	private Drawable customAppIcon3;
