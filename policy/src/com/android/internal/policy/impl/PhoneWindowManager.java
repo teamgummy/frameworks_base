@@ -1207,7 +1207,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     }
     
      void readLidState() {
-	    if(!readLidStateByHardwareFeature())
         try {
             int sw = mWindowManager.getSwitchState(SW_LID);
             if (sw > 0) {
@@ -2660,78 +2659,34 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     /** {@inheritDoc} */
     public void notifyLidSwitchChanged(long whenNanos, boolean lidOpen) {
         // lid changed state
-		if ((mKeyboardDockFeature) && (mDockMode == Intent.EXTRA_DOCK_STATE_TF101_KB));
-		    lidOpen = lidOpen ? false : true;
         mLidOpen = lidOpen ? LID_OPEN : LID_CLOSED;
-		readLidStateByHardwareFeature();
-		if(goToSleepWhenLidClose())
-		    return;
-		else {	
-            updateKeyboardVisibility();
 
-            boolean awakeNow = mKeyguardMediator.doLidChangeTq(lidOpen);
-		    updateRotation(true);
-		    if (awakeNow) {
-		        // If the lid is opening and we don't have to keep the
-			    // keyguard up, then we can turn on the screen
-			    // immediately.
-			    mKeyguardMediator.pokeWakelock();
-		    } else if (keyguardIsShowingTq()) {
-		        if (lidOpen) {
-			        // If we are opening the lid and not hiding the
-				    // keyguard, then we need to have it turn on the
-				    // screen once it is shown.
-				    mKeyguardMediator.onWakeKeyWhenKeyguardShowingTq(
-				        KeyEvent.KEYCODE_POWER, mDockMode != Intent.EXTRA_DOCK_STATE_UNDOCKED);
-			    }
-		    } else {
-		        // Light up the keyboard if we are sliding up
-			    if (lidOpen) {
-			        mPowerManager.userActivity(SystemClock.uptimeMillis(), false,
-				            LocalPowerManager.BUTTON_EVENT);
-			    } else {
-			        mPowerManager.userActivity(SystemClock.uptimeMillis(), false,
-				            LocalPowerManager.OTHER_EVENT);
-			    }
+       boolean awakeNow = mKeyguardMediator.doLidChangeTq(lidOpen);
+        updateRotation(true);
+        if (awakeNow) {
+            // If the lid is opening and we don't have to keep the
+            // keyguard up, then we can turn on the screen
+            // immediately.
+            mKeyguardMediator.pokeWakelock();
+        } else if (keyguardIsShowingTq()) {
+            if (lidOpen) {
+                // If we are opening the lid and not hiding the
+                // keyguard, then we need to have it turn on the
+                // screen once it is shown.
+                mKeyguardMediator.onWakeKeyWhenKeyguardShowingTq(
+                        KeyEvent.KEYCODE_POWER, mDockMode != Intent.EXTRA_DOCK_STATE_UNDOCKED);
             }
-        }
-    }
-
-	boolean readLidStateByHardwareFeature()
-	{
-	    boolean flag = true;
-		if (!mHallSensorFeature)
-		    mLidOpen = LID_ABSENT;
-		else {
-		    if((mKeyboardDockFeature) && (mDockMode != Intent.EXTRA_DOCK_STATE_TF101_KB))
-			    mLidOpen = LID_ABSENT;
-			else
-			    flag = false;
-		}
-		return flag;
-	}
-
-	private boolean goToSleepWhenLidClose()
-	{
-	    if ((mScreenOnEarly) && (isLidClosedOnDock()))
-		{
-		    mPowerManager.goToSleep(SystemClock.uptimeMillis() + 1L);
-			Log.i(TAG, "Lid closed, going to sleep");
-			return true;
-		} else {
-		    return false;
-		}
-	}
-
-	public boolean isLidClosedOnDock()
-	{
-	    if ((mLidOpen == LID_CLOSED) && (mKeyboardDockFeature)) {
-		    return true;
-		} else {
-		    return false;
-		}
-	}
-
+        } else {
+            // Light up the keyboard if we are sliding up.
+            if (lidOpen) {
+                mPowerManager.userActivity(SystemClock.uptimeMillis(), false,
+                        LocalPowerManager.BUTTON_EVENT);
+            } else {
+                mPowerManager.userActivity(SystemClock.uptimeMillis(), false,
+                        LocalPowerManager.OTHER_EVENT);
+            }
+         }
+     }
     void setHdmiPlugged(boolean plugged) {
         if (mHdmiPlugged != plugged) {
             mHdmiPlugged = plugged;
