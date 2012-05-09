@@ -101,7 +101,20 @@ status_t GraphicBufferAllocator::alloc(uint32_t w, uint32_t h, PixelFormat forma
 
 #ifdef MISSING_EGL_PIXEL_FORMAT_YV12
     if (format == HAL_PIXEL_FORMAT_YV12) {
-	format = HAL_PIXEL_FORMAT_RGBX_8888;
+        LOGD("%s: Override HAL_PIXEL_FORMAT_YV12", __FUNCTION__);
+        format = HAL_PIXEL_FORMAT_RGB_565;
+        //format = HAL_PIXEL_FORMAT_RGBA_8888;
+    }
+    if (format == 27) { //OMX_COLOR_FormatCbYCrY (both are 16bpp)
+        LOGD("%s: Override OMX_COLOR_FormatCbYCrY", __FUNCTION__);
+        format = HAL_PIXEL_FORMAT_RGB_565;
+        //format = HAL_PIXEL_FORMAT_RGBA_8888;
+    }
+    if (!(usage & GRALLOC_USAGE_SW_READ_MASK)) {
+        usage |= GRALLOC_USAGE_SW_READ_RARELY;
+    }
+    if (!(usage & GRALLOC_USAGE_SW_WRITE_MASK)) {
+        usage |= GRALLOC_USAGE_SW_WRITE_RARELY;
     }
     if (usage & GRALLOC_USAGE_EXTERNAL_DISP) {
 	usage ^= GRALLOC_USAGE_EXTERNAL_DISP;
