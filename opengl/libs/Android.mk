@@ -16,13 +16,13 @@ LOCAL_SRC_FILES:= 	       \
 	EGL/trace.cpp              \
 	EGL/getProcAddress.cpp.arm \
 	EGL/Loader.cpp 	       \
-#
 
 LOCAL_SHARED_LIBRARIES += libcutils libutils libGLESv2_dbg
 LOCAL_LDLIBS := -lpthread -ldl
 LOCAL_MODULE:= libEGL
 LOCAL_LDFLAGS += -Wl,--exclude-libs=ALL
 LOCAL_SHARED_LIBRARIES += libdl
+
 # Bionic's private TLS header relies on the ARCH_ARM_HAVE_TLS_REGISTER to
 # select the appropriate TLS codepath
 ifeq ($(ARCH_ARM_HAVE_TLS_REGISTER),true)
@@ -36,8 +36,8 @@ LOCAL_CFLAGS += -DGL_GLEXT_PROTOTYPES -DEGL_EGLEXT_PROTOTYPES
 LOCAL_CFLAGS += -fvisibility=hidden
 LOCAL_CFLAGS += -DEGL_TRACE=1
 
-ifeq ($(ARCH_ARM_HAVE_TLS_REGISTER),true)
-  LOCAL_CFLAGS += -DHAVE_ARM_TLS_REGISTER
+ifeq ($(TARGET_BOARD_PLATFORM),msm7k)
+LOCAL_CFLAGS += -DADRENO130=1
 endif
 
 ifneq ($(MAX_EGL_CACHE_ENTRY_SIZE),)
@@ -77,9 +77,7 @@ endif
 
 include $(CLEAR_VARS)
 
-LOCAL_SRC_FILES:= 		\
-	GLES_CM/gl.cpp.arm 	\
-#
+LOCAL_SRC_FILES := GLES_CM/gl.cpp.arm
 
 LOCAL_SHARED_LIBRARIES += libcutils libEGL
 LOCAL_LDLIBS := -lpthread -ldl
@@ -96,8 +94,8 @@ LOCAL_CFLAGS += -DLOG_TAG=\"libGLESv1\"
 LOCAL_CFLAGS += -DGL_GLEXT_PROTOTYPES -DEGL_EGLEXT_PROTOTYPES
 LOCAL_CFLAGS += -fvisibility=hidden
 
-ifeq ($(ARCH_ARM_HAVE_TLS_REGISTER),true)
-  LOCAL_CFLAGS += -DHAVE_ARM_TLS_REGISTER
+ifeq ($(TARGET_MISSING_EGL_EXTERNAL_IMAGE),true)
+  LOCAL_CFLAGS += -DHOOK_MISSING_EGL_EXTERNAL_IMAGE
 endif
 
 include $(BUILD_SHARED_LIBRARY)
@@ -109,9 +107,7 @@ include $(BUILD_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
 
-LOCAL_SRC_FILES:= 		\
-	GLES2/gl2.cpp.arm 	\
-#
+LOCAL_SRC_FILES := GLES2/gl2.cpp.arm
 
 LOCAL_SHARED_LIBRARIES += libcutils libEGL
 LOCAL_LDLIBS := -lpthread -ldl
@@ -128,8 +124,8 @@ LOCAL_CFLAGS += -DLOG_TAG=\"libGLESv2\"
 LOCAL_CFLAGS += -DGL_GLEXT_PROTOTYPES -DEGL_EGLEXT_PROTOTYPES
 LOCAL_CFLAGS += -fvisibility=hidden
 
-ifeq ($(ARCH_ARM_HAVE_TLS_REGISTER),true)
-  LOCAL_CFLAGS += -DHAVE_ARM_TLS_REGISTER
+ifeq ($(TARGET_MISSING_EGL_EXTERNAL_IMAGE),true)
+  LOCAL_CFLAGS += -DHOOK_MISSING_EGL_EXTERNAL_IMAGE
 endif
 
 include $(BUILD_SHARED_LIBRARY)
@@ -140,9 +136,7 @@ include $(BUILD_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
 
-LOCAL_SRC_FILES:= 		\
-	ETC1/etc1.cpp 	\
-#
+LOCAL_SRC_FILES := ETC1/etc1.cpp
 
 LOCAL_LDLIBS := -lpthread -ldl
 LOCAL_MODULE:= libETC1
@@ -155,9 +149,7 @@ include $(BUILD_HOST_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
 
-LOCAL_SRC_FILES:= 		\
-	ETC1/etc1.cpp 	\
-#
+LOCAL_SRC_FILES := ETC1/etc1.cpp
 
 LOCAL_LDLIBS := -lpthread -ldl
 LOCAL_MODULE:= libETC1
