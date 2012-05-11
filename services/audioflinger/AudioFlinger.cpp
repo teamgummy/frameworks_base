@@ -58,6 +58,10 @@
 #include <powermanager/PowerManager.h>
 // #define DEBUG_CPU_USAGE 10  // log statistics every n wall clock seconds
 
+#ifdef OMAP_ENHANCEMENT
+#include <postpro_patch_ics.h>
+#endif
+
 // ----------------------------------------------------------------------------
 
 
@@ -748,6 +752,9 @@ status_t AudioFlinger::setParameters(int ioHandle, const String8& keyValuePairs)
         AutoMutex lock(mHardwareLock);
         mHardwareStatus = AUDIO_SET_PARAMETER;
         status_t final_result = NO_ERROR;
+#ifdef OMAP_ENHANCEMENT
+        POSTPRO_PATCH_ICS_PARAMS_SET(keyValuePairs);
+#endif
         for (size_t i = 0; i < mAudioHwDevs.size(); i++) {
             audio_hw_device_t *dev = mAudioHwDevs[i];
             result = dev->set_parameters(dev, keyValuePairs.string());
@@ -831,6 +838,9 @@ String8 AudioFlinger::getParameters(int ioHandle, const String8& keys)
     if (ioHandle == 0) {
         String8 out_s8;
 
+#ifdef OMAP_ENHANCEMENT
+        POSTPRO_PATCH_ICS_PARAMS_GET(keys, out_s8);
+#endif
         for (size_t i = 0; i < mAudioHwDevs.size(); i++) {
             audio_hw_device_t *dev = mAudioHwDevs[i];
             char *s = dev->get_parameters(dev, keys.string());
@@ -1896,6 +1906,9 @@ bool AudioFlinger::MixerThread::threadLoop()
 #endif
 
     acquireWakeLock();
+#ifdef OMAP_ENHANCEMENT
+    POSTPRO_PATCH_ICS_OUTPROC_MIX_INIT(this, gettid());
+#endif
 
     while (!exitPending())
     {
@@ -2045,6 +2058,9 @@ bool AudioFlinger::MixerThread::threadLoop()
              }
              // enable changes in effect chain
              unlockEffectChains(effectChains);
+#ifdef OMAP_ENHANCEMENT
+             POSTPRO_PATCH_ICS_OUTPROC_MIX_SAMPLES(this, mFormat, mMixBuffer, mixBufferSize, mSampleRate, mChannelCount);
+#endif
             mLastWriteTime = systemTime();
             mInWrite = true;
             mBytesWritten += mixBufferSize;
@@ -2087,6 +2103,9 @@ bool AudioFlinger::MixerThread::threadLoop()
         mOutput->stream->common.standby(&mOutput->stream->common);
     }
 
+#ifdef OMAP_ENHANCEMENT
+    POSTPRO_PATCH_ICS_OUTPROC_MIX_EXIT(this, gettid());
+#endif
     releaseWakeLock();
 
     LOGV("MixerThread %p exiting", this);
@@ -2372,6 +2391,9 @@ bool AudioFlinger::MixerThread::checkForNewParameters_l()
         AudioParameter param = AudioParameter(keyValuePair);
         int value;
 
+#ifdef OMAP_ENHANCEMENT
+        POSTPRO_PATCH_ICS_OUTPROC_MIX_ROUTE(this, param, value);
+#endif
         if (param.getInt(String8(AudioParameter::keySamplingRate), value) == NO_ERROR) {
             reconfig = true;
         }
@@ -2625,6 +2647,9 @@ bool AudioFlinger::DirectOutputThread::threadLoop()
 
     acquireWakeLock();
 
+#ifdef OMAP_ENHANCEMENT
+    POSTPRO_PATCH_ICS_OUTPROC_DIRECT_INIT(this, gettid());
+#endif
     while (!exitPending())
     {
         bool rampVolume;
@@ -2859,6 +2884,9 @@ bool AudioFlinger::DirectOutputThread::threadLoop()
             }
             unlockEffectChains(effectChains);
 
+#ifdef OMAP_ENHANCEMENT
+            POSTPRO_PATCH_ICS_OUTPROC_DIRECT_SAMPLES(this, mFormat, mMixBuffer, mixBufferSize, mSampleRate, mChannelCount);
+#endif
             mLastWriteTime = systemTime();
             mInWrite = true;
             mBytesWritten += mixBufferSize;
@@ -2887,6 +2915,9 @@ bool AudioFlinger::DirectOutputThread::threadLoop()
         mOutput->stream->common.standby(&mOutput->stream->common);
     }
 
+#ifdef OMAP_ENHANCEMENT
+    POSTPRO_PATCH_ICS_OUTPROC_DIRECT_EXIT(this, gettid());
+#endif
     releaseWakeLock();
 
     LOGV("DirectOutputThread %p exiting", this);
@@ -3018,6 +3049,9 @@ bool AudioFlinger::DuplicatingThread::threadLoop()
 
     acquireWakeLock();
 
+#ifdef OMAP_ENHANCEMENT
+    POSTPRO_PATCH_ICS_OUTPROC_DUPE_INIT(this, gettid());
+#endif
     while (!exitPending())
     {
         processConfigEvents();
@@ -3128,6 +3162,9 @@ bool AudioFlinger::DuplicatingThread::threadLoop()
             // enable changes in effect chain
             unlockEffectChains(effectChains);
 
+#ifdef OMAP_ENHANCEMENT
+            POSTPRO_PATCH_ICS_OUTPROC_DUPE_SAMPLES(this, mFormat, mMixBuffer, mixBufferSize, mSampleRate, mChannelCount);
+#endif
             standbyTime = systemTime() + kStandbyTimeInNsecs;
             for (size_t i = 0; i < outputTracks.size(); i++) {
                 outputTracks[i]->write(mMixBuffer, writeFrames);
@@ -3151,6 +3188,9 @@ bool AudioFlinger::DuplicatingThread::threadLoop()
         effectChains.clear();
     }
 
+#ifdef OMAP_ENHANCEMENT
+    POSTPRO_PATCH_ICS_OUTPROC_DUPE_EXIT(this, gettid());
+#endif
     releaseWakeLock();
 
     return false;
@@ -4317,6 +4357,9 @@ bool AudioFlinger::RecordThread::threadLoop()
 
     acquireWakeLock();
 
+#ifdef OMAP_ENHANCEMENT
+    POSTPRO_PATCH_ICS_INPROC_INIT(this, gettid(), mFormat);
+#endif
     // start recording
     while (!exitPending()) {
 
@@ -4417,9 +4460,15 @@ bool AudioFlinger::RecordThread::threadLoop()
                             if (framesOut == mFrameCount &&
                                 ((int)mChannelCount == mReqChannelCount || mFormat != AUDIO_FORMAT_PCM_16_BIT)) {
                                 mBytesRead = mInput->stream->read(mInput->stream, buffer.raw, mInputBytes);
+#ifdef OMAP_ENHANCEMENT
+                                POSTPRO_PATCH_ICS_INPROC_SAMPLES(this, mFormat, mRsmpInBuffer, mBytesRead, mSampleRate, mChannelCount);
+#endif
                                 framesOut = 0;
                             } else {
                                 mBytesRead = mInput->stream->read(mInput->stream, mRsmpInBuffer, mInputBytes);
+#ifdef OMAP_ENHANCEMENT
+                                POSTPRO_PATCH_ICS_INPROC_SAMPLES(this, mFormat, mRsmpInBuffer, mBytesRead, mSampleRate, mChannelCount);
+#endif
                                 mRsmpInIndex = 0;
                             }
                             if (mBytesRead < 0) {
@@ -4491,6 +4540,9 @@ bool AudioFlinger::RecordThread::threadLoop()
 
     mStartStopCond.broadcast();
 
+#ifdef OMAP_ENHANCEMENT
+    POSTPRO_PATCH_ICS_INPROC_EXIT(this, gettid(), mFormat);
+#endif
     releaseWakeLock();
 
     LOGV("RecordThread %p exiting", this);
@@ -4668,6 +4720,9 @@ status_t AudioFlinger::RecordThread::getNextBuffer(AudioBufferProvider::Buffer* 
 
     if (framesReady == 0) {
         mBytesRead = mInput->stream->read(mInput->stream, mRsmpInBuffer, mInputBytes);
+#ifdef OMAP_ENHANCEMENT
+        POSTPRO_PATCH_ICS_INPROC_SAMPLES(this, mFormat, mRsmpInBuffer, mBytesRead, mSampleRate, mChannelCount);
+#endif
         if (mBytesRead < 0) {
             LOGE("RecordThread::getNextBuffer() Error reading audio input");
             if (mActiveTrack->mState == TrackBase::ACTIVE) {
@@ -4717,6 +4772,9 @@ bool AudioFlinger::RecordThread::checkForNewParameters_l()
         int reqSamplingRate = mReqSampleRate;
         int reqChannelCount = mReqChannelCount;
 
+#ifdef OMAP_ENHANCEMENT
+        POSTPRO_PATCH_ICS_INPROC_ROUTE(this, param, value);
+#endif
         if (param.getInt(String8(AudioParameter::keySamplingRate), value) == NO_ERROR) {
             reqSamplingRate = value;
             reconfig = true;
