@@ -58,6 +58,10 @@ ifeq ($(BOARD_OVERLAY_BASED_CAMERA_HAL),true)
         LOCAL_SRC_FILES += Overlay.cpp
 endif
 
+ifneq ($(BOARD_CUSTOM_OMX_16BPP_YUV),)
+	LOCAL_CFLAGS += -DCUSTOM_OMX_16BPP_YUV=$(BOARD_CUSTOM_OMX_16BPP_YUV)
+endif
+
 LOCAL_SHARED_LIBRARIES := \
 	libcutils \
 	libutils \
