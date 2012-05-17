@@ -2419,8 +2419,12 @@ public class PowerManagerService extends IPowerManager.Stub
 
     public void userActivity(long time, boolean noChangeLights, int eventType) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
         if (mDeepSleepMode && eventType == BUTTON_EVENT) {
+=======
+        if (mDeepSleepMode && eventType == 5) {
+>>>>>>> parent of c6a0523... Use our correct eventType
             mDeepSleepMode = false;
         }
 >>>>>>> c6a0523... Use our correct eventType
