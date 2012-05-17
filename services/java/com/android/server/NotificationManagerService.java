@@ -56,6 +56,8 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
 import android.widget.Toast;
 
+import com.android.internal.app.ThemeUtils;
+
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -81,6 +83,7 @@ public class NotificationManagerService extends INotificationManager.Stub
     private static final int DEFAULT_STREAM_TYPE = AudioManager.STREAM_NOTIFICATION;
 
     final Context mContext;
+    Context mUiContext;
     final IActivityManager mAm;
     final IBinder mForegroundToken = new Binder();
 
@@ -325,6 +328,13 @@ public class NotificationManagerService extends INotificationManager.Stub
         }
     };
 
+    private BroadcastReceiver mThemeChangeReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            mUiContext = null;
+        }
+    };
+
     private BroadcastReceiver mIntentReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -517,6 +527,7 @@ public class NotificationManagerService extends INotificationManager.Stub
         
         QuietHoursSettingsObserver qhObserver = new QuietHoursSettingsObserver(mHandler);
         qhObserver.observe();
+        ThemeUtils.registerThemeChangeReceiver(mContext, mThemeChangeReceiver);
     }
 
     void systemReady() {
@@ -1207,6 +1218,13 @@ public class NotificationManagerService extends INotificationManager.Stub
             }
         }
         return -1;
+    }
+
+    private Context getUiContext() {
+        if (mUiContext == null) {
+            mUiContext = ThemeUtils.createUiContext(mContext);
+        }
+        return mUiContext != null ? mUiContext : mContext;
     }
 
     private void updateNotificationPulse() {
