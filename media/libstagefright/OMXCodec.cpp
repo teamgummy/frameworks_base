@@ -342,20 +342,10 @@ uint32_t OMXCodec::getComponentQuirks(
         quirks |= kRequiresAllocateBufferOnInputPorts;
         quirks |= kInputBufferSizesAreBogus;
 
-    if (!strcmp(componentName, "OMX.TI.Video.Decoder") ||
-        !strcmp(componentName, "OMX.TI.720P.Decoder")) {
-        // TI Video Decoder and TI 720p Decoder must use buffers allocated
-        // by Overlay for output port. So, I cannot call OMX_AllocateBuffer
-        // on output port. I must use OMX_UseBuffer on input port to ensure
-        // 128 byte alignment.
-        quirks |= kRequiresAllocateBufferOnInputPorts;
-        quirks |= kInputBufferSizesAreBogus;
-
-        if (kPreferThumbnailMode) {
+        if(kPreferThumbnailMode) {
                 quirks |= OMXCodec::kRequiresAllocateBufferOnOutputPorts;
         }
     }
-
     if (!strcmp(componentName, "OMX.TI.DUCATI1.VIDEO.DECODER")) {
         quirks |= kRequiresAllocateBufferOnInputPorts;
         quirks |= kRequiresAllocateBufferOnOutputPorts;
@@ -698,12 +688,6 @@ status_t OMXCodec::configureCodec(const sp<MetaData> &meta) {
                 // Though this decoder can handle this profile/level,
                 // we prefer to use "OMX.TI.Video.Decoder" for
                 // Baseline Profile with level <=39 and sub 720p
-                return ERROR_UNSUPPORTED;
-            }
-
-            if (!strcmp(mComponentName, "OMX.google.h264.decoder")
-                && (profile != kAVCProfileBaseline)) {
-                // The profile is unsupported by the decoder
                 return ERROR_UNSUPPORTED;
             }
 
