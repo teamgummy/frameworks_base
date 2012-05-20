@@ -245,7 +245,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         mItems.add(
             new SinglePressAction(com.android.internal.R.drawable.zzic_lock_reboot, R.string.zzglobal_action_reboot) {
                 public void onPress() {
-                    ShutdownThread.reboot(mContext, "null", true);
+                    ShutdownThread.reboot(getUiContext(), "null", true);
                 }
 
                 public boolean showDuringKeyguard() {
