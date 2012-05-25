@@ -29,6 +29,9 @@ public class SystemProperties
     public static final int PROP_NAME_MAX = 31;
     public static final int PROP_VALUE_MAX = 91;
 
+    // OMAP4 and OMAP3's OMAP_COMPAT
+    public static final boolean OMAP_ENHANCEMENT = native_get_boolean("com.ti.omap_enhancement", false);
+    public static final boolean OMAP_COMPAT = native_get_boolean("com.ti.omap_compat", false);
 
     private static native String native_get(String key);
     private static native String native_get(String key, String def);
