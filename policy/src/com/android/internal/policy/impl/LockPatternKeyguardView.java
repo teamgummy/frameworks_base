@@ -20,6 +20,7 @@ import com.android.internal.R;
 import com.android.internal.policy.impl.LockPatternKeyguardView.UnlockMode;
 import com.android.internal.policy.IFaceLockCallback;
 import com.android.internal.policy.IFaceLockInterface;
+import com.android.internal.app.ThemeUtils;
 import com.android.internal.telephony.IccCard;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.internal.widget.LockScreenWidgetCallback;
@@ -34,6 +35,7 @@ import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
 import android.app.AlertDialog;
 import android.app.admin.DevicePolicyManager;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -100,6 +102,8 @@ public class LockPatternKeyguardView extends KeyguardViewBase implements Handler
 
     private View mLockScreen;
     private View mUnlockScreen;
+
+    private Context mUiContext;
 
     private volatile boolean mScreenOn = false;
     private volatile boolean mWindowFocused = false;
@@ -202,6 +206,12 @@ public class LockPatternKeyguardView extends KeyguardViewBase implements Handler
          */
         Unknown
     }
+
+    private BroadcastReceiver mThemeChangeReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            mUiContext = null;
+        }
+    };
 
     /**
      * The current mode.
@@ -769,6 +779,12 @@ public class LockPatternKeyguardView extends KeyguardViewBase implements Handler
         addView(mUnlockScreen);
     }
 
+     @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        ThemeUtils.registerThemeChangeReceiver(mContext, mThemeChangeReceiver);
+    }
+
     @Override
     protected void onDetachedFromWindow() {
         removeCallbacks(mRecreateRunnable);
@@ -777,6 +793,9 @@ public class LockPatternKeyguardView extends KeyguardViewBase implements Handler
         // using FaceLock
         // e.g., when device becomes unlocked
         stopAndUnbindFromFaceLock();
+
+        mContext.unregisterReceiver(mThemeChangeReceiver);
+        mUiContext = null;
 
         super.onDetachedFromWindow();
     }
@@ -1164,11 +1183,11 @@ public class LockPatternKeyguardView extends KeyguardViewBase implements Handler
     }
 
     private void showDialog(String title, String message) {
-        final AlertDialog dialog = new AlertDialog.Builder(mContext)
-                .setTitle(title)
-                .setMessage(message)
-                .setNeutralButton(R.string.ok, null)
-                .create();
+        final AlertDialog dialog = new AlertDialog.Builder(getUiContext())
+            .setTitle(title)
+            .setMessage(message)
+            .setNeutralButton(R.string.ok, null)
+            .create();
         dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG);
         dialog.show();
     }
@@ -1187,6 +1206,13 @@ public class LockPatternKeyguardView extends KeyguardViewBase implements Handler
                 timeoutInSeconds);
 
         showDialog(null, message);
+    }
+
+    private Context getUiContext() {
+        if (mUiContext == null) {
+            mUiContext = ThemeUtils.createUiContext(mContext);
+        }
+        return mUiContext != null ? mUiContext : mContext;
     }
 
     private void showAlmostAtAccountLoginDialog() {
