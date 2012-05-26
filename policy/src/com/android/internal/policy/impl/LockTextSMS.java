@@ -47,7 +47,6 @@ import java.lang.IllegalArgumentException;
 public class LockTextSMS extends TextView {
 
     private boolean mIsAttached;
-    private Handler mHandler;
     
     private static final String SMS_RECEIVED = "android.provider.Telephony.SMS_RECEIVED";
     private static final String ACTION_SHUTDOWN = "android.intent.action.ACTION_SHUTDOWN";
@@ -67,10 +66,6 @@ public class LockTextSMS extends TextView {
 
     public LockTextSMS(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        
-        mHandler = new Handler();
-        SettingsObserver settingsObserver = new SettingsObserver(mHandler);
-        settingsObserver.observe();
 
         updateSettings();
         
@@ -99,8 +94,8 @@ public class LockTextSMS extends TextView {
         super.onDetachedFromWindow();
         //do not allow to detach or unregister receiver
         //only allow this when the user has selected to not use it
-        boolean showTexts = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_SHOW_TEXTS, 0) == 0);
-        if (showTexts) {
+        boolean dontShowTexts = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_SHOW_TEXTS, 0) == 0);
+        if (dontShowTexts) {
         	if (mIsAttached) {
                 getContext().unregisterReceiver(mIntentReceiver);
                 getContext().unregisterReceiver(mShutDownReceiver);
@@ -112,10 +107,11 @@ public class LockTextSMS extends TextView {
     private final BroadcastReceiver mIntentReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+        	boolean showTexts = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_SHOW_TEXTS, 0) == 1);
             Log.i(TAG, "Intent recieved: " + intent.getAction());
 
             if (intent.getAction() == SMS_RECEIVED) {
-                Bundle bundle = intent.getExtras();
+            	Bundle bundle = intent.getExtras();
                 if (bundle != null) {
                 	getYourText(bundle);
                 }
@@ -130,16 +126,16 @@ public class LockTextSMS extends TextView {
             //needed to search for shutdown to prevent hotboots upon reboots with 
             //SMS popup visible
             if (intent.getAction() == ACTION_SHUTDOWN) {
-            	Settings.System.putInt(getContext().getContentResolver(), Settings.System.LOCKSCREEN_SMS_CROSS, 1);
+            	Settings.System.putInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_SMS_CROSS, 1);
             }
         }
     };
     
     private void keepMyBoxUp() {
-    	boolean showTexts = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_SMS_CROSS, 1) == 0);
+    	boolean canShowTexts = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_SMS_CROSS, 1) == 0);
     	boolean musicPlaying = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_SMS_MUSIC, 0) == 1);
     	
-    	if (showTexts) {
+    	if (canShowTexts) {
     		Uri uri = Uri.parse("content://sms/inbox");
 
         	Cursor c = mContext.getContentResolver().query(uri, null, "read = 0", null, null);
@@ -175,6 +171,39 @@ public class LockTextSMS extends TextView {
     	}	
     }
     
+    //stupid lockscreen's getting destroyed means we get to have double the work on getting sms info
+    private void getYourText(Bundle bundle) {
+    	boolean showTexts = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_SHOW_TEXTS, 0) == 1);
+    	boolean musicPlaying = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_SMS_MUSIC, 0) == 1);
+    	
+    	if (showTexts && !musicPlaying) {
+    		Object[] pdus = (Object[])bundle.get("pdus");
+            final SmsMessage[] messages = new SmsMessage[pdus.length];
+            for (int i = 0; i < pdus.length; i++) {
+                messages[i] = SmsMessage.createFromPdu((byte[])pdus[i]);
+            }
+            if (messages.length > -1) {
+            	for (int i = 0; i< pdus.length; i++) {
+                	body = messages[i].getDisplayMessageBody();
+                	findName = messages[i].getOriginatingAddress();
+                	Uri personUri = Uri.withAppendedPath( ContactsContract.PhoneLookup.CONTENT_FILTER_URI, findName);
+                	Cursor cur = mContext.getContentResolver().query(personUri, new String[] { ContactsContract.PhoneLookup.DISPLAY_NAME }, null, null, null );
+                	if (cur.moveToFirst()) {
+                		int nameIndex = cur.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME);
+                		caller = cur.getString(nameIndex);
+                	}
+                	if (caller == null){
+                		caller = findName;
+                	}
+                    updateCurrentText(body, caller);
+                    setBackgroundResource(R.drawable.ic_lockscreen_player_background_old);
+                    Settings.System.putInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_SMS_CROSS, 0);
+                    setVisibility(View.VISIBLE);
+            	}
+            }
+        }
+    }
+    
     private void updateCurrentText(String textBody, String callerID) {
     	String newewstText = callerID + ": " + textBody;
     	
@@ -186,57 +215,6 @@ public class LockTextSMS extends TextView {
     	}
     	
     	setText(SMSText);
-    }
-    
-    private void getYourText(Bundle bundle) {
-    	boolean showTexts = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_SHOW_TEXTS, 0) == 1);
-    	boolean musicPlaying = (Settings.System.getInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_SMS_MUSIC, 0) == 1);
-    	
-    	if (showTexts && !musicPlaying) {
-        	try {
-        		Object[] pdus = (Object[])bundle.get("pdus");
-                final SmsMessage[] messages = new SmsMessage[pdus.length];
-                for (int i = 0; i < pdus.length; i++) {
-                    messages[i] = SmsMessage.createFromPdu((byte[])pdus[i]);
-                }
-                if (messages.length > -1) {
-                	for (int i = 0; i< pdus.length; i++) {
-                    	body = messages[i].getDisplayMessageBody();
-                    	findName = messages[i].getOriginatingAddress();
-                    	Uri personUri = Uri.withAppendedPath( ContactsContract.PhoneLookup.CONTENT_FILTER_URI, findName);
-                    	Cursor cur = mContext.getContentResolver().query(personUri, new String[] { ContactsContract.PhoneLookup.DISPLAY_NAME }, null, null, null );
-                    	if (cur.moveToFirst()) {
-                    		int nameIndex = cur.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME);
-                    		caller = cur.getString(nameIndex);
-                    	}
-                    	if (caller == null){
-                    		caller = findName;
-                    	}
-                        updateCurrentText(body, caller);
-                        setBackgroundResource(R.drawable.ic_lockscreen_player_background_old);
-                        Settings.System.putInt(mContext.getContentResolver(), Settings.System.LOCKSCREEN_SMS_CROSS, 0);
-                        setVisibility(View.VISIBLE);
-                	}
-                }
-        	} catch (IllegalArgumentException e) {
-        	}
-        }
-    }
-
-    class SettingsObserver extends ContentObserver {
-        SettingsObserver(Handler handler) {
-            super(handler);
-        }
-
-        void observe() {
-            ContentResolver resolver = mContext.getContentResolver();
-            resolver.registerContentObserver(Settings.System.getUriFor(Settings.System.LOCKSCREEN_SHOW_TEXTS), false, this);
-        }
-
-        @Override
-        public void onChange(boolean selfChange) {
-            updateSettings();
-        }
     }
 
     private void updateSettings() {
