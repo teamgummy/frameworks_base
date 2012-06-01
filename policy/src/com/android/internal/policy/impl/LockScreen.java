@@ -41,6 +41,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -1091,6 +1092,8 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 						this, true);
 		}
 
+        setBackground(mContext, (ViewGroup) findViewById(R.id.root));
+
 		mStatusViewManager = new KeyguardStatusViewManager(this,
 				mUpdateMonitor, mLockPatternUtils, mCallback, false);
 
@@ -1340,6 +1343,27 @@ class LockScreen extends LinearLayout implements KeyguardScreen {
 							+ (mUnlockWidget.isHardwareAccelerated() ? "on"
 									: "off"));
 	}
+
+    static void setBackground(Context context, ViewGroup layout) {
+        String lockBack = Settings.System.getString(context.getContentResolver(), Settings.System.LOCKSCREEN_BACKGROUND);	
+        if (lockBack != null) {
+            if (!lockBack.isEmpty()) {
+                try {
+                    layout.setBackgroundColor(Integer.parseInt(lockBack));
+                } catch(NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                try {
+                    Context settingsContext = context.createPackageContext("com.android.settings", 0);	
+                    String wallpaperFile = settingsContext.getFilesDir() + "/lockwallpaper";	
+                    Bitmap background = BitmapFactory.decodeFile(wallpaperFile);	
+                    layout.setBackgroundDrawable(new BitmapDrawable(background));	
+                } catch (NameNotFoundException e) {
+                }
+            }
+        }
+    }
 
 	private boolean isSilentMode() {
 		return mAudioManager.getRingerMode() != AudioManager.RINGER_MODE_NORMAL;

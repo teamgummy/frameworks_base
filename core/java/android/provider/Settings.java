@@ -2615,7 +2615,12 @@ public final class Settings {
         public static final String QUIET_HOURS_DIM = "quiet_hours_dim";
         
         /**
-         * Alpha % for icons in the notification bar.
+         * Sets the lockscreen background style
+         * @hide
+         */
+        public static final String LOCKSCREEN_BACKGROUND = "lockscreen_background";
+
+        /**
          * @hide
          */
         public static final String STATUSBAR_NOTIFICATION_ALPHA = "statusbar_notification_alpha";
