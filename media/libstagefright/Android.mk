@@ -52,7 +52,31 @@ LOCAL_SRC_FILES:=                         \
         XINGSeeker.cpp                    \
         avc_utils.cpp                     \
 
-LOCAL_C_INCLUDES:= \
+ifeq ($(OMAP_ENHANCEMENT), true)
+	LOCAL_SRC_FILES += ASFExtractor.cpp
+	LOCAL_SRC_FILES += AVIExtractor.cpp
+	LOCAL_C_INCLUDES += $(TOP)/hardware/ti/omap4xxx/domx/omx_core/inc
+endif
+
+ifeq ($(TARGET_USES_QCOM_LPA),true)
+ifeq ($(BOARD_USES_ALSA_AUDIO),true)
+	LOCAL_SRC_FILES += LPAPlayerALSA.cpp
+	LOCAL_C_INCLUDES += $(TARGET_OUT_HEADERS)/mm-audio/libalsa-intf
+	LOCAL_C_INCLUDES += $(TOP)/hardware/libhardware_legacy/include
+	LOCAL_SHARED_LIBRARIES += libalsa-intf
+	LOCAL_SHARED_LIBRARIES += libhardware_legacy
+	LOCAL_SHARED_LIBRARIES += libpowermanager
+else
+	LOCAL_SRC_FILES += LPAPlayer.cpp
+ifeq ($(TARGET_USES_ION_AUDIO),true)
+	LOCAL_SRC_FILES += LPAPlayerION.cpp
+else
+	LOCAL_SRC_FILES += LPAPlayerPMEM.cpp
+endif
+endif
+endif
+
+LOCAL_C_INCLUDES+= \
 	$(JNI_H_INCLUDE) \
         $(TOP)/frameworks/base/include/media/stagefright/openmax \
         $(TOP)/external/flac/include \
