@@ -2668,6 +2668,8 @@ public final class Settings {
          * @hide
          */
         public static final String VOLBTN_MUSIC_CONTROLS = "volbtn_music_controls";
+		
+		/**
          * Show the weather on the lock screen
          * @hide
          */
@@ -2714,8 +2716,6 @@ public final class Settings {
          * @hide
          */
         public static final String WEATHER_INVERT_LOWHIGH = "weather_invert_lowhigh";
-
-        /**
 
         /**
          * Settings to backup. This is here so that it's in the same place as
