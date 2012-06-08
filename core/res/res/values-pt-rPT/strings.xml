@@ -1284,4 +1284,6 @@
     <string name="weather_SW">SO</string>
     <string name="weather_W">O</string>
     <string name="weather_NW">NO</string>
-    <string name="weather_tap_to_refresh">Toque para actualizar</string></resources>
+    <string name="weather_tap_to_refresh">Toque para actualizar</string>
+	
+</resources>

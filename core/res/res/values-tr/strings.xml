@@ -1284,4 +1284,6 @@
     <string name="weather_SW">GB</string>
     <string name="weather_W">B</string>
     <string name="weather_NW">KB</string>
-    <string name="weather_tap_to_refresh">Yenile</string></resources>
+    <string name="weather_tap_to_refresh">Yenile</string>
+
+</resources>

@@ -1287,4 +1287,6 @@
     <string name="weather_NW">pn.-zach.</string>
 
     <!-- Lock screen Weather - error messages -->
-    <string name="weather_tap_to_refresh">Dotknij by odświeżyć</string></resources>
+    <string name="weather_tap_to_refresh">Dotknij by odświeżyć</string>
+	
+</resources>

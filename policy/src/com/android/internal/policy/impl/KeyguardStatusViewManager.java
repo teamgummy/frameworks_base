@@ -268,6 +268,8 @@ class KeyguardStatusViewManager implements OnClickListener {
         } else {
             return mTransportView != null && mTransportView.getVisibility() == View.VISIBLE;
         }
+	}
+	
     /*
      * CyanogenMod Lock screen Weather related functionality
      */
@@ -511,8 +513,6 @@ class KeyguardStatusViewManager implements OnClickListener {
             e.printStackTrace();
         }
         return null;
-    }
-
     }
 
     void setInstructionText(String string) {

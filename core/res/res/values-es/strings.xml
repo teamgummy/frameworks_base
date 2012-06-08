@@ -1279,4 +1279,5 @@
     <string name="weather_3200">No disponible</string>
 
     <!-- Lock screen Weather - error messages -->
-    <string name="weather_tap_to_refresh">Toca para refrescar</string></resources>
+    <string name="weather_tap_to_refresh">Toca para refrescar</string>
+</resources>

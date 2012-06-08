@@ -1290,4 +1290,6 @@
     <string name="weather_NW">NW</string>
 
     <!-- Lock screen Weather - error messages -->
-    <string name="weather_tap_to_refresh">Zum Aktualisieren berühren</string></resources>
+    <string name="weather_tap_to_refresh">Zum Aktualisieren berühren</string>
+	
+</resources>
