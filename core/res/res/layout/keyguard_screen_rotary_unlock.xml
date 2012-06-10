@@ -153,7 +153,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="120dip"
+        android:layout_marginTop="132dip"
         android:paddingTop="4dip" >
 
         <ImageView
