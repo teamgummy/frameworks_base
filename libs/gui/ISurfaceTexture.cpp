@@ -216,6 +216,27 @@ public:
         result = reply.readInt32();
         return result;
     }
+<<<<<<< HEAD
+=======
+
+#ifdef QCOM_HARDWARE
+    virtual status_t performQcomOperation(int operation, int arg1, int arg2, int arg3) {
+        Parcel data, reply;
+        data.writeInterfaceToken(ISurfaceTexture::getInterfaceDescriptor());
+
+        data.writeInt32(operation);
+        data.writeInt32(arg1);
+        data.writeInt32(arg2);
+        data.writeInt32(arg3);
+        status_t result =remote()->transact(PERFORM_QCOM_OPERATION, data, &reply);
+        if (result != NO_ERROR) {
+            return result;
+        }
+        result = reply.readInt32();
+        return result;
+    }
+#endif
+>>>>>>> 3575b42... Revert "GUI libs OMAP_ENHANCEMENT support"
 };
 
 IMPLEMENT_META_INTERFACE(SurfaceTexture, "android.gui.SurfaceTexture");

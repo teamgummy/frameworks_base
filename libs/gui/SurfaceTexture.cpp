@@ -396,6 +396,15 @@ status_t SurfaceTexture::dequeueBuffer(int *outBuf, uint32_t w, uint32_t h,
                 // than allowed.
                 const int avail = mBufferCount - (dequeuedCount+1);
                 if (avail < (MIN_UNDEQUEUED_BUFFERS-int(mSynchronousMode))) {
+#ifdef MISSING_GRALLOC_BUFFERS
+                    if (mClientBufferCount != 0) {
+                        mBufferCount++;
+                        mClientBufferCount = mServerBufferCount = mBufferCount;
+                        LOGD("SurfaceTexture::dequeuebuffer: MIN EXCEEDED "
+                                "mBuffer:%d bumped\n", mBufferCount);
+                        continue;
+                    }
+#endif
                     ST_LOGE("dequeueBuffer: MIN_UNDEQUEUED_BUFFERS=%d exceeded "
                             "(dequeued=%d)",
                             MIN_UNDEQUEUED_BUFFERS-int(mSynchronousMode),
@@ -754,15 +763,6 @@ status_t SurfaceTexture::setScalingMode(int mode) {
     return OK;
 }
 
-#ifdef OMAP_ENHANCEMENT
-status_t SurfaceTexture::updateTexImage() {
-    return __updateTexImage(true);
-}
-
-status_t SurfaceTexture::__updateTexImage(bool lock) {
-    ST_LOGV("updateTexImage");
-    if (lock) Mutex::Autolock lock(mMutex);
-#else
 status_t SurfaceTexture::updateTexImage(bool isComposition) {
     ST_LOGV("updateTexImage");
     Mutex::Autolock lock(mMutex);

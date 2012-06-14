@@ -404,7 +404,6 @@ int SurfaceTextureClient::dispatchUnlockAndPost(va_list args) {
     return unlockAndPost();
 }
 
-
 int SurfaceTextureClient::connect(int api) {
     LOGV("SurfaceTextureClient::connect");
     Mutex::Autolock lock(mMutex);
