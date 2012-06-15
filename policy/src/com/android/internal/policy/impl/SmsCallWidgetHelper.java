@@ -112,6 +112,21 @@ public class SmsCallWidgetHelper {
         return msg;
     }
 
+    public static long getSmsId(Context context) {
+        long messageId = 0;
+        Cursor cursor = context.getContentResolver().query(
+                SMS_INBOX_CONTENT_URI,
+                new String[] { "_id" },
+                null, null, null);
+        if (cursor.moveToFirst()) {
+            messageId = cursor.getLong(cursor.getColumnIndex("_id"));
+        }
+        if (cursor != null) {
+            cursor.close();
+        }
+        return messageId;
+    }
+
     public static String getDate(Context context, int msgType) {
         long date = 0;
         String formattedDate;

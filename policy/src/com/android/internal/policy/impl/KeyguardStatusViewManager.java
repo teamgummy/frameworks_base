@@ -142,6 +142,7 @@ class KeyguardStatusViewManager implements OnClickListener, OnLongClickListener 
     // numbers and name to pass to others
     private String callNumber = null;
     private String callerName = null;
+    private long messageId = 0;
 
     // which view are we seeing
     private boolean mShowingSms;
@@ -1182,6 +1183,7 @@ class KeyguardStatusViewManager implements OnClickListener, OnLongClickListener 
                     "com.android.mms.ui.QuickReplyBox");
             i.putExtra("numbers", callNumber);
             i.putExtra("name", callerName);
+            i.putExtra("id", messageId);
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             getContext().startActivity(i);
             return true;
@@ -1232,7 +1234,7 @@ class KeyguardStatusViewManager implements OnClickListener, OnLongClickListener 
                             setSmsCallWidget();
                             setSmsInfo();
                         }
-                    },500);
+                    },1000);
                 } else if (action.equals(
                         TelephonyManager.
                         ACTION_PHONE_STATE_CHANGED)) {
@@ -1245,7 +1247,7 @@ class KeyguardStatusViewManager implements OnClickListener, OnLongClickListener 
                             setSmsCallWidget();
                             setCallInfo();
                         }
-                    },500);
+                    },1000);
                 }
             };
         };
@@ -1280,6 +1282,7 @@ class KeyguardStatusViewManager implements OnClickListener, OnLongClickListener 
     private void setSmsInfo() {
         callNumber = SmsCallWidgetHelper.getSmsNumber(getContext());
         callerName = SmsCallWidgetHelper.getName(getContext(), callNumber);
+        messageId = SmsCallWidgetHelper.getSmsId(getContext());
         Bitmap contactImage = SmsCallWidgetHelper.getContactPicture(
                 getContext(), callNumber);
         if (contactImage != null) {
