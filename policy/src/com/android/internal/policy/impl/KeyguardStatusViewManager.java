@@ -270,11 +270,14 @@ class KeyguardStatusViewManager implements OnClickListener, OnLongClickListener 
         mSmsCallBackground = (ImageView) findViewById(R.id.sms_call_message_background);
         mSmsCallWidgetReply = (ImageButton) findViewById(R.id.sms_call_widget_reply);
         mSmsCallWidgetCall = (ImageButton) findViewById(R.id.sms_call_widget_call);
-        mUnreadSmsButton.setOnClickListener(this);
-        mMissedCallButton.setOnClickListener(this);
-        mSmsCallWidgetCall.setOnLongClickListener(this); 
-        mSmsCallWidgetReply.setOnLongClickListener(this);
-        mSmsBody.setOnLongClickListener(this);
+
+        if (mMissedCallButton != null || mUnreadSmsButton != null) {
+            mSmsBody.setOnLongClickListener(this);
+            mSmsCallWidgetCall.setOnLongClickListener(this);
+            mSmsCallWidgetReply.setOnLongClickListener(this);
+            mUnreadSmsButton.setOnClickListener(this);
+            mMissedCallButton.setOnClickListener(this);
+        }
 
         // Weather panel
         mWeatherPanel = (RelativeLayout) findViewById(R.id.weather_panel);
@@ -322,7 +325,9 @@ class KeyguardStatusViewManager implements OnClickListener, OnLongClickListener 
         // check to see if we have a count and set indicator
         smsCount = SmsCallWidgetHelper.getUnreadSmsCount(getContext());
         callCount = SmsCallWidgetHelper.getMissedCallCount(getContext());
-        setSmsCallWidget();
+        if (mMissedCallButton != null || mUnreadSmsButton != null) {
+            setSmsCallWidget();
+        }
         // we shouldn't be showing these yet
         mShowingSms = false;
         mShowingCall = false;
@@ -1288,9 +1293,11 @@ class KeyguardStatusViewManager implements OnClickListener, OnLongClickListener 
         if (contactImage != null) {
             mContactPicture.setImageBitmap(contactImage);
         }
-        mContactName.setText(callerName);
-        mSmsBody.setText(SmsCallWidgetHelper.getSmsBody(getContext()));
-        mTimeStamp.setText(SmsCallWidgetHelper.getDate(getContext(), 0));
+        if (mMissedCallButton != null || mUnreadSmsButton != null) {
+            mContactName.setText(callerName);
+            mSmsBody.setText(SmsCallWidgetHelper.getSmsBody(getContext()));
+            mTimeStamp.setText(SmsCallWidgetHelper.getDate(getContext(), 0));
+        }
     }
 
     private void setCallInfo() {
@@ -1301,7 +1308,9 @@ class KeyguardStatusViewManager implements OnClickListener, OnLongClickListener 
         if (contactImage != null) {
             mContactPicture.setImageBitmap(contactImage);
         }
-        mContactName.setText(callerName);
-        mTimeStamp.setText(SmsCallWidgetHelper.getDate(getContext(), 1));   
+        if (mMissedCallButton != null || mUnreadSmsButton != null) {
+            mContactName.setText(callerName);
+            mTimeStamp.setText(SmsCallWidgetHelper.getDate(getContext(), 1));
+        }
     } 
 }
