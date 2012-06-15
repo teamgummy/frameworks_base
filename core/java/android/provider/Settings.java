@@ -2647,6 +2647,20 @@ public final class Settings {
          * @hide
          */
         public static final String VOLBTN_MUSIC_CONTROLS = "volbtn_music_controls";
+
+        /**
+         * Determine friction of scrolling
+         *
+         * @hide
+         */
+        public static final String SCROLL_FRICTION = "scroll_friction";
+
+        /**
+         * Determine custom fling velocity
+         *
+         * @hide
+         */
+        public static final String CUSTOM_FLING_VELOCITY = "custom_fling_velocity";
 		
 		/**
          * Show the weather on the lock screen
