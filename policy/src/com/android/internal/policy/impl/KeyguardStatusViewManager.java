@@ -445,8 +445,9 @@ class KeyguardStatusViewManager implements OnClickListener, OnLongClickListener 
     private void refreshWeather() {
         final ContentResolver resolver = getContext().getContentResolver();
         boolean showWeather = Settings.System.getInt(resolver,Settings.System.LOCKSCREEN_WEATHER, 0) == 1;
+        boolean musicPlaying = Settings.System.getInt(resolver,Settings.System.LOCKSCREEN_SMS_MUSIC, 0) == 1;
 
-        if (showWeather) {
+        if (showWeather && !musicPlaying) {
             final long interval = Settings.System.getLong(resolver,
                     Settings.System.WEATHER_UPDATE_INTERVAL, 60); // Default to hourly
             boolean manualSync = (interval == 0);
