@@ -17,14 +17,6 @@
 
 package com.android.internal.policy.impl;
 
-import android.content.res.Resources;
-import android.location.Criteria;
-import android.location.Location;
-import android.location.LocationManager;
-import android.os.Handler;
-import android.os.Message;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import com.android.internal.R;
 import com.android.internal.policy.impl.KeyguardUpdateMonitor.SimStateCallback;
 import com.android.internal.telephony.IccCard;
@@ -45,23 +37,39 @@ import java.util.Date;
 
 import libcore.util.MutableInt;
 
+import android.content.ActivityNotFoundException;
+import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
+import android.os.Handler;
+import android.os.Message;
+import android.net.Uri;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
-import android.provider.Settings;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 /***
  * Manages a number of views inside of LockScreen layouts. See below for a list of widgets
  *
  */
-class KeyguardStatusViewManager implements OnClickListener {
+class KeyguardStatusViewManager implements OnClickListener, OnLongClickListener {
     private static final boolean DEBUG = false;
     private static final String TAG = "KeyguardStatusView";
 
@@ -78,6 +86,8 @@ class KeyguardStatusViewManager implements OnClickListener {
     private static final int HELP_MESSAGE_TEXT = 13;
     private static final int OWNER_INFO = 14;
     private static final int BATTERY_INFO = 15;
+
+    public static final String SMS_CHANGED = "android.provider.Telephony.SMS_RECEIVED";
 
     private StatusMode mStatus;
     private String mDateFormatString;
@@ -97,16 +107,46 @@ class KeyguardStatusViewManager implements OnClickListener {
     private TextView mWeatherCity, mWeatherCondition, mWeatherLowHigh, mWeatherTemp, mWeatherUpdateTime;
     private ImageView mWeatherImage;
 
+	// views for sms call widget
+    private ImageView mContactPicture;
+    private TextView mSmsCountView;
+    private TextView mMissedCallCountView;
+    private TextView mContactName;
+    private TextView mSmsBody;
+    private TextView mTimeStamp;;
+    private ImageButton mMissedCallButton;
+    private ImageButton mUnreadSmsButton;
+    private ImageView mSmsCallBackground;
+    private ImageButton mSmsCallWidgetReply;
+    private ImageButton mSmsCallWidgetCall;
+
     // Top-level container view for above views
     private View mContainer;
 
     // are we showing battery information?
     private boolean mShowingBatteryInfo = false;
 
+    // toggle always showing battery percents
     private boolean mLockAlwaysBattery;
     
     // toggle boolean for music widget
     private boolean mUseOldMusic;
+
+    // toggle for sms call widget
+    private boolean mShowSmsCallWidget;
+
+    // counts for the indicator on sms call widget
+    private int smsCount = 0;
+    private int callCount = 0;
+
+    // numbers and name to pass to others
+    private String callNumber = null;
+    private String callerName = null;
+    private long messageId = 0;
+
+    // which view are we seeing
+    private boolean mShowingSms;
+    private boolean mShowingCall;
 
     // last known plugged in state
     private boolean mPluggedIn = false;
@@ -134,6 +174,9 @@ class KeyguardStatusViewManager implements OnClickListener {
     private CharSequence mPlmn;
     private CharSequence mSpn;
     protected int mPhoneState;
+
+    private IntentFilter filter;
+    private Handler mSmsCallHandler;
 
     private class TransientTextManager {
         private TextView mTextView;
@@ -201,6 +244,8 @@ class KeyguardStatusViewManager implements OnClickListener {
         mLockPatternUtils = lockPatternUtils;
         mUpdateMonitor = updateMonitor;
         mCallback = callback;
+        filter = new IntentFilter();
+        mSmsCallHandler = new Handler();
 
         mCarrierView = (TextView) findViewById(R.id.carrier);
         mDateView = (TextView) findViewById(R.id.date);
@@ -212,6 +257,27 @@ class KeyguardStatusViewManager implements OnClickListener {
         mTransportView2 = (TransportControlView) findViewById(R.id.transport2);
         mEmergencyCallButton = (Button) findViewById(R.id.emergencyCallButton);
         mEmergencyCallButtonEnabledInScreen = emergencyButtonEnabledInScreen;
+
+		// Sms call widget
+        mSmsCountView = (TextView) findViewById(R.id.unread_sms_count);
+        mMissedCallCountView = (TextView) findViewById(R.id.missed_call_count); 
+        mContactPicture = (ImageView) findViewById(R.id.contact_image);
+        mContactName = (TextView) findViewById(R.id.contact_name);
+        mSmsBody = (TextView) findViewById(R.id.sms_body);
+        mTimeStamp = (TextView) findViewById(R.id.timestamp);
+        mUnreadSmsButton = (ImageButton) findViewById(R.id.unread_sms_button);
+        mMissedCallButton = (ImageButton) findViewById(R.id.missed_call_button);
+        mSmsCallBackground = (ImageView) findViewById(R.id.sms_call_message_background);
+        mSmsCallWidgetReply = (ImageButton) findViewById(R.id.sms_call_widget_reply);
+        mSmsCallWidgetCall = (ImageButton) findViewById(R.id.sms_call_widget_call);
+
+        if (mMissedCallButton != null || mUnreadSmsButton != null) {
+            mSmsBody.setOnLongClickListener(this);
+            mSmsCallWidgetCall.setOnLongClickListener(this);
+            mSmsCallWidgetReply.setOnLongClickListener(this);
+            mUnreadSmsButton.setOnClickListener(this);
+            mMissedCallButton.setOnClickListener(this);
+        }
 
         // Weather panel
         mWeatherPanel = (RelativeLayout) findViewById(R.id.weather_panel);
@@ -247,10 +313,24 @@ class KeyguardStatusViewManager implements OnClickListener {
         mUpdateMonitor.registerInfoCallback(mInfoCallback);
         mUpdateMonitor.registerSimStateCallback(mSimStateCallback);
 
+        filter.addAction(SMS_CHANGED);
+        filter.addAction(TelephonyManager.ACTION_PHONE_STATE_CHANGED);
+        getContext().registerReceiver(mSmsCallListener, filter);
+
         resetStatusInfo();
         refreshDate();
         updateOwnerInfo();
         refreshWeather();
+
+        // check to see if we have a count and set indicator
+        smsCount = SmsCallWidgetHelper.getUnreadSmsCount(getContext());
+        callCount = SmsCallWidgetHelper.getMissedCallCount(getContext());
+        if (mMissedCallButton != null || mUnreadSmsButton != null) {
+            setSmsCallWidget();
+        }
+        // we shouldn't be showing these yet
+        mShowingSms = false;
+        mShowingCall = false;
 
         // Required to get Marquee to work.
         final View scrollableViews[] = { mCarrierView, mDateView, mStatus1View, mStatus2View,  mOwnerInfoView,
@@ -370,8 +450,9 @@ class KeyguardStatusViewManager implements OnClickListener {
     private void refreshWeather() {
         final ContentResolver resolver = getContext().getContentResolver();
         boolean showWeather = Settings.System.getInt(resolver,Settings.System.LOCKSCREEN_WEATHER, 0) == 1;
+        boolean musicPlaying = Settings.System.getInt(resolver,Settings.System.LOCKSCREEN_SMS_MUSIC, 0) == 1;
 
-        if (showWeather) {
+        if (showWeather && !musicPlaying) {
             final long interval = Settings.System.getLong(resolver,
                     Settings.System.WEATHER_UPDATE_INTERVAL, 60); // Default to hourly
             boolean manualSync = (interval == 0);
@@ -584,6 +665,10 @@ class KeyguardStatusViewManager implements OnClickListener {
         if (DEBUG) Log.v(TAG, "onPause()");
         mUpdateMonitor.removeCallback(mInfoCallback);
         mUpdateMonitor.removeCallback(mSimStateCallback);
+        if (mSmsCallListener != null) {
+            getContext().unregisterReceiver(mSmsCallListener);
+            mSmsCallListener = null;
+        }
     }
 
     /** {@inheritDoc} */
@@ -591,6 +676,9 @@ class KeyguardStatusViewManager implements OnClickListener {
         if (DEBUG) Log.v(TAG, "onResume()");
         mUpdateMonitor.registerInfoCallback(mInfoCallback);
         mUpdateMonitor.registerSimStateCallback(mSimStateCallback);
+        if (mSmsCallListener == null) {
+        getContext().registerReceiver(mSmsCallListener, filter);
+        }
         resetStatusInfo();
     }
 
@@ -1029,6 +1117,93 @@ class KeyguardStatusViewManager implements OnClickListener {
             if (!mHandler.hasMessages(QUERY_WEATHER)) {
                 mHandler.sendEmptyMessage(QUERY_WEATHER);
             }
+        } else if (v == mUnreadSmsButton) {
+            mCallback.pokeWakelock();
+            if (smsCount > 0) {
+                mShowingCall = false;
+                if (mShowingSms) {
+                    // if the sms view is already showing hide it
+                    mContactPicture.setVisibility(View.GONE);
+                    mContactName.setVisibility(View.GONE);
+                    mSmsBody.setVisibility(View.GONE);
+                    mTimeStamp.setVisibility(View.GONE);
+                    mSmsCallWidgetReply.setVisibility(View.GONE);
+                    mSmsCallWidgetCall.setVisibility(View.GONE);
+                    mSmsCallBackground.setVisibility(View.INVISIBLE);
+                    mShowingSms = false;
+                } else {
+                    setSmsInfo();
+                    mContactPicture.setVisibility(View.VISIBLE);
+                    mContactName.setVisibility(View.VISIBLE);
+                    mSmsBody.setVisibility(View.VISIBLE);
+                    mTimeStamp.setVisibility(View.VISIBLE);
+                    mSmsCallWidgetReply.setVisibility(View.VISIBLE);
+                    mSmsCallWidgetCall.setVisibility(View.VISIBLE);
+                    mSmsCallBackground.setVisibility(View.VISIBLE);
+                    mShowingSms = true;
+                }
+            }
+        } else if (v == mMissedCallButton) {
+            mCallback.pokeWakelock();
+            if (callCount > 0) {
+                mShowingSms = false;
+                // if the call view is already showing hide it
+                if (mShowingCall) {
+                    mContactPicture.setVisibility(View.GONE);
+                    mContactName.setVisibility(View.GONE);
+                    mTimeStamp.setVisibility(View.GONE);
+                    mSmsCallWidgetReply.setVisibility(View.GONE);
+                    mSmsCallWidgetCall.setVisibility(View.GONE);
+                    mSmsCallBackground.setVisibility(View.INVISIBLE);
+                    mShowingCall = false;
+                } else {
+                    setCallInfo();
+                    mContactPicture.setVisibility(View.VISIBLE);
+                    mContactName.setVisibility(View.VISIBLE);
+                    mTimeStamp.setVisibility(View.VISIBLE);
+                    mSmsCallWidgetReply.setVisibility(View.VISIBLE);
+                    mSmsCallWidgetCall.setVisibility(View.VISIBLE);
+                    mSmsCallBackground.setVisibility(View.VISIBLE);
+                    mSmsBody.setVisibility(View.GONE);
+                    mShowingCall = true;
+                }
+            }
+        }
+    }
+
+    public boolean onLongClick(View v) {
+        if (v == mSmsCallWidgetCall) {
+            mCallback.pokeWakelock();
+            try {
+                Intent i = new Intent(Intent.ACTION_CALL);
+                i.setData(Uri.parse("tel:" + callNumber));
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                getContext().startActivity(i);
+            } catch (ActivityNotFoundException e) {
+            }
+            return true;
+        } else if (v == mSmsCallWidgetReply) {
+            mCallback.pokeWakelock();
+            Intent i = new Intent(Intent.ACTION_MAIN);
+            i.setClassName("com.android.mms",
+                    "com.android.mms.ui.QuickReplyBox");
+            i.putExtra("numbers", callNumber);
+            i.putExtra("name", callerName);
+            i.putExtra("id", messageId);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            getContext().startActivity(i);
+            return true;
+        } else if (v == mSmsBody) {
+            mCallback.pokeWakelock();
+            Intent i = new Intent(Intent.ACTION_MAIN);	
+            i.addCategory(Intent.CATEGORY_DEFAULT);	
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);	
+            i.setType("vnd.android-dir/mms-sms");	
+            getContext().startActivity(i);
+            mCallback.goToUnlockScreen();
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -1051,4 +1226,92 @@ class KeyguardStatusViewManager implements OnClickListener {
             return "";
         }
     }
+
+    private BroadcastReceiver mSmsCallListener = new BroadcastReceiver() {
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                if (action.equals(SMS_CHANGED)) {
+                    mSmsCallHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            // get a new count and set indicator
+                            smsCount = SmsCallWidgetHelper.
+                                    getUnreadSmsCount(getContext());
+                            setSmsCallWidget();
+                            setSmsInfo();
+                        }
+                    },1000);
+                } else if (action.equals(
+                        TelephonyManager.
+                        ACTION_PHONE_STATE_CHANGED)) {
+                    mSmsCallHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            // get a new count and set indicator
+                            callCount = SmsCallWidgetHelper.
+                                    getMissedCallCount(getContext());
+                            setSmsCallWidget();
+                            setCallInfo();
+                        }
+                    },1000);
+                }
+            };
+        };
+
+
+    private void setSmsCallWidget() {
+        mShowSmsCallWidget = (Settings.System.getInt(getContext().getContentResolver(),
+            Settings.System.LOCKSCREEN_SMS_CALL_WIDGET, 0) == 1);
+        
+        if (mShowSmsCallWidget) {
+            if ((smsCount > 0) || (callCount > 0)) {
+                mSmsCountView.setText(Integer.toString(smsCount));
+                mMissedCallCountView.setText(Integer.toString(callCount));
+                mSmsCountView.setVisibility(View.VISIBLE);
+                mMissedCallCountView.setVisibility(View.VISIBLE);
+                mUnreadSmsButton.setVisibility(View.VISIBLE);
+                mMissedCallButton.setVisibility(View.VISIBLE);
+            } else {
+                mSmsCountView.setVisibility(View.GONE);
+                mMissedCallCountView.setVisibility(View.GONE);
+                mUnreadSmsButton.setVisibility(View.GONE);
+                mMissedCallButton.setVisibility(View.GONE);
+            }
+        } else {
+            mSmsCountView.setVisibility(View.GONE);
+            mMissedCallCountView.setVisibility(View.GONE);
+            mUnreadSmsButton.setVisibility(View.GONE);
+            mMissedCallButton.setVisibility(View.GONE);
+        }
+    }
+
+    private void setSmsInfo() {
+        callNumber = SmsCallWidgetHelper.getSmsNumber(getContext());
+        callerName = SmsCallWidgetHelper.getName(getContext(), callNumber);
+        messageId = SmsCallWidgetHelper.getSmsId(getContext());
+        Bitmap contactImage = SmsCallWidgetHelper.getContactPicture(
+                getContext(), callNumber);
+        if (contactImage != null) {
+            mContactPicture.setImageBitmap(contactImage);
+        }
+        if (mMissedCallButton != null || mUnreadSmsButton != null) {
+            mContactName.setText(callerName);
+            mSmsBody.setText(SmsCallWidgetHelper.getSmsBody(getContext()));
+            mTimeStamp.setText(SmsCallWidgetHelper.getDate(getContext(), 0));
+        }
+    }
+
+    private void setCallInfo() {
+        callNumber = SmsCallWidgetHelper.getCallNumber(getContext());
+        callerName = SmsCallWidgetHelper.getName(getContext(), callNumber);
+        Bitmap contactImage = SmsCallWidgetHelper.getContactPicture(
+                getContext(), callNumber);
+        if (contactImage != null) {
+            mContactPicture.setImageBitmap(contactImage);
+        }
+        if (mMissedCallButton != null || mUnreadSmsButton != null) {
+            mContactName.setText(callerName);
+            mTimeStamp.setText(SmsCallWidgetHelper.getDate(getContext(), 1));
+        }
+    } 
 }

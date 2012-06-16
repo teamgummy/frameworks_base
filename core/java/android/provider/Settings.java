@@ -2615,7 +2615,12 @@ public final class Settings {
         public static final String QUIET_HOURS_DIM = "quiet_hours_dim";
         
         /**
-         * Alpha % for icons in the notification bar.
+         * Sets the lockscreen background style
+         * @hide
+         */
+        public static final String LOCKSCREEN_BACKGROUND = "lockscreen_background";
+
+        /**
          * @hide
          */
         public static final String STATUSBAR_NOTIFICATION_ALPHA = "statusbar_notification_alpha";
@@ -2627,33 +2632,6 @@ public final class Settings {
         public static final String STATUSBAR_NOTIFICATION_COLOR = "statusbar_notification_color";
         
         /**
-         * Show/Hide Lock Screen SMS Popup
-         * @hide
-         */
-        public static final String LOCKSCREEN_SHOW_TEXTS = "lockscreen_show_texts";       
-        
-        /**
-         * When using SMS popups needed a crossover to hide/show current popups with
-         * the lock screen rebuilding each time
-         *  1 = has been viewed
-         *  0 = will show popup
-         * @hide
-         */
-        public static final String LOCKSCREEN_SMS_CROSS = "lockscreen_sms_cross";
-        
-        /**
-         * 3rd party apps allowed for SMS popup
-         * @hide
-         */
-        public static final String LOCKSCREEN_SMS_APP = "lockscreen_sms_app"; 
-        
-        /**
-         * SMS Lockscreen popup text color picker
-         * @hide
-         */
-        public static final String LOCKSCREEN_SMS_COLOR = "lockscreen_sms_color"; 
-        
-        /**
          * Is music playing & transportview visible?
          * 1 = visible transport view
          * 0 = hidden transport view
@@ -2661,13 +2639,33 @@ public final class Settings {
          * as they dont play nice together
          * @hide
          */
-        public static final String LOCKSCREEN_SMS_MUSIC = "lockscreen_sms_music"; 
-        
+        public static final String LOCKSCREEN_SMS_MUSIC = "lockscreen_sms_music";
+
+        /**
+         * Whether or not to show lockscreen sms call widget
+         * @hide
+         */
+        public static final String LOCKSCREEN_SMS_CALL_WIDGET = "lockscreen_sms_call_widget";
+
         /**
          * Whether or not volume button music controls should be enabled to seek media tracks
          * @hide
          */
         public static final String VOLBTN_MUSIC_CONTROLS = "volbtn_music_controls";
+
+        /**
+         * Determine friction of scrolling
+         *
+         * @hide
+         */
+        public static final String SCROLL_FRICTION = "scroll_friction";
+
+        /**
+         * Determine custom fling velocity
+         *
+         * @hide
+         */
+        public static final String CUSTOM_FLING_VELOCITY = "custom_fling_velocity";
 		
 		/**
          * Show the weather on the lock screen

@@ -110,7 +110,133 @@
         android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
         android:drawablePadding="4dip"
         />
-
+    <RelativeLayout
+        android:id="@+id/call_sms_main"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="147dip">
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/call_sms_main">
+                <ImageView
+                    android:id="@+id/sms_call_message_background"
+                    android:background="@drawable/ic_lockscreen_sms_call_widget_message_background"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="invisible"/>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <ImageView
+                        android:id="@+id/contact_image"
+                        android:layout_height="60dip"
+                        android:layout_width="60dip"
+                        android:layout_marginTop="7dip"
+                        android:layout_marginLeft="7dip"
+                        android:src="@android:drawable/ic_contact_picture"
+                        android:visibility="gone"/>
+                    <LinearLayout
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:orientation="vertical">
+                        <TextView
+                            android:id="@+id/contact_name"
+                            android:layout_width="125dip"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dip"
+                            android:layout_marginTop="4dip"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:singleLine="true"
+                            android:visibility="gone"/>
+                        <TextView
+                            android:id="@+id/sms_body"
+                            android:layout_width="125dip"
+                            android:layout_height="35dip"
+                            android:layout_marginLeft="5dip"
+                            android:textSize="10sp"
+                            android:maxLines="3"
+                            android:ellipsize="marquee"
+                            android:visibility="gone"/>
+                        <TextView
+                            android:id="@+id/timestamp"
+                            android:layout_width="125dip"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom"
+                            android:layout_marginLeft="5dip"
+                            android:layout_marginTop="3dip"
+                            android:textSize="8sp"
+                            android:singleLine="true"
+                            android:visibility="gone"/>
+                    </LinearLayout>
+                    <ImageButton
+                        android:id="@+id/sms_call_widget_reply"
+                        android:background="@drawable/ic_lockscreen_sms_call_widget_reply"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="15dip"
+                        android:layout_marginTop="6dip"
+                        android:visibility="gone"/>
+                    <ImageButton
+                        android:id="@+id/sms_call_widget_call"
+                        android:background="@drawable/ic_lockscreen_sms_call_widget_call"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="20dip"
+                        android:layout_marginTop="5dip"
+                        android:visibility="gone"/>
+                </LinearLayout>
+            </FrameLayout>
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/indicator_widget"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/call_sms_main"
+        android:gravity="center_horizontal">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <ImageButton
+                   android:id="@+id/missed_call_button"
+                   android:background="@drawable/ic_lockscreen_missed_call_button"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"/>
+                <TextView
+                   android:id="@+id/missed_call_count"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_gravity="center_vertical|right"
+                   android:paddingRight="12dip"
+                   android:textSize="19sp"/>
+            </FrameLayout>
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <ImageButton
+                    android:id="@+id/unread_sms_button"
+                    android:background="@drawable/ic_lockscreen_unread_sms_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:id="@+id/unread_sms_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|left"
+                    android:paddingLeft="12dip"
+                    android:textSize="19sp"/>
+            </FrameLayout>
+        </LinearLayout>
+    </RelativeLayout>
     <Space android:layout_gravity="fill" />
 
     <TextView
@@ -136,21 +262,6 @@
         style="?android:attr/buttonBarButtonStyle"
         android:drawablePadding="8dip"
         android:visibility="gone"
-        />
-
-        <com.android.internal.policy.impl.LockTextSMS
-            android:id="@+id/locksms"             
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/zzstatus2"
-            android:lines="2"
-            android:ellipsize="end"
-            android:gravity="center"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textSize="@dimen/keyguard_lockscreen_status_line_font_size"
-            android:drawablePadding="4dip"
-            android:layout_marginRight="@dimen/keyguard_lockscreen_status_line_font_right_margin"
-            android:layout_marginLeft="@dimen/keyguard_lockscreen_status_line_font_right_margin"
         />
 
     <!-- Column 1 -->
