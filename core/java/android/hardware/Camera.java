@@ -3484,6 +3484,38 @@ public class Camera {
             return result;
         }
 
+	// Splits a comma delimited string to an ArrayList of Coordinate.
+        // Return null if the passing string is null or the Coordinate is 0.
+        private ArrayList<Coordinate> splitCoordinate(String str) {
+            if (str == null) return null;
+
+            TextUtils.StringSplitter splitter = new TextUtils.SimpleStringSplitter(',');
+            splitter.setString(str);
+            ArrayList<Coordinate> coordinateList = new ArrayList<Coordinate>();
+            for (String s : splitter) {
+                Coordinate c = strToCoordinate(s);
+                if (c != null) coordinateList.add(c);
+            }
+            if (coordinateList.size() == 0) return null;
+            return coordinateList;
+        }
+
+        // Parses a string (ex: "500x500") to Coordinate object.
+        // Return null if the passing string is null.
+        private Coordinate strToCoordinate(String str) {
+            if (str == null) return null;
+
+            int pos = str.indexOf('x');
+            if (pos != -1) {
+                String x = str.substring(0, pos);
+                String y = str.substring(pos + 1);
+                return new Coordinate(Integer.parseInt(x),
+                                Integer.parseInt(y));
+            }
+            Log.e(TAG, "Invalid Coordinate parameter string=" + str);
+            return null;
+        }
+
         private boolean same(String s1, String s2) {
             if (s1 == null && s2 == null) return true;
             if (s1 != null && s1.equals(s2)) return true;
