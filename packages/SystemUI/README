@@ -1,6 +1,0 @@
-This folder can be dropped into /frameworks/base/packages/ and delete your old SystemUI folder, and drop this in. 
-As of right now, the only changes as of 1/22/2012 are the volume slider and the removed options of the Notifications 
-toggle and Airplane Mode (APM was is used, and notifications caused indefinite bootloop until /data was wiped)
-
-I will keep tabs on all patches and/or updates to SystemUI from the official Cyanogenmod repository and will update
-this repository with changes ASAP
