@@ -23,6 +23,7 @@
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 
+//#define LOG_NDEBUG 0
 #include <cutils/log.h>
 #include <cutils/properties.h>
 
@@ -80,6 +81,7 @@ using namespace android;
 
     #define CALL_GL_API(_api, ...)                                       \
         gl_hooks_t::gl_t const * const _c = &getGlThreadSpecific()->gl;  \
+        LOGV("[" #_api "]"); \
         _c->_api(__VA_ARGS__); \
         GLenum status = GL_NO_ERROR; \
         while ((status = glGetError()) != GL_NO_ERROR) { \
@@ -151,9 +153,13 @@ void glShaderSource(GLuint shader, GLsizei count, const GLchar** string, const G
 {
     bool needRewrite = false;
 
+<<<<<<< HEAD
     LOGD("Shader source dump:");
+=======
+    LOGV("Shader source dump:");
+>>>>>>> 3148852... update our shaders debugging
     for (GLsizei i = 0; i < count; i++) {
-        //LOGD("%s", string[i]);
+        LOGV("%s", string[i]);
         if (strstr(string[i], "GL_OES_EGL_image_external")) {
             needRewrite = true;
             break;
@@ -178,7 +184,7 @@ all real cases encountered so far.
         return;
     }
 
-    //LOGD("Shader source rewrite:");
+    LOGW("Shader source rewrite");
 
     GLchar **newStrings = new GLchar*[count];
     const GLchar *start, *pos;
@@ -220,7 +226,7 @@ void glTexParameterf(GLenum target, GLenum pname, GLfloat param)
 {
     if (target == GL_TEXTURE_EXTERNAL_OES) {
         target = GL_TEXTURE_2D;
-        //LOGD("glTexParameterf: EXTERNAL_OES -> 2D");
+        LOGV("glTexParameterf: EXTERNAL_OES -> 2D");
     }
     __glTexParameterf(target, pname, param);
 }
@@ -229,7 +235,7 @@ void glTexParameterfv(GLenum target, GLenum pname, const GLfloat* params)
 {
     if (target == GL_TEXTURE_EXTERNAL_OES) {
         target = GL_TEXTURE_2D;
-        //LOGD("glTexParameterfv: EXTERNAL_OES -> 2D");
+        LOGV("glTexParameterfv: EXTERNAL_OES -> 2D");
     }
     __glTexParameterfv(target, pname, params);
 }
@@ -238,7 +244,7 @@ void glTexParameteri(GLenum target, GLenum pname, GLint param)
 {
     if (target == GL_TEXTURE_EXTERNAL_OES) {
         target = GL_TEXTURE_2D;
-        //LOGD("glTexParameteri: EXTERNAL_OES -> 2D");
+        LOGV("glTexParameteri: EXTERNAL_OES -> 2D");
     }
     __glTexParameteri(target, pname, param);
 }
@@ -247,7 +253,7 @@ void glTexParameteriv(GLenum target, GLenum pname, const GLint* params)
 {
     if (target == GL_TEXTURE_EXTERNAL_OES) {
         target = GL_TEXTURE_2D;
-        //LOGD("glTexParameteriv: EXTERNAL_OES -> 2D");
+        LOGV("glTexParameteriv: EXTERNAL_OES -> 2D");
     }
     __glTexParameteriv(target, pname, params);
 }
@@ -256,7 +262,7 @@ void glEnable(GLenum cap)
 {
     if (cap == GL_TEXTURE_EXTERNAL_OES) {
         cap = GL_TEXTURE_2D;
-        //LOGD("glEnable: EXTERNAL_OES -> 2D");
+        LOGV("glEnable: EXTERNAL_OES -> 2D");
     }
     __glEnable(cap);
 }
@@ -265,7 +271,7 @@ void glDisable(GLenum cap)
 {
     if (cap == GL_TEXTURE_EXTERNAL_OES) {
         cap = GL_TEXTURE_2D;
-        //LOGD("glDisable: EXTERNAL_OES -> 2D");
+        LOGV("glDisable: EXTERNAL_OES -> 2D");
     }
     __glDisable(cap);
 }
@@ -274,7 +280,7 @@ void glBindTexture(GLenum target, GLuint texture)
 {
     if (target == GL_TEXTURE_EXTERNAL_OES) {
         target = GL_TEXTURE_2D;
-        //LOGD("glBindTexture: EXTERNAL_OES -> 2D");
+        LOGV("glBindTexture(%d,%x): EXTERNAL_OES -> 2D", target, texture);
     }
     __glBindTexture(target, texture);
 }
@@ -285,7 +291,7 @@ void glEGLImageTargetTexture2DOES(GLenum target, GLeglImageOES image)
 #ifdef HOOK_MISSING_EGL_EXTERNAL_IMAGE
     if (target == GL_TEXTURE_EXTERNAL_OES) {
         target = GL_TEXTURE_2D;
-        //LOGD("glEGLImageTargetTexture2DOES: EXTERNAL_OES -> 2D");
+        LOGV("glEGLImageTargetTexture2DOES(%d): EXTERNAL_OES -> 2D", target);
     }
 #endif
     GLeglImageOES implImage = 
