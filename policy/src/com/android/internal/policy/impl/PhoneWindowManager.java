@@ -3263,7 +3263,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         }
     }
 
-	class PassFunctionKey implements Runnable {
+    class PassFunctionKey implements Runnable {
         KeyEvent mKeyEvent;
 
         PassFunctionKey(KeyEvent keyEvent) {
