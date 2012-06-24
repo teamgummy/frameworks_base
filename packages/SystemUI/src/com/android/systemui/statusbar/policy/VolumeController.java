@@ -22,13 +22,14 @@ import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.media.AudioManager;
 import android.provider.Settings;
+import android.util.Log;
 import android.util.Slog;
 import android.view.IWindowManager;
 import android.widget.CompoundButton;
 
 public class VolumeController implements ToggleSlider.Listener {
     private static final String TAG = "StatusBar.VolumeController";
-    private static final int STREAM = AudioManager.STREAM_NOTIFICATION;
+    private static final int STREAM = AudioManager.STREAM_MUSIC;
 
     private Context mContext;
     private ToggleSlider mControl;
@@ -52,7 +53,7 @@ public class VolumeController implements ToggleSlider.Listener {
     }
 
     public void onChanged(ToggleSlider view, boolean tracking, boolean mute, int level) {
-        if (!tracking) {
+    	if (!tracking) {
             if (mute) {
                 boolean vibeInSilent = (1 == Settings.System.getInt(mContext.getContentResolver(),
                         Settings.System.VIBRATE_IN_SILENT, 1));
