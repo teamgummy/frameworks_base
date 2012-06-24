@@ -29,20 +29,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.systemui.R;
-import com.android.systemui.statusbar.policy.AirplaneModeController;
 import com.android.systemui.statusbar.policy.AutoRotateController;
 import com.android.systemui.statusbar.policy.BrightnessController;
-import com.android.systemui.statusbar.policy.DoNotDisturbController;
 import com.android.systemui.statusbar.policy.ToggleSlider;
 import com.android.systemui.statusbar.policy.VolumeController;
 
 public class SettingsView extends LinearLayout implements View.OnClickListener {
     static final String TAG = "SettingsView";
 
-    AirplaneModeController mAirplane;
     AutoRotateController mRotate;
     BrightnessController mBrightness;
-    DoNotDisturbController mDoNotDisturb;
+    VolumeController mVolume;
 
     public SettingsView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
@@ -58,23 +55,14 @@ public class SettingsView extends LinearLayout implements View.OnClickListener {
 
         final Context context = getContext();
 
-        mAirplane = new AirplaneModeController(context,
-                (CompoundButton)findViewById(R.id.airplane_checkbox));
-        findViewById(R.id.network).setOnClickListener(this);
+	findViewById(R.id.network).setOnClickListener(this);
         mRotate = new AutoRotateController(context,
                 (CompoundButton)findViewById(R.id.rotate_checkbox));
         mBrightness = new BrightnessController(context,
                 (ToggleSlider)findViewById(R.id.brightness));
-        mDoNotDisturb = new DoNotDisturbController(context,
-                (CompoundButton)findViewById(R.id.do_not_disturb_checkbox));
-        findViewById(R.id.settings).setOnClickListener(this);
-    }
-
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        mAirplane.release();
-        mDoNotDisturb.release();
+        mVolume = new VolumeController(context,
+                (ToggleSlider)findViewById(R.id.volume));
+	findViewById(R.id.settings).setOnClickListener(this);
     }
 
     public void onClick(View v) {

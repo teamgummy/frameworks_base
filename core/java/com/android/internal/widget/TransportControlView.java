@@ -198,7 +198,6 @@ public class TransportControlView extends FrameLayout implements OnClickListener
         mAudioManager = new AudioManager(mContext);
         mCurrentPlayState = RemoteControlClient.PLAYSTATE_NONE; // until we get a callback
         mIRCD = new IRemoteControlDisplayWeak(mHandler);
-        isMusicPlaying(false);
     }
 
     private void updateTransportControls(int transportControlFlags) {
