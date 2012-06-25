@@ -357,19 +357,6 @@ status_t SurfaceMediaSource::dequeueBuffer(int *outBuf, uint32_t w, uint32_t h,
     return returnFlags;
 }
 
-#ifdef OMAP_ENHANCEMENT
-status_t SurfaceMediaSource::updateAndGetCurrent(sp<GraphicBuffer>* buf) {
-    LOGV("updateAndGetCurrent");
-    Mutex::Autolock lock(mMutex);
-    if (mStopped) {
-        LOGE("updateAndGetCurrent: SurfaceTexture has been stopped!");
-        return NO_INIT;
-    }
-    // no-op
-    return NO_ERROR;
-}
-#endif
-
 // TODO: clean this up
 status_t SurfaceMediaSource::setSynchronousMode(bool enabled) {
     Mutex::Autolock lock(mMutex);
@@ -468,14 +455,8 @@ status_t SurfaceMediaSource::disconnect(int api) {
     return err;
 }
 
-#ifdef OMAP_ENHANCEMENT
-status_t SurfaceMediaSource::queueBuffer(int bufIndex, int64_t timestamp,
-        uint32_t* outWidth, uint32_t* outHeight, uint32_t* outTransform,
-        const String8& metadata) {
-#else
 status_t SurfaceMediaSource::queueBuffer(int bufIndex, int64_t timestamp,
         uint32_t* outWidth, uint32_t* outHeight, uint32_t* outTransform) {
-#endif
     LOGV("queueBuffer");
 
     Mutex::Autolock lock(mMutex);
