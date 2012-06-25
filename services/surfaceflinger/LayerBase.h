@@ -230,9 +230,6 @@ protected:
           void clearWithOpenGL(const Region& clip, GLclampf r, GLclampf g,
                                GLclampf b, GLclampf alpha) const;
           void clearWithOpenGL(const Region& clip) const;
-#ifdef OMAP_ENHANCEMENT_S3D
-          virtual void drawWithOpenGL(const Region& clip) const;
-#else
           void drawWithOpenGL(const Region& clip) const;
 #endif
 
