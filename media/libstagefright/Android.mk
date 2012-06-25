@@ -53,6 +53,7 @@ LOCAL_SRC_FILES:=                         \
         avc_utils.cpp                     \
 
 ifeq ($(OMAP_ENHANCEMENT), true)
+	LOCAL_SRC_FILES += ASFExtractor.cpp
 	LOCAL_SRC_FILES += AVIExtractor.cpp
 	LOCAL_C_INCLUDES += $(TOP)/hardware/ti/omap4xxx/domx/omx_core/inc
 endif
