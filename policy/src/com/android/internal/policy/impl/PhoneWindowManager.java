@@ -1208,7 +1208,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     }
 
     void readLidState() {
-        if(!readLidStateByHardwareFeature())
         try {
             int sw = mWindowManager.getSwitchState(SW_LID);
             if (sw > 0) {
