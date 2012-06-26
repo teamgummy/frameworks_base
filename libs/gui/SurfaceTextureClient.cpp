@@ -21,6 +21,9 @@
 #include <surfaceflinger/ISurfaceComposer.h>
 #include <surfaceflinger/SurfaceComposerClient.h>
 
+#ifdef OMAP_ENHANCEMENT
+#include <cutils/properties.h>
+#endif
 #include <utils/Log.h>
 
 namespace android {
@@ -657,7 +660,27 @@ status_t SurfaceTextureClient::lock(
 
             // keep track of the are of the buffer that is "clean"
             // (ie: that will be redrawn)
+#ifdef OMAP_ENHANCEMENT
             mOldDirtyRegion = newDirtyRegion;
+#endif // OMAP_ENHANCEMENT
+
+#ifdef OMAP_ENHANCEMENT
+            // push the new dirty region to top the list and ignore
+            // the last one
+            int historySize = mOldDirtyRegionHistory.size();
+            Region* historyArray = mOldDirtyRegionHistory.editArray();
+            mOldDirtyRegion.clear();
+            // array indices start from zero to (size -1 )
+            for (int i = (historySize - 1); i > 0; i--) {
+                historyArray[i].clear();
+                if (canCopyBack) {
+                    historyArray[i].orSelf(historyArray[i-1]);
+                    mOldDirtyRegion.orSelf(historyArray[i]);
+                }
+            }
+            historyArray[0] = newDirtyRegion;
+            mOldDirtyRegion.orSelf(historyArray[0]);
+#endif
 
             if (inOutDirtyBounds) {
                 *inOutDirtyBounds = newDirtyRegion.getBounds();
