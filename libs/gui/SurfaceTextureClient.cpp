@@ -344,6 +344,14 @@ int SurfaceTextureClient::perform(int operation, va_list args)
     case NATIVE_WINDOW_API_DISCONNECT:
         res = dispatchDisconnect(args);
         break;
+#ifdef OMAP_ENHANCEMENT
+    case NATIVE_WINDOW_SET_BUFFERS_LAYOUT:
+        res = dispatchSetBuffersLayout(args);
+        break;
+    case NATIVE_WINDOW_UPDATE_AND_GET_CURRENT:
+        res = dispatchUpdateAndGetCurrent(args);
+        break;
+#endif
     default:
         res = NAME_NOT_FOUND;
         break;
@@ -422,6 +430,17 @@ int SurfaceTextureClient::dispatchLock(va_list args) {
 int SurfaceTextureClient::dispatchUnlockAndPost(va_list args) {
     return unlockAndPost();
 }
+
+#ifdef OMAP_ENHANCEMENT
+int SurfaceTextureClient::dispatchSetBuffersLayout(va_list args) {
+    uint32_t bufLayout = va_arg(args, uint32_t);
+    return setBuffersLayout(bufLayout);
+}
+int SurfaceTextureClient::dispatchUpdateAndGetCurrent(va_list args) {
+    ANativeWindowBuffer** buffer = va_arg(args, ANativeWindowBuffer**);
+    return updateAndGetCurrent(buffer);
+}
+#endif
 
 int SurfaceTextureClient::connect(int api) {
     LOGV("SurfaceTextureClient::connect");
@@ -553,6 +572,27 @@ int SurfaceTextureClient::setBuffersTimestamp(int64_t timestamp)
     mTimestamp = timestamp;
     return NO_ERROR;
 }
+
+#ifdef OMAP_ENHANCEMENT
+int SurfaceTextureClient::setBuffersLayout(uint32_t bufLayout)
+{
+    LOGV("SurfaceTextureClient::setBuffersLayout");
+    Mutex::Autolock lock(mMutex);
+    status_t err = mSurfaceTexture->setLayout(bufLayout);
+    return NO_ERROR;
+}
+
+int SurfaceTextureClient::updateAndGetCurrent(android_native_buffer_t** buffer)
+{
+    LOGV("SurfaceTextureClient::updateAndGetCurrent");
+    status_t err = NO_ERROR;
+
+    Mutex::Autolock lock(mMutex);
+    err = mSurfaceTexture->updateAndGetCurrent(&mCurrentBuffer);
+    *buffer = mCurrentBuffer.get();
+    return err;
+}
+#endif
 
 void SurfaceTextureClient::freeAllBuffers() {
     for (int i = 0; i < NUM_BUFFER_SLOTS; i++) {

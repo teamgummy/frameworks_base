@@ -151,6 +151,19 @@ SurfaceTexture::SurfaceTexture(GLuint tex, bool allowSynchronousMode,
     mNextCrop.makeInvalid();
     memcpy(mCurrentTransformMatrix, mtxIdentity,
             sizeof(mCurrentTransformMatrix));
+
+#ifdef OMAP_ENHANCEMENT
+    mCurrentLayout = mNextLayout = NATIVE_WINDOW_BUFFERS_LAYOUT_PROGRESSIVE;
+    if (texTarget == EGL_NONE) {
+        mMinBufferSlots = 1;
+        // need at least one to avoid deadlock in client
+        mMinUndequeued = 1;
+    } else {
+        mMinBufferSlots =  mSynchronousMode ?
+            MIN_SYNC_BUFFER_SLOTS : MIN_ASYNC_BUFFER_SLOTS;
+        mMinUndequeued = MIN_UNDEQUEUED_BUFFERS - int(mSynchronousMode);
+    }
+#endif
 }
 
 SurfaceTexture::~SurfaceTexture() {
@@ -218,8 +231,12 @@ status_t SurfaceTexture::setBufferCount(int bufferCount) {
         }
     }
 
+#ifdef OMAP_ENHANCEMENT
+    const int minBufferSlots = mMinBufferSlots;
+#else
     const int minBufferSlots = mSynchronousMode ?
             MIN_SYNC_BUFFER_SLOTS : MIN_ASYNC_BUFFER_SLOTS;
+#endif
     if (bufferCount == 0) {
         mClientBufferCount = 0;
         bufferCount = (mServerBufferCount >= minBufferSlots) ?
@@ -316,9 +333,12 @@ status_t SurfaceTexture::dequeueBuffer(int *outBuf, uint32_t w, uint32_t h,
             //
             // As long as this condition is true AND the FIFO is not empty, we
             // wait on mDequeueCondition.
-
+#ifdef OMAP_ENHANCEMENT
+            const int minBufferCountNeeded = mMinBufferSlots;
+#else
             const int minBufferCountNeeded = mSynchronousMode ?
                     MIN_SYNC_BUFFER_SLOTS : MIN_ASYNC_BUFFER_SLOTS;
+#endif
 
             const bool numberOfBuffersNeedsToChange = !mClientBufferCount &&
                     ((mServerBufferCount != mBufferCount) ||
@@ -398,6 +418,13 @@ status_t SurfaceTexture::dequeueBuffer(int *outBuf, uint32_t w, uint32_t h,
                 // make sure the client is not trying to dequeue more buffers
                 // than allowed.
                 const int avail = mBufferCount - (dequeuedCount+1);
+#ifdef OMAP_ENHANCEMENT
+                if (avail < mMinUndequeued) {
+                    ST_LOGE("dequeueBuffer: MIN_UNDEQUEUED_BUFFERS=%d exceeded "
+                            "(dequeued=%d)", mMinBufferSlots, dequeuedCount);
+                    return -EBUSY;
+                }
+#else
                 if (avail < (MIN_UNDEQUEUED_BUFFERS-int(mSynchronousMode))) {
 #ifdef MISSING_GRALLOC_BUFFERS
                     if (mClientBufferCount != 0) {
@@ -414,6 +441,7 @@ status_t SurfaceTexture::dequeueBuffer(int *outBuf, uint32_t w, uint32_t h,
                             dequeuedCount);
                     return -EBUSY;
                 }
+#endif // OMAP_ENHANCEMENT
             }
 
             // we're in synchronous mode and didn't find a buffer, we need to
@@ -552,6 +580,14 @@ status_t SurfaceTexture::setSynchronousMode(bool enabled) {
         mSynchronousMode = enabled;
         mDequeueCondition.signal();
     }
+
+#ifdef OMAP_ENHANCEMENT
+    if (mTexTarget != EGL_NONE) {
+        mMinBufferSlots =  mSynchronousMode ?
+            MIN_SYNC_BUFFER_SLOTS : MIN_ASYNC_BUFFER_SLOTS;
+        mMinUndequeued = MIN_UNDEQUEUED_BUFFERS - int(mSynchronousMode);
+    }
+#endif
     return err;
 }
 
@@ -852,6 +888,9 @@ status_t SurfaceTexture::updateTexImage() {
         mCurrentTransform = mSlots[buf].mTransform;
         mCurrentScalingMode = mSlots[buf].mScalingMode;
         mCurrentTimestamp = mSlots[buf].mTimestamp;
+#ifdef OMAP_ENHANCEMENT
+        mCurrentLayout = mSlots[buf].mLayout;
+#endif
         computeCurrentTransformMatrix();
 
         // Now that we've passed the point at which failures can happen,
@@ -1141,6 +1180,13 @@ bool SurfaceTexture::isSynchronousMode() const {
     return mSynchronousMode;
 }
 
+#ifdef OMAP_ENHANCEMENT
+uint32_t SurfaceTexture::getCurrentLayout() const {
+    Mutex::Autolock lock(mMutex);
+    return mCurrentLayout;
+}
+#endif
+
 int SurfaceTexture::query(int what, int* outValue)
 {
     Mutex::Autolock lock(mMutex);
@@ -1162,8 +1208,12 @@ int SurfaceTexture::query(int what, int* outValue)
         value = mPixelFormat;
         break;
     case NATIVE_WINDOW_MIN_UNDEQUEUED_BUFFERS:
+#ifdef OMAP_ENHANCEMENT
+        value = mMinUndequeued;
+#else
         value = mSynchronousMode ?
                 (MIN_UNDEQUEUED_BUFFERS-1) : MIN_UNDEQUEUED_BUFFERS;
+#endif
         break;
     default:
         return BAD_VALUE;
