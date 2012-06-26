@@ -71,6 +71,11 @@ private:
     int dispatchSetUsage(va_list args);
     int dispatchLock(va_list args);
     int dispatchUnlockAndPost(va_list args);
+#ifdef OMAP_ENHANCEMENT
+    int dispatchSetBuffersLayout(va_list args);
+    int dispatchUpdateAndGetCurrent(va_list args);
+    int dispatchSetBuffersMetadata(va_list args);
+#endif
 
 protected:
     virtual int cancelBuffer(ANativeWindowBuffer* buffer);
@@ -93,6 +98,11 @@ protected:
     virtual int setUsage(uint32_t reqUsage);
     virtual int lock(ANativeWindow_Buffer* outBuffer, ARect* inOutDirtyBounds);
     virtual int unlockAndPost();
+#ifdef OMAP_ENHANCEMENT
+    virtual int setBuffersMetadata(const char *metadata);
+    virtual int setBuffersLayout(uint32_t layout);
+    virtual int updateAndGetCurrent(ANativeWindowBuffer** buffer);
+#endif
 
     enum { MIN_UNDEQUEUED_BUFFERS = SurfaceTexture::MIN_UNDEQUEUED_BUFFERS };
     enum { NUM_BUFFER_SLOTS = SurfaceTexture::NUM_BUFFER_SLOTS };
