@@ -45,8 +45,15 @@ public:
     virtual status_t setBufferCount(int bufferCount);
 
 protected:
+
+#ifdef OMAP_ENHANCEMENT
+    virtual status_t queueBuffer(int buf, int64_t timestamp,
+            uint32_t* outWidth, uint32_t* outHeight, uint32_t* outTransform,
+            const String8& metadata);
+#else
     virtual status_t queueBuffer(int buf, int64_t timestamp,
             uint32_t* outWidth, uint32_t* outHeight, uint32_t* outTransform);
+#endif
 
     virtual status_t dequeueBuffer(int *buf, uint32_t w, uint32_t h,
             uint32_t format, uint32_t usage);
