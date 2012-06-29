@@ -2130,8 +2130,9 @@ private NetworkStateTracker makeWimaxStateTracker() {
             String dnsString = dns.getHostAddress();
             if (changed || !dnsString.equals(SystemProperties.get("net.dns" + j + "." + pid))) {
                 changed = true;
-                SystemProperties.set("net.dns" + j++ + "." + pid, dns.getHostAddress());
+                SystemProperties.set("net.dns" + j + "." + pid, dns.getHostAddress());
             }
+            j++;
         }
         return changed;
     }
