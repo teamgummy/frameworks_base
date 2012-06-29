@@ -235,8 +235,31 @@ static const KeycodeLabel KEYCODES[] = {
     { "CALENDAR", 208 },
     { "MUSIC", 209 },
     { "CALCULATOR", 210 },
+<<<<<<< HEAD
     { "ALT_LOCK", 211 },
     { "VOICE", 212 },
+=======
+    { "TOGGLE_WIFI", 211 },
+    { "TOGGLE_BT", 212 },
+    { "TOGGLE_TOUCHPAD", 213 },
+    { "BRIGHTNESS_DOWN", 214 },
+    { "BRIGHTNESS_UP", 215 },
+    { "BRIGHTNESS_AUTO", 216 },
+    { "SCREENSHOT", 217 },
+    { "FUNC_1", 218 },
+    { "FUNC_2", 219 },
+    { "FUNC_3", 220 },
+    { "FUNC_4", 221 },
+    { "FUNC_5", 222 },
+    { "FUNC_6", 223 },
+    { "FUNC_7", 224 },
+    { "FUNC_8", 225 },
+    { "USER1", 226 },
+    { "USER2", 227 },
+    { "USER3", 228 },
+    { "USER4", 229 },
+    { "USER5", 230 },
+>>>>>>> 84ca245... input: add keymapping and handle www/com key for keypads in ics
 
     // NOTE: If you add a new keycode here you must also add it to several other files.
     //       Refer to frameworks/base/core/java/android/view/KeyEvent.java for the full list.
