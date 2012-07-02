@@ -171,14 +171,14 @@ static void agps_status_callback(AGpsStatus* agps_status)
         // if we have a valid ipv4 address
         if (agps_status->ipv4_addr != 0xFFFFFFFF) {
             byteArray = env->NewByteArray(4);
-            ALOG_ASSERT(byteArray, "Native could not create new byte[]");
+            LOG_ASSERT(byteArray, "Native could not create new byte[]");
             env->SetByteArrayRegion(byteArray, 0, 4, (const jbyte *)agps_status->ipv4_addr);
         } else if (agps_status->size >= sizeof(AGpsStatus)) {
             // newest version of AGpsStatus struct, which has ipv6
             // address. So we go with that. We won't get here if
             // we have a valid ipv4 address.
             byteArray = env->NewByteArray(16);
-            ALOG_ASSERT(byteArray, "Native could not create new byte[]");
+            LOG_ASSERT(byteArray, "Native could not create new byte[]");
             env->SetByteArrayRegion(byteArray, 0, 16, (const jbyte *)agps_status->ipv6_addr );
         }
     }
