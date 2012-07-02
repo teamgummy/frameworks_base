@@ -107,7 +107,7 @@ static void nmea_callback(GpsUtcTime timestamp, const char* nmea, int length)
 
 static void set_capabilities_callback(uint32_t capabilities)
 {
-    LOGD("set_capabilities_callback: %ld\n", (long ) capabilities);
+    LOGD("set_capabilities_callback: %ld\n", capabilities);
     JNIEnv* env = AndroidRuntime::getJNIEnv();
     env->CallVoidMethod(mCallbacksObj, method_setEngineCapabilities, capabilities);
     checkAndClearExceptionFromCallback(env, __FUNCTION__);
@@ -163,34 +163,16 @@ GpsXtraCallbacks sGpsXtraCallbacks = {
 static void agps_status_callback(AGpsStatus* agps_status)
 {
     JNIEnv* env = AndroidRuntime::getJNIEnv();
-    jbyteArray byteArray = NULL;
 
-    // there is neither ipv4 now ipv6 addresses unless this is true
-    if (agps_status->size >
-        ((char*)(agps_status->ipv4_addr) - (char*)agps_status)) {
-        // if we have a valid ipv4 address
-        if (agps_status->ipv4_addr != 0xFFFFFFFF) {
-            byteArray = env->NewByteArray(4);
-            ALOG_ASSERT(byteArray, "Native could not create new byte[]");
-            env->SetByteArrayRegion(byteArray, 0, 4, (const jbyte *)agps_status->ipv4_addr);
-        } else if (agps_status->size >= sizeof(AGpsStatus)) {
-            // newest version of AGpsStatus struct, which has ipv6
-            // address. So we go with that. We won't get here if
-            // we have a valid ipv4 address.
-            byteArray = env->NewByteArray(16);
-            ALOG_ASSERT(byteArray, "Native could not create new byte[]");
-            env->SetByteArrayRegion(byteArray, 0, 16, (const jbyte *)agps_status->ipv6_addr );
-        }
-    }
-
+    uint32_t ipaddr;
+    // ipaddr field was not included in original AGpsStatus
+    if (agps_status->size >= sizeof(AGpsStatus))
+        ipaddr = agps_status->ipaddr;
+    else
+        ipaddr = 0xFFFFFFFF;
     env->CallVoidMethod(mCallbacksObj, method_reportAGpsStatus,
-                        agps_status->type, agps_status->status,
-                        byteArray);
-
+                        agps_status->type, agps_status->status, ipaddr);
     checkAndClearExceptionFromCallback(env, __FUNCTION__);
-    if (byteArray != NULL) {
-        env->DeleteLocalRef(byteArray);
-    }
 }
 
 AGpsCallbacks sAGpsCallbacks = {
@@ -258,7 +240,7 @@ static void android_location_GpsLocationProvider_class_init_native(JNIEnv* env, 
     method_reportLocation = env->GetMethodID(clazz, "reportLocation", "(IDDDFFFJ)V");
     method_reportStatus = env->GetMethodID(clazz, "reportStatus", "(I)V");
     method_reportSvStatus = env->GetMethodID(clazz, "reportSvStatus", "()V");
-    method_reportAGpsStatus = env->GetMethodID(clazz, "reportAGpsStatus", "(II[B)V");
+    method_reportAGpsStatus = env->GetMethodID(clazz, "reportAGpsStatus", "(III)V");
     method_reportNmea = env->GetMethodID(clazz, "reportNmea", "(J)V");
     method_setEngineCapabilities = env->GetMethodID(clazz, "setEngineCapabilities", "(I)V");
     method_xtraDownloadRequest = env->GetMethodID(clazz, "xtraDownloadRequest", "()V");
