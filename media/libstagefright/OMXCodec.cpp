@@ -1255,6 +1255,13 @@ status_t OMXCodec::setupH263EncoderParameters(const sp<MetaData>& meta) {
     }
     h263type.nBFrames = 0;
 
+#ifdef OMAP_ENAHNCEMENT
+    //When flag kOnlySubmitOneInputBufferAtOneTime is enabled, B frames must not be used.
+    if (mFlags & kOnlySubmitOneInputBufferAtOneTime) {
+        h263type.nBFrames = 0;
+    }
+#endif
+
     // Check profile and level parameters
     CodecProfileLevel defaultProfileLevel, profileLevel;
     defaultProfileLevel.mProfile = h263type.eProfile;
@@ -1311,6 +1318,13 @@ status_t OMXCodec::setupMPEG4EncoderParameters(const sp<MetaData>& meta) {
     mpeg4type.nTimeIncRes = 1000;
     mpeg4type.nHeaderExtension = 0;
     mpeg4type.bReversibleVLC = OMX_FALSE;
+
+#ifdef OMAP_ENHANCEMENT
+    //When flag kOnlySubmitOneInputBufferAtOneTime is enabled, B frames must not be used.
+    if (mFlags & kOnlySubmitOneInputBufferAtOneTime) {
+        mpeg4type.nBFrames = 0;
+    }
+#endif
 
     // Check profile and level parameters
     CodecProfileLevel defaultProfileLevel, profileLevel;
@@ -1382,6 +1396,13 @@ status_t OMXCodec::setupAVCEncoderParameters(const sp<MetaData>& meta) {
         h264type.bDirectSpatialTemporal = OMX_FALSE;
         h264type.nCabacInitIdc = 0;
     }
+
+#ifdef OMAP_ENHANCEMENT
+    //When flag kOnlySubmitOneInputBufferAtOneTime is enabled, B frames must not be used.
+    if (mFlags & kOnlySubmitOneInputBufferAtOneTime) {
+        h264type.nBFrames = 0;
+    }
+#endif
 
     if (h264type.nBFrames != 0) {
         h264type.nAllowedPictureTypes |= OMX_VIDEO_PictureTypeB;
@@ -1504,6 +1525,9 @@ status_t OMXCodec::setVideoOutputFormat(
 
     video_def->nFrameWidth = width;
     video_def->nFrameHeight = height;
+#ifdef OMAP_ENHANCEMENT
+    video_def->xFramerate = mVideoFPS << 16;
+#endif
 
     video_def->eCompressionFormat = compressionFormat;
     video_def->eColorFormat = OMX_COLOR_FormatUnused;
@@ -3952,6 +3976,11 @@ void OMXCodec::addCodecSpecificData(const void *data, size_t size) {
 
     specific->mSize = size;
     memcpy(specific->mData, data, size);
+#ifdef OMAP_ENHANCEMENT
+    if (!size) {
+        return;
+    }
+#endif
 
     mCodecSpecificData.push(specific);
 }
@@ -4802,6 +4831,9 @@ void OMXCodec::initOutputFormat(const sp<MetaData> &inputFormat) {
 
                 if (mNativeWindow != NULL) {
                      initNativeWindowCrop();
+#ifdef OMAP_ENHANCEMENT
+                     native_window_set_buffers_layout(mNativeWindow.get(), layout);
+#endif
                 }
             }
             break;
