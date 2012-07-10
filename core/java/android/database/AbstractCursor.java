@@ -407,7 +407,7 @@ public abstract class AbstractCursor implements CrossProcessCursor {
             mContentResolver.unregisterContentObserver(mSelfObserver);
         }
         try {
-            close();
+            if (!mClosed) close();
         } catch(Exception e) { }
     }
 
