@@ -48,6 +48,12 @@ enum {
     kKeyBitRate           = 'brte',  // int32_t (bps)
     kKeyESDS              = 'esds',  // raw data
     kKeyAVCC              = 'avcc',  // raw data
+#ifdef OMAP_ENHANCEMENT
+    kKeyHdr               = 'hdrd',  // raw data
+    kKeySARIdc            = 'sari',  // Sample aspect ratio of the luma samples (int32_t)
+    kKeySARWidth          = 'sarw',  // Sample aspect ratio width (int32_t)
+    kKeySARHeight         = 'sarh',  // Sample aspect ratio height (int32_t)
+#endif
     kKeyD263              = 'd263',  // raw data
     kKeyVorbisInfo        = 'vinf',  // raw data
     kKeyVorbisBooks       = 'vboo',  // raw data
@@ -59,6 +65,9 @@ enum {
     kKeyNTPTime           = 'ntpT',  // uint64_t (ntp-timestamp)
     kKeyTargetTime        = 'tarT',  // int64_t (usecs)
     kKeyDriftTime         = 'dftT',  // int64_t (usecs)
+#ifdef OMAP_ENHANCEMENT
+    kKeyElstTime          = 'elst',  // int64_t (usecs)
+#endif
     kKeyAnchorTime        = 'ancT',  // int64_t (usecs)
     kKeyDuration          = 'dura',  // int64_t (usecs)
     kKeyColorFormat       = 'colf',
@@ -124,13 +133,36 @@ enum {
     kKeyTextFormatData    = 'text',  // raw data
 
     kKeyRequiresSecureBuffers = 'secu',  // bool (int32_t)
+
+#ifdef OMAP_ENHANCEMENT_S3D
+    kKeyS3DLayout         = 's3dl',
+#endif
+#ifdef OMAP_ENHANCEMENT
+    kKeyBufferLayout      = 'lout',
+    kKeyVideoFPS          = 'vfps', // int32_t
+
+    //Wifi Display - MPEG2TS RTP streaming
+    kKeySourceAVRtpPort = 'sarp', // int32_t
+    kKeySinkAVRtpPort = 'SARP', // int32_t
+    kKeySourceIpAddr = 'sipa', // cstring
+    kKeySinkIpAddr = 'SIPA', // cstring
+#endif
 };
 
 enum {
     kTypeESDS        = 'esds',
     kTypeAVCC        = 'avcc',
+#ifdef OMAP_ENHANCEMENT
+    kTypeHdr         = 'hdrd',
+#endif
     kTypeD263        = 'd263',
 };
+
+#ifdef OMAP_ENHANCEMENT
+enum {
+    kKeyGenericMPEG4    = 'gnmp',
+};
+#endif
 
 class MetaData : public RefBase {
 public:
