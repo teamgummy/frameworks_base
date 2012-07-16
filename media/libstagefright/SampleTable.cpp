@@ -58,6 +58,11 @@ private:
     size_t mCurrentEntrySampleIndex;
 
     DISALLOW_EVIL_CONSTRUCTORS(CompositionDeltaLookup);
+
+#ifdef OMAP_ENHANCEMENT
+public:
+    bool haveEntries() const { return (mNumDeltaEntries > 0); };
+#endif
 };
 
 SampleTable::CompositionDeltaLookup::CompositionDeltaLookup()
@@ -814,5 +819,15 @@ uint32_t SampleTable::getCompositionTimeOffset(uint32_t sampleIndex) {
     return mCompositionDeltaLookup->getCompositionTimeOffset(sampleIndex);
 }
 
+uint32_t SampleTable::getNumSyncSamples()
+{
+    return mNumSyncSamples;
+}
+
+#ifdef OMAP_ENHANCEMENT
+bool SampleTable::haveDeltaTable() const {
+    return mCompositionDeltaLookup == NULL ? false : mCompositionDeltaLookup->haveEntries();
+}
+#endif
 }  // namespace android
 
