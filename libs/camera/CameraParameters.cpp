@@ -164,17 +164,150 @@ const char CameraParameters::FOCUS_MODE_FIXED[] = "fixed";
 const char CameraParameters::FOCUS_MODE_EDOF[] = "edof";
 const char CameraParameters::FOCUS_MODE_CONTINUOUS_VIDEO[] = "continuous-video";
 const char CameraParameters::FOCUS_MODE_CONTINUOUS_PICTURE[] = "continuous-picture";
+#ifdef QCOM_HARDWARE
+const char CameraParameters::FOCUS_MODE_CONTINUOUS_CAMERA[] = "continuous-camera";
+const char CameraParameters::FOCUS_MODE_NORMAL[] = "normal";
 
+
+const char CameraParameters::KEY_SKIN_TONE_ENHANCEMENT[] = "skinToneEnhancement";
+const char CameraParameters::KEY_SUPPORTED_SKIN_TONE_ENHANCEMENT_MODES[] = "skinToneEnhancement-values";
+
+// Values for ISO Settings
+const char CameraParameters::ISO_AUTO[] = "auto";
+const char CameraParameters::ISO_HJR[] = "ISO_HJR";
+const char CameraParameters::ISO_100[] = "ISO100";
+const char CameraParameters::ISO_200[] = "ISO200";
+const char CameraParameters::ISO_400[] = "ISO400";
+const char CameraParameters::ISO_800[] = "ISO800";
+const char CameraParameters::ISO_1600[] = "ISO1600";
+
+ //Values for Lens Shading
+const char CameraParameters::LENSSHADE_ENABLE[] = "enable";
+const char CameraParameters::LENSSHADE_DISABLE[] = "disable";
+
+// Values for auto exposure settings.
+const char CameraParameters::AUTO_EXPOSURE_FRAME_AVG[] = "frame-average";
+const char CameraParameters::AUTO_EXPOSURE_CENTER_WEIGHTED[] = "center-weighted";
+const char CameraParameters::AUTO_EXPOSURE_SPOT_METERING[] = "spot-metering";
+
+const char CameraParameters::KEY_GPS_LATITUDE_REF[] = "gps-latitude-ref";
+const char CameraParameters::KEY_GPS_LONGITUDE_REF[] = "gps-longitude-ref";
+const char CameraParameters::KEY_GPS_ALTITUDE_REF[] = "gps-altitude-ref";
+const char CameraParameters::KEY_GPS_STATUS[] = "gps-status";
+const char CameraParameters::KEY_EXIF_DATETIME[] = "exif-datetime";
+
+const char CameraParameters::KEY_HISTOGRAM[] = "histogram";
+const char CameraParameters::KEY_SUPPORTED_HISTOGRAM_MODES[] = "histogram-values";
+//Values for Histogram Shading
+const char CameraParameters::HISTOGRAM_ENABLE[] = "enable";
+const char CameraParameters::HISTOGRAM_DISABLE[] = "disable";
+
+//Values for Skin Tone Enhancement Modes
+const char CameraParameters::SKIN_TONE_ENHANCEMENT_ENABLE[] = "enable";
+const char CameraParameters::SKIN_TONE_ENHANCEMENT_DISABLE[] = "disable";
+
+const char CameraParameters::KEY_SHARPNESS[] = "sharpness";
+#ifdef QCOM_HARDWARE
+const char CameraParameters::KEY_MAX_SHARPNESS[] = "sharpness-max";
+const char CameraParameters::KEY_MIN_SHARPNESS[] = "sharpness-min";
+#else
+const char CameraParameters::KEY_MAX_SHARPNESS[] = "max-sharpness";
+#endif
+const char CameraParameters::KEY_CONTRAST[] = "contrast";
+#ifdef QCOM_HARDWARE
+const char CameraParameters::KEY_MAX_CONTRAST[] = "contrast-max";
+const char CameraParameters::KEY_MIN_CONTRAST[] = "contrast-min";
+#else
+const char CameraParameters::KEY_MAX_CONTRAST[] = "max-contrast";
+#endif
+const char CameraParameters::KEY_SATURATION[] = "saturation";
+#ifdef QCOM_HARDWARE
+const char CameraParameters::KEY_MAX_SATURATION[] = "saturation-max";
+const char CameraParameters::KEY_MIN_SATURATION[] = "saturation-min";
+#else
+const char CameraParameters::KEY_MAX_SATURATION[] = "max-saturation";
+#endif
+
+//Values for DENOISE
+const char CameraParameters::DENOISE_OFF[] = "denoise-off";
+const char CameraParameters::DENOISE_ON[] = "denoise-on";
+// Values for selectable zone af Settings
+const char CameraParameters::SELECTABLE_ZONE_AF_AUTO[] = "auto";
+const char CameraParameters::SELECTABLE_ZONE_AF_SPOT_METERING[] = "spot-metering";
+const char CameraParameters::SELECTABLE_ZONE_AF_CENTER_WEIGHTED[] = "center-weighted";
+const char CameraParameters::SELECTABLE_ZONE_AF_FRAME_AVERAGE[] = "frame-average";
+
+// Values for Face Detection settings.
+const char CameraParameters::FACE_DETECTION_OFF[] = "off";
+const char CameraParameters::FACE_DETECTION_ON[] = "on";
+
+// Values for MCE settings.
+const char CameraParameters::MCE_ENABLE[] = "enable";
+const char CameraParameters::MCE_DISABLE[] = "disable";
+
+// Values for HFR settings.
+const char CameraParameters::VIDEO_HFR_OFF[] = "off";
+const char CameraParameters::VIDEO_HFR_2X[] = "60";
+const char CameraParameters::VIDEO_HFR_3X[] = "90";
+const char CameraParameters::VIDEO_HFR_4X[] = "120";
+
+// Values for Redeye Reduction settings.
+const char CameraParameters::REDEYE_REDUCTION_ENABLE[] = "enable";
+const char CameraParameters::REDEYE_REDUCTION_DISABLE[] = "disable";
+// Values for HDR settings.
+const char CameraParameters::HDR_ENABLE[] = "enable";
+const char CameraParameters::HDR_DISABLE[] = "disable";
+
+// Values for ZSL settings.
+const char CameraParameters::ZSL_OFF[] = "off";
+const char CameraParameters::ZSL_ON[] = "on";
+
+// Values for HDR Bracketing settings.
+const char CameraParameters::AE_BRACKET_HDR_OFF[] = "Off";
+const char CameraParameters::AE_BRACKET_HDR[] = "HDR";
+const char CameraParameters::AE_BRACKET[] = "AE-Bracket";
+
+static const char* portrait = "portrait";
+static const char* landscape = "landscape";
+
+int CameraParameters::getOrientation() const
+{
+    const char* orientation = get("orientation");
+    if (orientation && !strcmp(orientation, portrait))
+        return CAMERA_ORIENTATION_PORTRAIT;
+    return CAMERA_ORIENTATION_LANDSCAPE;
+}
+void CameraParameters::setOrientation(int orientation)
+{
+    if (orientation == CAMERA_ORIENTATION_PORTRAIT) {
+        set("orientation", portrait);
+    } else {
+         set("orientation", landscape);
+    }
+}
+#endif
+
+#ifdef OMAP_ENHANCEMENT_CPCAM
+CameraParametersBase::CameraParametersBase()
+#else
 CameraParameters::CameraParameters()
                 : mMap()
+#endif
 {
 }
 
+#ifdef OMAP_ENHANCEMENT_CPCAM
+CameraParametersBase::~CameraParametersBase()
+#else
 CameraParameters::~CameraParameters()
 {
 }
 
+#ifdef OMAP_ENHANCEMENT_CPCAM
+String8 CameraParametersBase::flatten() const
+#else
 String8 CameraParameters::flatten() const
+#endif
 {
     String8 flattened("");
     size_t size = mMap.size();
@@ -194,7 +327,11 @@ String8 CameraParameters::flatten() const
     return flattened;
 }
 
+#ifdef OMAP_ENHANCEMENT_CPCAM
+void CameraParametersBase::unflatten(const String8 &params)
+#else
 void CameraParameters::unflatten(const String8 &params)
+#endif
 {
     const char *a = params.string();
     const char *b;
@@ -227,7 +364,11 @@ void CameraParameters::unflatten(const String8 &params)
 }
 
 
+#ifdef OMAP_ENHANCEMENT_CPCAM
+void CameraParametersBase::set(const char *key, const char *value)
+#else
 void CameraParameters::set(const char *key, const char *value)
+#endif
 {
     // XXX i think i can do this with strspn()
     if (strchr(key, '=') || strchr(key, ';')) {
@@ -243,21 +384,33 @@ void CameraParameters::set(const char *key, const char *value)
     mMap.replaceValueFor(String8(key), String8(value));
 }
 
+#ifdef OMAP_ENHANCEMENT_CPCAM
+void CameraParametersBase::set(const char *key, int value)
+#else
 void CameraParameters::set(const char *key, int value)
+#endif
 {
     char str[16];
     sprintf(str, "%d", value);
     set(key, str);
 }
 
+#ifdef OMAP_ENHANCEMENT_CPCAM
+void CameraParametersBase::setFloat(const char *key, float value)
+#else
 void CameraParameters::setFloat(const char *key, float value)
+#endif
 {
     char str[16];  // 14 should be enough. We overestimate to be safe.
     snprintf(str, sizeof(str), "%g", value);
     set(key, str);
 }
 
+#ifdef OMAP_ENHANCEMENT_CPCAM
+const char *CameraParametersBase::get(const char *key) const
+#else
 const char *CameraParameters::get(const char *key) const
+#endif
 {
     String8 v = mMap.valueFor(String8(key));
     if (v.length() == 0)
@@ -265,7 +418,11 @@ const char *CameraParameters::get(const char *key) const
     return v.string();
 }
 
+#ifdef OMAP_ENHANCEMENT_CPCAM
+int CameraParametersBase::getInt(const char *key) const
+#else
 int CameraParameters::getInt(const char *key) const
+#endif
 {
     const char *v = get(key);
     if (v == 0)
@@ -273,14 +430,22 @@ int CameraParameters::getInt(const char *key) const
     return strtol(v, 0, 0);
 }
 
+#ifdef OMAP_ENHANCEMENT_CPCAM
+float CameraParametersBase::getFloat(const char *key) const
+#else
 float CameraParameters::getFloat(const char *key) const
+#endif
 {
     const char *v = get(key);
     if (v == 0) return -1;
     return strtof(v, 0);
 }
 
+#ifdef OMAP_ENHANCEMENT_CPCAM
+void CameraParametersBase::remove(const char *key)
+#else
 void CameraParameters::remove(const char *key)
+#endif
 {
     mMap.removeItem(String8(key));
 }
@@ -447,7 +612,11 @@ const char *CameraParameters::getPictureFormat() const
     return get(KEY_PICTURE_FORMAT);
 }
 
+#ifdef OMAP_ENHANCEMENT_CPCAM
+void CameraParametersBase::dump() const
+#else
 void CameraParameters::dump() const
+#endif
 {
     LOGD("dump: mMap.size = %d", mMap.size());
     for (size_t i = 0; i < mMap.size(); i++) {
@@ -458,7 +627,12 @@ void CameraParameters::dump() const
     }
 }
 
+
+#ifdef OMAP_ENHANCEMENT_CPCAM
+status_t CameraParametersBase::dump(int fd, const Vector<String16>& args) const
+#else
 status_t CameraParameters::dump(int fd, const Vector<String16>& args) const
+#endif
 {
     const size_t SIZE = 256;
     char buffer[SIZE];
