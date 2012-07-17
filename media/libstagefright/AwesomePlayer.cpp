@@ -561,6 +561,15 @@ status_t AwesomePlayer::setDataSource_l(const sp<MediaExtractor> &extractor) {
         return UNKNOWN_ERROR;
     }
 
+#if defined(OMAP_ENHANCEMENT) && !defined(TARGET_OMAP3)
+    // WMV files with old versions of codecs like wmv2,wmv1..
+    LOGV(" setDataSource_l : haveAudio=%d, haveVideo=%d", haveAudio, haveVideo);
+    if ((extractor->countTracks())> 1 && !(haveAudio && haveVideo)) {
+        LOGE("Not supported stream");
+        return UNKNOWN_ERROR;
+    }
+#endif
+
     mExtractorFlags = extractor->flags();
 
     return OK;
@@ -1596,10 +1605,104 @@ status_t AwesomePlayer::initAudioDecoder() {
         }
 #endif
     } else {
+<<<<<<< HEAD
+=======
+#ifdef WITH_QCOM_LPA
+        // For LPA Playback use the decoder without OMX layer
+        char lpaDecode[128];
+        char *matchComponentName = NULL;
+        property_get("lpa.decode",lpaDecode,"0");
+        if(strcmp("true",lpaDecode) == 0 && mVideoSource == NULL) {
+            const char *mime;
+            bool success = meta->findCString(kKeyMIMEType, &mime);
+            CHECK(success);
+            int64_t durationUs;
+            success = meta->findInt64(kKeyDuration, &durationUs);
+            if (!success) durationUs = 0;
+            int32_t isFormatAdif = 0;
+            meta->findInt32(kkeyAacFormatAdif, &isFormatAdif);
+
+            if ( (durationUs > 60000000) && !isFormatAdif && LPAPlayer::objectsAlive == 0) {
+                if(!strcasecmp(mime, MEDIA_MIMETYPE_AUDIO_MPEG)) {
+                    LOGV("matchComponentName is set to MP3Decoder");
+                    matchComponentName= "MP3Decoder";
+                }
+                if(!strcasecmp(mime, MEDIA_MIMETYPE_AUDIO_AAC)) {
+                    LOGV("matchComponentName is set to AACDecoder");
+                    matchComponentName= "AACDecoder";
+                }
+            }
+        }
+#endif
+#ifdef OMAP_ENHANCEMENT
+        if (mStats.mVideoWidth * mStats.mVideoHeight > MAX_RESOLUTION) {
+         // video is launched first, so these capablities are known
+         // audio can be selected accordingly
+         // TODO: extend this to a method that can include more
+         // capabilities to evaluate
+
+#ifdef TARGET_OMAP4
+            //for OMAP4 720p,1080p videos, lets stick to OMX.PV audio codecs
+            mAudioSource = OMXCodec::Create(
+                    mClient.interface(), mAudioTrack->getFormat(),
+                    false, // createEncoder
+                    mAudioTrack);
+#else
+        bool isIttiamAudioCodecRequired = false;
+        bool is720PCodecRequired = (mStats.mVideoWidth * mStats.mVideoHeight
+                                    > MAX_RESOLUTION) ? true : false;
+
+        if (true == is720PCodecRequired) {
+            isIttiamAudioCodecRequired = true;
+        }
+        if (true == isIttiamAudioCodecRequired) {
+            // video is launched first, so these capablities are known
+            // audio can be selected accordingly
+            // TODO: extend this to a method that can include more
+            // capabilities to evaluate
+
+            const char *componentName;
+            if (!strcasecmp(mime, MEDIA_MIMETYPE_AUDIO_AAC)) {
+                componentName = "OMX.ITTIAM.AAC.decode";
+                mAudioSource = OMXCodec::Create(
+                        mClient.interface(), mAudioTrack->getFormat(),
+                        false, // createEncoder
+                        mAudioTrack, componentName);
+            } else if (!strcasecmp(mime, MEDIA_MIMETYPE_AUDIO_WMA)) {
+                componentName = "OMX.ITTIAM.WMA.decode";
+                mAudioSource = OMXCodec::Create(
+                        mClient.interface(), mAudioTrack->getFormat(),
+                        false,
+                        mAudioTrack, componentName);
+            } else {
+                componentName = "NoComponentAvailable";
+                mAudioSource = OMXCodec::Create(
+                        mClient.interface(), mAudioTrack->getFormat(),
+                        false,
+                        mAudioTrack);
+            }
+        }
+#endif
+        } else {
+            mAudioSource = OMXCodec::Create(
+                    mClient.interface(), mAudioTrack->getFormat(),
+                    false, // createEncoder
+                    mAudioTrack);
+        }
+#else // OMAP_ENHANCEMENT
+>>>>>>> 961f3b9... stagefright: omap3 720P encoder/decoder preliminary support
         mAudioSource = OMXCodec::Create(
                 mClient.interface(), mAudioTrack->getFormat(),
                 false, // createEncoder
                 mAudioTrack);
+<<<<<<< HEAD
+=======
+#else
+                mAudioTrack,
+                matchComponentName);
+#endif
+#endif // OMAP_ENHANCEMENT
+>>>>>>> 961f3b9... stagefright: omap3 720P encoder/decoder preliminary support
     }
 
     if (mAudioSource != NULL) {
@@ -2097,9 +2200,6 @@ void AwesomePlayer::onVideoEvent() {
 
         if (latenessUs < -10000) {
             // We're more than 10ms early.
-<<<<<<< HEAD
-
-=======
             logOnTime(timeUs,nowUs,latenessUs);
             {
                 Mutex::Autolock autoLock(mStatsLock);
@@ -2117,7 +2217,6 @@ void AwesomePlayer::onVideoEvent() {
                 postVideoEvent_l(latenessUs * -1);
             }
 #else
->>>>>>> 0130036... libstagefright: MPEG4Extractor OMAP support
             postVideoEvent_l(10000);
 #endif
             return;
@@ -2783,8 +2882,6 @@ void AwesomePlayer::modifyFlags(unsigned value, FlagMode mode) {
     }
 }
 
-<<<<<<< HEAD
-=======
 //Statistics profiling
 void AwesomePlayer::logStatistics() {
     const char *mime;
@@ -2924,5 +3021,4 @@ status_t AwesomePlayer::createTrackExtractor(sp<MediaExtractor> &trackExtractor,
 }
 #endif
 
->>>>>>> 0130036... libstagefright: MPEG4Extractor OMAP support
 }  // namespace android
