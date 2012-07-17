@@ -156,6 +156,7 @@ enum {
     kTypeHdr         = 'hdrd',
 #endif
     kTypeD263        = 'd263',
+    kKeyVideoInterlaced   = 'vint',
 };
 
 #ifdef OMAP_ENHANCEMENT
