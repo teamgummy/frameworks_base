@@ -30,6 +30,9 @@
 #include <media/stagefright/CameraSource.h>
 #include <media/stagefright/CameraSourceTimeLapse.h>
 #include <media/stagefright/MPEG2TSWriter.h>
+#ifdef OMAP_ENHANCEMENT
+#include <MPEG2TSRTPWriter.h>
+#endif
 #include <media/stagefright/MPEG4Writer.h>
 #include <media/stagefright/MediaDebug.h>
 #include <media/stagefright/MediaDefs.h>
@@ -67,6 +70,9 @@ static void addBatteryData(uint32_t params) {
 StagefrightRecorder::StagefrightRecorder()
     : mWriter(NULL),
       mOutputFd(-1),
+#ifdef OMAP_ENHANCEMENT
+      mVidEncoder(NULL),
+#endif
       mAudioSource(AUDIO_SOURCE_CNT),
       mVideoSource(VIDEO_SOURCE_LIST_END),
       mStarted(false), mSurfaceMediaSource(NULL) {
@@ -573,6 +579,32 @@ status_t StagefrightRecorder::setParamGeoDataLatitude(
     return OK;
 }
 
+#ifdef OMAP_ENHANCEMENT
+status_t StagefrightRecorder::setParamAVRTPPort(int32_t rtpPort, bool source) {
+    LOGV("StagefrightRecorder::setParamAVRTPPort: %d", rtpPort);
+
+    if (source) {
+        mSourceAVRtpPort = rtpPort;
+    } else {
+        mSinkAVRtpPort = rtpPort;
+    }
+
+    return OK;
+}
+
+status_t StagefrightRecorder::setParamIPAddr(String8 &ipAddr, bool source) {
+    LOGV("StagefrightRecorder::setParamIPAddr: %s", ipAddr.string());
+
+    if (source) {
+        mSourceIPAddr.append(ipAddr);
+    } else {
+        mSinkIPAddr.append(ipAddr);
+    }
+
+    return OK;
+}
+#endif
+
 status_t StagefrightRecorder::setParameter(
         const String8 &key, const String8 &value) {
     LOGV("setParameter: key (%s) => value (%s)", key.string(), value.string());
@@ -682,6 +714,22 @@ status_t StagefrightRecorder::setParameter(
             return setParamTimeBetweenTimeLapseFrameCapture(
                     1000LL * timeBetweenTimeLapseFrameCaptureMs);
         }
+#ifdef OMAP_ENHANCEMENT
+    } else if ((key == "video-param-insert-i-frame") ||
+               (key == "video-param-nalsize-bytes") ||
+               (key == "video-param-nalsize-macroblocks") ||
+               (key == "video-config-encoding-bitrate") ||
+               (key == "video-config-encoding-framerate")) {
+        return mVidEncoder->setParameter(key, value);
+    }else if (key == "sink-av-rtp-port") {
+        int32_t rtpPort;
+        if (safe_strtoi32(value.string(), &rtpPort)) {
+            return setParamAVRTPPort(rtpPort, false);
+        }
+    } else if (key == "sink-ip-addr") {
+        String8 ipAddr = value;
+        return setParamIPAddr(ipAddr, false);
+#endif
     } else {
         LOGE("setParameter: failed to find key %s", key.string());
     }
@@ -768,6 +816,14 @@ status_t StagefrightRecorder::start() {
             status = startMPEG2TSRecording();
             break;
 
+
+#ifdef OMAP_ENHANCEMENT
+        //Added for wifi display
+        case OUTPUT_FORMAT_RTP_MPEG2TS:
+            status = startMPEG2TSRTPRecording();
+            break;
+#endif
+
         default:
             LOGE("Unsupported output file format: %d", mOutputFormat);
             status = UNKNOWN_ERROR;
@@ -818,6 +874,12 @@ sp<MediaSource> StagefrightRecorder::createAudioSource() {
         case AUDIO_ENCODER_AAC:
             mime = MEDIA_MIMETYPE_AUDIO_AAC;
             break;
+#ifdef OMAP_ENHANCEMENT
+        // PCM audio encoder support for wifi display
+        case AUDIO_ENCODER_PCM:
+            mime = MEDIA_MIMETYPE_AUDIO_RAW;
+            break;
+#endif
         default:
             LOGE("Unknown audio encoder: %d", mAudioEncoder);
             return NULL;
@@ -839,9 +901,20 @@ sp<MediaSource> StagefrightRecorder::createAudioSource() {
     OMXClient client;
     CHECK_EQ(client.connect(), OK);
 
-    sp<MediaSource> audioEncoder =
+    sp<MediaSource> audioEncoder;
+#ifdef OMAP_ENHANCEMENT
+    // for raw audio, connect the audio source to writer
+    if (!strcmp(mime, MEDIA_MIMETYPE_AUDIO_RAW)) {
+        audioEncoder = audioSource;
+    } else {
+#endif
+    audioEncoder =
         OMXCodec::Create(client.interface(), encMeta,
                          true /* createEncoder */, audioSource);
+#ifdef OMAP_ENHANCEMENT
+    }
+#endif
+
     mAudioSourceNode = audioSource;
 
     return audioEncoder;
@@ -1014,6 +1087,74 @@ status_t StagefrightRecorder::startMPEG2TSRecording() {
 
     return mWriter->start();
 }
+
+#ifdef OMAP_ENHANCEMENT
+status_t StagefrightRecorder::startMPEG2TSRTPRecording() {
+
+    LOGV("startMPEG2TSRTPRecording");
+
+    CHECK_EQ(mOutputFormat, OUTPUT_FORMAT_RTP_MPEG2TS);
+
+    sp<MediaWriter> writer = new MPEG2TSRTPWriter(mOutputFd);
+
+    mWFDEnable = true;
+    if (mAudioSource != AUDIO_SOURCE_CNT) {
+        if (mAudioEncoder != AUDIO_ENCODER_AAC && mAudioEncoder != AUDIO_ENCODER_PCM) {
+            return ERROR_UNSUPPORTED;
+        }
+
+        status_t err = setupAudioEncoder(writer);
+
+        if (err != OK) {
+            return err;
+        }
+    }
+
+    if (mVideoSource < VIDEO_SOURCE_LIST_END) {
+        if (mVideoEncoder != VIDEO_ENCODER_H264) {
+            return ERROR_UNSUPPORTED;
+        }
+
+        sp<MediaSource> mediaSource;
+        status_t err = setupMediaSource(&mediaSource);
+        if (err != OK) {
+            return err;
+        }
+
+        sp<MediaSource> encoder;
+        err = setupVideoEncoder(mediaSource, mVideoBitRate, &encoder);
+
+        if (err != OK) {
+            return err;
+        }
+
+        mVidEncoder = encoder;
+
+        writer->addSource(encoder);
+    }
+
+    if (mMaxFileDurationUs != 0) {
+        writer->setMaxFileDuration(mMaxFileDurationUs);
+    }
+
+    if (mMaxFileSizeBytes != 0) {
+        writer->setMaxFileSize(mMaxFileSizeBytes);
+    }
+
+    mWriter = writer;
+
+    int64_t startTimeUs = systemTime() / 1000;
+    sp<MetaData> meta = new MetaData;
+    LOGV("MPEG2TS - Metadata:startTimeUs %lld ",startTimeUs);
+    setupMPEG4MetaData(startTimeUs, mVideoBitRate, &meta);
+
+    LOGV("Call setupMPEG2TSRTPMetaData");
+    setupMPEG2TSRTPMetaData(&meta);
+
+
+    return mWriter->start(meta.get());
+}
+#endif
 
 void StagefrightRecorder::clipVideoFrameRate() {
     LOGV("clipVideoFrameRate: encoder %d", mVideoEncoder);
@@ -1436,6 +1577,13 @@ status_t StagefrightRecorder::setupVideoEncoder(
         enc_meta->setInt32(kKeyVideoLevel, mVideoEncoderLevel);
     }
 
+#ifdef OMAP_ENHANCEMENT_S3D
+    int32_t s3dLayout;
+    if (meta->findInt32(kKeyS3DLayout, &s3dLayout)) {
+        enc_meta->setInt32(kKeyS3DLayout, s3dLayout);
+    }
+#endif
+
     OMXClient client;
     CHECK_EQ(client.connect(), OK);
 
@@ -1448,9 +1596,24 @@ status_t StagefrightRecorder::setupVideoEncoder(
     // Do not wait for all the input buffers to become available.
     // This give timelapse video recording faster response in
     // receiving output from video encoder component.
-    if (mCaptureTimeLapse) {
+    if ((mCaptureTimeLapse)
+#ifdef OMAP_ENHANCEMENT
+        || (mWFDEnable)
+#endif
+        ) {
         encoder_flags |= OMXCodec::kOnlySubmitOneInputBufferAtOneTime;
     }
+
+#ifdef OMAP_ENHANCEMENT
+    if (mWFDEnable) {
+        //Use constant bit rate for streaming use cases
+        encoder_flags |= OMXCodec::kEnableConstantBitRate;
+
+        //Enable SPS/PPS with every IDR frame.
+        //This will help in case of streaming use cases if initial IDR frame is lost.
+        encoder_flags |= OMXCodec::kEnableSPSPPSWithIDRFrame;
+    }
+#endif
 
     sp<MediaSource> encoder = OMXCodec::Create(
             client.interface(), enc_meta,
@@ -1472,14 +1635,26 @@ status_t StagefrightRecorder::setupVideoEncoder(
 
 status_t StagefrightRecorder::setupAudioEncoder(const sp<MediaWriter>& writer) {
     status_t status = BAD_VALUE;
+
+#ifdef OMAP_ENHANCEMENT
+    // If encoding is raw, there is no need for OMX encoder and caps check.
+    if (mAudioEncoder != AUDIO_ENCODER_PCM) {
+#endif
     if (OK != (status = checkAudioEncoderCapabilities())) {
         return status;
     }
+#ifdef OMAP_ENHANCEMENT
+    }
+#endif
 
     switch(mAudioEncoder) {
         case AUDIO_ENCODER_AMR_NB:
         case AUDIO_ENCODER_AMR_WB:
         case AUDIO_ENCODER_AAC:
+#ifdef OMAP_ENHANCEMENT
+         // PCM support for wifi display
+       case AUDIO_ENCODER_PCM:
+#endif
             break;
 
         default:
@@ -1521,6 +1696,9 @@ status_t StagefrightRecorder::setupMPEG4Recording(
             return err;
         }
 
+#ifdef OMAP_ENHANCEMENT
+        mVidEncoder = encoder;
+#endif
         writer->addSource(encoder);
         *totalBitRate += videoBitRate;
     }
@@ -1577,6 +1755,27 @@ void StagefrightRecorder::setupMPEG4MetaData(int64_t startTimeUs, int32_t totalB
     }
 }
 
+#ifdef OMAP_ENHANCEMENT
+void StagefrightRecorder::setupMPEG2TSRTPMetaData(sp<MetaData> *meta) {
+
+    if (mSourceAVRtpPort >= 0) {
+        (*meta)->setInt32(kKeySourceAVRtpPort, mSourceAVRtpPort);
+    }
+    if (mSinkAVRtpPort >= 0) {
+         (*meta)->setInt32(kKeySinkAVRtpPort, mSinkAVRtpPort);
+    }
+
+    if (mSourceIPAddr.length() > 0) {
+         (*meta)->setCString(kKeySourceIpAddr, mSourceIPAddr.string());
+    }
+
+    if (mSinkIPAddr.length() > 0) {
+         (*meta)->setCString(kKeySinkIpAddr, mSinkIPAddr.string());
+    }
+
+}
+#endif
+
 status_t StagefrightRecorder::startMPEG4Recording() {
     int32_t totalBitRate;
     status_t err = setupMPEG4Recording(
@@ -1627,6 +1826,9 @@ status_t StagefrightRecorder::stop() {
     LOGV("stop");
     status_t err = OK;
 
+#ifdef OMAP_ENHANCEMENT
+    mWFDEnable = false;
+#endif
     if (mCaptureTimeLapse && mCameraSourceTimeLapse != NULL) {
         mCameraSourceTimeLapse->startQuickReadReturns();
         mCameraSourceTimeLapse = NULL;
@@ -1710,6 +1912,15 @@ status_t StagefrightRecorder::reset() {
     mLongitudex10000 = -3600000;
 
     mOutputFd = -1;
+
+
+#ifdef OMAP_ENHANCEMENT
+    // initialization for variables related to mpeg2tsrtp writer for wifi display
+    mSourceAVRtpPort = -1;
+    mSinkAVRtpPort = -1;
+    mSourceIPAddr = String8("");
+    mSinkIPAddr = String8("");
+#endif
 
     return OK;
 }
