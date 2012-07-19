@@ -129,7 +129,6 @@ public class QwertyKeyListener extends BaseKeyListener {
             return true;
         }
 
-<<<<<<< HEAD
         if (i == KeyCharacterMap.ALT_LOCK_INPUT) {
             if (getMetaState(content, MetaKeyKeyListener.META_ALT_ON) < 2) {
                 lockMeta(content, KeyEvent.KEYCODE_ALT_LEFT);
@@ -141,11 +140,6 @@ public class QwertyKeyListener extends BaseKeyListener {
 
         if (i == KeyCharacterMap.VOICE_INPUT) {
             // TODO: Actually do something
-=======
-	if (i == KeyCharacterMap.DOT_WWW_INPUT || i == KeyCharacterMap.DOT_COM_INPUT) {
-            content.replace(selStart, selEnd, selStart == 0 ? "www." : ".com");
-            adjustMetaAfterKeypress(content);
->>>>>>> 84ca245... input: add keymapping and handle www/com key for keypads in ics
             return true;
         }
 

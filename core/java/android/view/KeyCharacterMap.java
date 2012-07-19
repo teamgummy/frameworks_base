@@ -120,7 +120,6 @@ public class KeyCharacterMap {
     public static final char PICKER_DIALOG_INPUT = '\uEF01';
 
     /**
-<<<<<<< HEAD
      * Private use character for alt-lock
      * @hide
      */
@@ -130,18 +129,6 @@ public class KeyCharacterMap {
      * Private use character indicating the voice input should be activated
      */
     public static final char VOICE_INPUT = '\uEF06';
-=======
-     * Private use character denoting a .com suffix
-     * @hide
-     */
-    public static final char DOT_COM_INPUT = '\uEF03';
-
-    /**
-     * Private use character denoting a www. prefix
-     * @hide
-     */
-    public static final char DOT_WWW_INPUT = '\uEF04';
->>>>>>> 84ca245... input: add keymapping and handle www/com key for keypads in ics
 
     /**
      * Modifier keys may be chorded with character keys.

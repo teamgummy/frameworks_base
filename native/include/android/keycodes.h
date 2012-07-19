@@ -254,7 +254,6 @@ enum {
     AKEYCODE_CALENDAR        = 208,
     AKEYCODE_MUSIC           = 209,
     AKEYCODE_CALCULATOR      = 210,
-<<<<<<< HEAD
     AKEYCODE_HANKAKU_ZENKAKU = 211,
     AKEYCODE_EISU            = 212,
     AKEYCODE_MUHENKAN        = 213,
@@ -271,28 +270,6 @@ enum {
     AKEYCODE_BRIGHTNESS_DOWN = 224,
     AKEYCODE_BRIGHTNESS_AUTO = 225,
     AKEYCODE_CAPTURE         = 226,
-=======
-    AKEYCODE_TOGGLE_WIFI     = 211,
-    AKEYCODE_TOGGLE_BT       = 212,
-    AKEYCODE_TOGGLE_TOUCHPAD = 213,
-    AKEYCODE_BRIGHTNESS_DOWN = 214,
-    AKEYCODE_BRIGHTNESS_UP   = 215,
-    AKEYCODE_BRIGHTNESS_AUTO = 216,
-    AKEYCODE_SCREENSHOT      = 217,
-    AKEYCODE_FUNC_1          = 218,
-    AKEYCODE_FUNC_2          = 219,
-    AKEYCODE_FUNC_3          = 220,
-    AKEYCODE_FUNC_4          = 221,
-    AKEYCODE_FUNC_5          = 222,
-    AKEYCODE_FUNC_6          = 223,
-    AKEYCODE_FUNC_7          = 224,
-    AKEYCODE_FUNC_8          = 225,
-    AKEYCODE_USER1           = 226,
-    AKEYCODE_USER2           = 227,
-    AKEYCODE_USER3           = 228,
-    AKEYCODE_USER4           = 229,
-    AKEYCODE_USER5           = 230,
->>>>>>> 84ca245... input: add keymapping and handle www/com key for keypads in ics
 
     // NOTE: If you add a new keycode here you must also add it to several other files.
     //       Refer to frameworks/base/core/java/android/view/KeyEvent.java for the full list.
