@@ -1605,35 +1605,6 @@ status_t AwesomePlayer::initAudioDecoder() {
         }
 #endif
     } else {
-<<<<<<< HEAD
-=======
-#ifdef WITH_QCOM_LPA
-        // For LPA Playback use the decoder without OMX layer
-        char lpaDecode[128];
-        char *matchComponentName = NULL;
-        property_get("lpa.decode",lpaDecode,"0");
-        if(strcmp("true",lpaDecode) == 0 && mVideoSource == NULL) {
-            const char *mime;
-            bool success = meta->findCString(kKeyMIMEType, &mime);
-            CHECK(success);
-            int64_t durationUs;
-            success = meta->findInt64(kKeyDuration, &durationUs);
-            if (!success) durationUs = 0;
-            int32_t isFormatAdif = 0;
-            meta->findInt32(kkeyAacFormatAdif, &isFormatAdif);
-
-            if ( (durationUs > 60000000) && !isFormatAdif && LPAPlayer::objectsAlive == 0) {
-                if(!strcasecmp(mime, MEDIA_MIMETYPE_AUDIO_MPEG)) {
-                    LOGV("matchComponentName is set to MP3Decoder");
-                    matchComponentName= "MP3Decoder";
-                }
-                if(!strcasecmp(mime, MEDIA_MIMETYPE_AUDIO_AAC)) {
-                    LOGV("matchComponentName is set to AACDecoder");
-                    matchComponentName= "AACDecoder";
-                }
-            }
-        }
-#endif
 #ifdef OMAP_ENHANCEMENT
         if (mStats.mVideoWidth * mStats.mVideoHeight > MAX_RESOLUTION) {
          // video is launched first, so these capablities are known
@@ -1690,19 +1661,15 @@ status_t AwesomePlayer::initAudioDecoder() {
                     mAudioTrack);
         }
 #else // OMAP_ENHANCEMENT
->>>>>>> 961f3b9... stagefright: omap3 720P encoder/decoder preliminary support
         mAudioSource = OMXCodec::Create(
                 mClient.interface(), mAudioTrack->getFormat(),
                 false, // createEncoder
                 mAudioTrack);
-<<<<<<< HEAD
-=======
 #else
                 mAudioTrack,
                 matchComponentName);
 #endif
 #endif // OMAP_ENHANCEMENT
->>>>>>> 961f3b9... stagefright: omap3 720P encoder/decoder preliminary support
     }
 
     if (mAudioSource != NULL) {
