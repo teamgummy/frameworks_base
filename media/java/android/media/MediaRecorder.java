@@ -20,8 +20,13 @@ import android.hardware.Camera;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.os.SystemProperties;
 import android.util.Log;
 import android.view.Surface;
+import android.app.Application;
+import android.app.ActivityThread;
+import android.content.Context;
+import android.content.Intent;
 
 import java.io.FileDescriptor;
 import java.io.FileOutputStream;
@@ -77,7 +82,8 @@ public class MediaRecorder
         native_init();
     }
     private final static String TAG = "MediaRecorder";
-
+    private final static String IOBUSY_VOTE = "com.android.server.CpuGovernorService.action.IOBUSY_VOTE";
+    private final static String IOBUSY_UNVOTE = "com.android.server.CpuGovernorService.action.IOBUSY_UNVOTE";
     // The two fields below are accessed by native methods
     @SuppressWarnings("unused")
     private int mNativeContext;
@@ -220,6 +226,13 @@ public class MediaRecorder
 
         /** @hide H.264/AAC data encapsulated in MPEG2/TS */
         public static final int OUTPUT_FORMAT_MPEG2TS = 8;
+
+        /** QCP file format
+         * @hide */
+        public static final int QCP = 9;
+        /** 3GPP2 media file format
+         * @hide */
+        public static final int THREE_GPP2 = 10;
     };
 
     /**
@@ -242,6 +255,12 @@ public class MediaRecorder
         public static final int AAC_PLUS = 4;
         /** @hide enhanced AAC plus audio codec */
         public static final int EAAC_PLUS = 5;
+        /** EVRC audio codec
+         * @hide */
+        public static final int EVRC = 6;
+        /** QCELP audio codec
+         * @hide */
+        public static final int QCELP =7;
     }
 
     /**

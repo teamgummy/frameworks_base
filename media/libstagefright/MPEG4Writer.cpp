@@ -2271,6 +2271,9 @@ status_t MPEG4Writer::Track::threadEntry() {
                 addOneCttsTableEntry(cttsSampleCount, lastCttsDurTicks);
                 cttsSampleCount = 0;
             }
+
+            lastCttsDurTicks = currCttsDurTicks;
+            lastCttsTimeUs = cttsDeltaTimeUs;
         }
 #endif
 
@@ -2285,11 +2288,6 @@ status_t MPEG4Writer::Track::threadEntry() {
         lastDurationUs = timestampUs - lastTimestampUs;
         lastDurationTicks = currDurationTicks;
         lastTimestampUs = timestampUs;
-
-        if (!mIsAudio) {
-            lastCttsDurTicks = currCttsDurTicks;
-            lastCttsTimeUs = cttsDeltaTimeUs;
-        }
 
         if (isSync != 0) {
             addOneStssTableEntry(mNumSamples);
@@ -3041,7 +3039,7 @@ void MPEG4Writer::Track::writeCttsBox() {
     mOwner->writeInt32(0);  // version=0, flags=0
 #else
     if (mHasNegativeCttsDeltaDuration) {
-        mOwner->writeInt32(0x00010000);  // version=1, flags=0
+        mOwner->writeInt32(0x01000000);  // version=1 (1 byte), flags=0 (3 bytes)
     } else {
         mOwner->writeInt32(0);  // version=0, flags=0
     }

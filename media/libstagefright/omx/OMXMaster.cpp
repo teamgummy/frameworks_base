@@ -51,6 +51,7 @@ void OMXMaster::addPlugin(const char *libname) {
     mVendorLibHandle = dlopen(libname, RTLD_NOW);
 
     if (mVendorLibHandle == NULL) {
+        LOGE("dlopen(%s) failed.", libname);
         return;
     }
 

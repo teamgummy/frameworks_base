@@ -358,10 +358,6 @@ private:
         kAvoidMemcopyInputRecordingFrames     = 2048,
         kRequiresLargerEncoderOutputBuffer    = 4096,
         kOutputBuffersAreUnreadable           = 8192,
-        kDecoderNeedsPortReconfiguration      = 16384,
-        kDecoderCantRenderSmallClips          = 32768,
-        kInterlacedOutputContent              = 65535,
-        kThumbnailMode                        = 131072,
     };
 
     enum BufferStatus {
@@ -379,7 +375,7 @@ private:
         void *mData;
         MediaBuffer *mMediaBuffer;
         OMX_U8 *mAllocatedBuffer;
-        size_t mAllocatedSize;
+        OMX_U32 mAllocatedSize;
     };
 
     struct CodecSpecificData {

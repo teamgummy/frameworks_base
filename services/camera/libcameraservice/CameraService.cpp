@@ -21,6 +21,8 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <pthread.h>
+#include <unistd.h>
+#include <fcntl.h>
 
 #include <binder/IPCThreadState.h>
 #include <binder/IServiceManager.h>
@@ -36,7 +38,7 @@
 #include <utils/Errors.h>
 #include <utils/Log.h>
 #include <utils/String16.h>
-
+#include <system/camera.h>
 #include "CameraService.h"
 #include "CameraHardwareInterface.h"
 
@@ -342,6 +344,7 @@ CameraService::Client::Client(const sp<CameraService>& cameraService,
     mCameraFacing = cameraFacing;
     mClientPid = clientPid;
     mMsgEnabled = 0;
+    mburstCnt = 0;
     mSurface = 0;
     mPreviewWindow = 0;
 #ifdef OMAP_ENHANCEMENT_CPCAM
@@ -506,7 +509,6 @@ void CameraService::Client::disconnect() {
     if (mPreviewWindow != 0) {
         disconnectWindow(mPreviewWindow);
         mPreviewWindow = 0;
-        mHardware->setPreviewWindow(mPreviewWindow);
     }
 #ifdef OMAP_ENHANCEMENT_CPCAM
    // Release the held ANativeWindow resources.
@@ -704,6 +706,7 @@ status_t CameraService::Client::startRecordingMode() {
 // stop preview mode
 void CameraService::Client::stopPreview() {
     LOG1("stopPreview (pid %d)", getCallingPid());
+    disableMsgType(CAMERA_MSG_PREVIEW_METADATA);
     Mutex::Autolock lock(mLock);
     if (checkPidAndHardware() != NO_ERROR) return;
 
@@ -1182,7 +1185,7 @@ void CameraService::Client::dataCallback(int32_t msgType,
 
     if (dataPtr == 0 && metadata == NULL) {
         LOGE("Null data returned in data callback");
-        client->handleGenericNotify(CAMERA_MSG_ERROR, UNKNOWN_ERROR, 0);
+        client->handleGenericNotify(CAMERA_MSG_ERROR, CAMERA_ERROR_UNKNOWN, 0);
         return;
     }
 
@@ -1318,8 +1321,17 @@ void CameraService::Client::handleRawPicture(const sp<IMemory>& mem) {
 
 // picture callback - compressed picture ready
 void CameraService::Client::handleCompressedPicture(const sp<IMemory>& mem) {
-    disableMsgType(CAMERA_MSG_COMPRESSED_IMAGE);
+    if (mburstCnt) mburstCnt--;
 
+    if (!mburstCnt) {
+        LOG1("mburstCnt = %d", mburstCnt);
+        disableMsgType(CAMERA_MSG_COMPRESSED_IMAGE);
+#ifdef QCOM_HARDWARE
+        if (mFaceDetection) {
+          enableMsgType(CAMERA_MSG_PREVIEW_METADATA);
+        }
+#endif
+    }
     sp<ICameraClient> c = mCameraClient;
     mLock.unlock();
     if (c != 0) {

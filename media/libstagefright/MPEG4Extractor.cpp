@@ -39,6 +39,7 @@
 #include <media/stagefright/MetaData.h>
 #include <media/stagefright/Utils.h>
 #include <utils/String8.h>
+#include <cutils/properties.h>
 
 namespace android {
 #ifdef OMAP_ENHANCEMENT
@@ -96,6 +97,12 @@ private:
     bool mWantsNALFragments;
 
     uint8_t *mSrcBuffer;
+
+    //For statistics profiling
+    uint32_t mNumSamplesReadError;
+    bool mStatistics;
+    void logExpectedFrames();
+    void logTrackStatistics();
 
     size_t parseNALSize(const uint8_t *data) const;
 
@@ -676,6 +683,9 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
     uint32_t chunk_type = ntohl(hdr[1]);
     off64_t data_offset = *offset + 8;
 
+    if(chunk_size == 0)
+       return ERROR_MALFORMED;
+
     if (chunk_size == 1) {
         if (mDataSource->readAt(*offset + 8, &chunk_size, 8) < 8) {
             return ERROR_IO;
@@ -1252,12 +1262,17 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
 
         case FOURCC('s', 't', 's', 's'):
         {
-            status_t err =
-                mLastTrack->sampleTable->setSyncSampleParams(
-                        data_offset, chunk_data_size);
+            const char *mime;
+            CHECK(mLastTrack->meta->findCString(kKeyMIMEType, &mime));
+            if(strncmp(mime, "audio/", 6))
+            {
+                status_t err =
+                    mLastTrack->sampleTable->setSyncSampleParams(
+                           data_offset, chunk_data_size);
 
-            if (err != OK) {
-                return err;
+                if (err != OK) {
+                   return err;
+                }
             }
 
             *offset += chunk_size;
@@ -2073,10 +2088,17 @@ MPEG4Source::MPEG4Source(
       mGroup(NULL),
       mBuffer(NULL),
       mWantsNALFragments(false),
-      mSrcBuffer(NULL) {
+      mSrcBuffer(NULL),
+      mNumSamplesReadError(0){
     const char *mime;
     bool success = mFormat->findCString(kKeyMIMEType, &mime);
     CHECK(success);
+
+    //for statistics profiling
+    char value[PROPERTY_VALUE_MAX];
+    mStatistics = false;
+    property_get("persist.debug.sf.statistics", value, "0");
+    if(atoi(value)) mStatistics = true;
 
     mIsAVC = !strcasecmp(mime, MEDIA_MIMETYPE_VIDEO_AVC);
 

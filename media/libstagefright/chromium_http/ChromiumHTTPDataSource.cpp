@@ -63,6 +63,7 @@ status_t ChromiumHTTPDataSource::connect(
         const char *uri,
         const KeyedVector<String8, String8> *headers,
         off64_t offset) {
+    Mutex::Autolock autoSerializer(mSerializer);
     Mutex::Autolock autoLock(mLock);
 
     uid_t uid;
@@ -131,6 +132,7 @@ void ChromiumHTTPDataSource::onConnectionFailed(status_t err) {
 }
 
 void ChromiumHTTPDataSource::disconnect() {
+    Mutex::Autolock autoSerializer(mSerializer);
     Mutex::Autolock autoLock(mLock);
     disconnect_l();
 }
@@ -200,7 +202,7 @@ ssize_t ChromiumHTTPDataSource::readAt(off64_t offset, void *data, size_t size) 
             LOG_PRI(ANDROID_LOG_INFO, LOG_TAG, "Read data timeout");
             mState = preState;
             return -EAGAIN;
-            }
+        }
     }
 
     if (mIOResult < OK) {

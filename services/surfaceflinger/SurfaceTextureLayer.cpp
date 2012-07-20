@@ -52,14 +52,6 @@ status_t SurfaceTextureLayer::setBufferCount(int bufferCount) {
     return res;
 }
 
-#ifdef OMAP_ENHANCEMENT
-status_t SurfaceTextureLayer::queueBuffer(int buf, int64_t timestamp,
-        uint32_t* outWidth, uint32_t* outHeight, uint32_t* outTransform,
-        const String8& metadata) {
-
-   status_t res = SurfaceTexture::queueBuffer(buf, timestamp,
-            outWidth, outHeight, outTransform, metadata);
-#else
 
 #ifdef OMAP_ENHANCEMENT
 status_t SurfaceTextureLayer::queueBuffer(int buf, int64_t timestamp,
@@ -125,7 +117,7 @@ status_t SurfaceTextureLayer::connect(int api,
 #endif
                 // fall through to set synchronous mode when not defaulting to
                 // async mode.
-            deafult:
+            default:
                 err = setSynchronousMode(true);
                 break;
         }

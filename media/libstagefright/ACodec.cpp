@@ -999,8 +999,7 @@ status_t ACodec::setSupportedOutputFormat() {
     CHECK(format.eColorFormat == OMX_COLOR_FormatYUV420Planar
            || format.eColorFormat == OMX_COLOR_FormatYUV420SemiPlanar
            || format.eColorFormat == OMX_COLOR_FormatCbYCrY
-           || format.eColorFormat == OMX_TI_COLOR_FormatYUV420PackedSemiPlanar
-           || format.eColorFormat == OMX_QCOM_COLOR_FormatYVU420SemiPlanar);
+           || format.eColorFormat == OMX_TI_COLOR_FormatYUV420PackedSemiPlanar);
 
     return mOMX->setParameter(
             mNode, OMX_IndexParamVideoPortFormat,
@@ -1818,6 +1817,23 @@ void ACodec::UninitializedState::onSetup(
             ++matchIndex) {
         componentName = matchingCodecs.itemAt(matchIndex).string();
 
+	int32_t width = 0, height = 0;
+
+	if (!strncasecmp(mime.c_str(), "video/", 6)) {
+		msg->findInt32("width", &width);
+		msg->findInt32("height", &height);
+		if ((width * height) <= 414720) {
+			if (strcmp(componentName.c_str(),
+				"OMX.TI.Video.Decoder")) {
+				continue;
+			}
+		}
+	} else if (!strcasecmp(mime.c_str(), MEDIA_MIMETYPE_AUDIO_AAC)) {
+		if (strcmp(componentName.c_str(), "OMX.google.aac.decoder")) {
+			continue;
+		}
+	}
+
         pid_t tid = androidGetTid();
         int prevPriority = androidGetThreadPriority(tid);
         androidSetThreadPriority(tid, ANDROID_PRIORITY_FOREGROUND);
@@ -1901,6 +1917,7 @@ status_t ACodec::LoadedToIdleState::allocateBuffers() {
 bool ACodec::LoadedToIdleState::onMessageReceived(const sp<AMessage> &msg) {
     switch (msg->what()) {
         case kWhatShutdown:
+        case kWhatFlush:
         {
             mCodec->deferMessage(msg);
             return true;
@@ -1945,6 +1962,7 @@ void ACodec::IdleToExecutingState::stateEntered() {
 
 bool ACodec::IdleToExecutingState::onMessageReceived(const sp<AMessage> &msg) {
     switch (msg->what()) {
+        case kWhatFlush:
         case kWhatShutdown:
         {
             mCodec->deferMessage(msg);
